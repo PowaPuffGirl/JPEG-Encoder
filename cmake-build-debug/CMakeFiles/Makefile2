@@ -65,6 +65,43 @@ CMAKE_SOURCE_DIR = /home/buttercup/git/MedienInfo
 CMAKE_BINARY_DIR = /home/buttercup/git/MedienInfo/cmake-build-debug
 
 #=============================================================================
+# Target rules for target CMakeFiles/PPMCreator.dir
+
+# All Build rule for target.
+CMakeFiles/PPMCreator.dir/all:
+	$(MAKE) -f CMakeFiles/PPMCreator.dir/build.make CMakeFiles/PPMCreator.dir/depend
+	$(MAKE) -f CMakeFiles/PPMCreator.dir/build.make CMakeFiles/PPMCreator.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/buttercup/git/MedienInfo/cmake-build-debug/CMakeFiles --progress-num=3,4 "Built target PPMCreator"
+.PHONY : CMakeFiles/PPMCreator.dir/all
+
+# Include target in all.
+all: CMakeFiles/PPMCreator.dir/all
+
+.PHONY : all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/PPMCreator.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/buttercup/git/MedienInfo/cmake-build-debug/CMakeFiles 2
+	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/PPMCreator.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/buttercup/git/MedienInfo/cmake-build-debug/CMakeFiles 0
+.PHONY : CMakeFiles/PPMCreator.dir/rule
+
+# Convenience name for target.
+PPMCreator: CMakeFiles/PPMCreator.dir/rule
+
+.PHONY : PPMCreator
+
+# clean rule for target.
+CMakeFiles/PPMCreator.dir/clean:
+	$(MAKE) -f CMakeFiles/PPMCreator.dir/build.make CMakeFiles/PPMCreator.dir/clean
+.PHONY : CMakeFiles/PPMCreator.dir/clean
+
+# clean rule for target.
+clean: CMakeFiles/PPMCreator.dir/clean
+
+.PHONY : clean
+
+#=============================================================================
 # Target rules for target CMakeFiles/MedienInfo.dir
 
 # All Build rule for target.

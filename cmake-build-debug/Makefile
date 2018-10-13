@@ -111,6 +111,19 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named PPMCreator
+
+# Build rule for target.
+PPMCreator: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 PPMCreator
+.PHONY : PPMCreator
+
+# fast build rule for target.
+PPMCreator/fast:
+	$(MAKE) -f CMakeFiles/PPMCreator.dir/build.make CMakeFiles/PPMCreator.dir/build
+.PHONY : PPMCreator/fast
+
+#=============================================================================
 # Target rules for targets named MedienInfo
 
 # Build rule for target.
@@ -150,6 +163,33 @@ main.cpp.s:
 	$(MAKE) -f CMakeFiles/MedienInfo.dir/build.make CMakeFiles/MedienInfo.dir/main.cpp.s
 .PHONY : main.cpp.s
 
+ppmCreator.o: ppmCreator.cpp.o
+
+.PHONY : ppmCreator.o
+
+# target to build an object file
+ppmCreator.cpp.o:
+	$(MAKE) -f CMakeFiles/PPMCreator.dir/build.make CMakeFiles/PPMCreator.dir/ppmCreator.cpp.o
+.PHONY : ppmCreator.cpp.o
+
+ppmCreator.i: ppmCreator.cpp.i
+
+.PHONY : ppmCreator.i
+
+# target to preprocess a source file
+ppmCreator.cpp.i:
+	$(MAKE) -f CMakeFiles/PPMCreator.dir/build.make CMakeFiles/PPMCreator.dir/ppmCreator.cpp.i
+.PHONY : ppmCreator.cpp.i
+
+ppmCreator.s: ppmCreator.cpp.s
+
+.PHONY : ppmCreator.s
+
+# target to generate assembly for a file
+ppmCreator.cpp.s:
+	$(MAKE) -f CMakeFiles/PPMCreator.dir/build.make CMakeFiles/PPMCreator.dir/ppmCreator.cpp.s
+.PHONY : ppmCreator.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -158,10 +198,14 @@ help:
 	@echo "... depend"
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
+	@echo "... PPMCreator"
 	@echo "... MedienInfo"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
+	@echo "... ppmCreator.o"
+	@echo "... ppmCreator.i"
+	@echo "... ppmCreator.s"
 .PHONY : help
 
 
