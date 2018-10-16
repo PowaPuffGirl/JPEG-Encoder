@@ -11,8 +11,8 @@ void writePPM(std::string filename, int width, int height, int depth, std::funct
             RGB dt = pixelSource(offset++);
             fileText.append(std::to_string(
                     (int)(dt.red * depth)) + " " +
-                    std::to_string((int)(dt.green*depth)) + " " +
-                    std::to_string((int)(dt.blue*depth)) + "\t"
+                    std::to_string((int)(dt.green * depth)) + " " +
+                    std::to_string((int)(dt.blue * depth)) + "\t"
                 );
         }
         fileText.append("\n");

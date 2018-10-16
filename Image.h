@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <stdexcept>
+#include "ppmCreator.h"
 
 struct RawImage {
     const unsigned int width, height, colorDepth;
@@ -33,6 +34,30 @@ struct RawImage {
         Y.at(offset) = y;
         Cb.at(offset) = cb;
         Cr.at(offset) = cr;
+    }
+
+    void exportYPpm(std::string filename) {
+        writePPM(filename, width, height, 255, [this] (int offset) {
+            return RGB().fromYCbCr(Y.at(offset), 0, 0);
+        });
+    }
+
+    void exportCbPpm(std::string filename) {
+        writePPM(filename, width, height, 255, [this] (int offset) {
+            return RGB().fromYCbCr(0, Cb.at(offset), 0);
+        });
+    }
+
+    void exportCrPpm(std::string filename) {
+        writePPM(filename, width, height, 255, [this] (int offset) {
+            return RGB().fromYCbCr(0, 0, Cr.at(offset));
+        });
+    }
+
+    void exportPpm(std::string filename) {
+        writePPM(filename, width, height, 255, [this] (int offset) {
+            return RGB().fromYCbCr(Y.at(offset), Cb.at(offset), Cr.at(offset));
+        });
     }
 };
 

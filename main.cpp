@@ -5,7 +5,11 @@ int main() {
     PPMParser test;
     RawImage temp = test.parsePPM();
 
-    RGB firstPixel(temp.Y[0],temp.Cb[0],temp.Cr[0],temp.colorDepth);
+    temp.exportYPpm("bw");
+    temp.exportCbPpm("cb");
+    temp.exportCrPpm("cr");
+    temp.exportPpm("full");
+
     int i = 0;
     return 0;
 }
