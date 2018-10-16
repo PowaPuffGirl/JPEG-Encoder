@@ -41,7 +41,7 @@ public:
             unsigned int r, g, b, offset = 0;
             try {
 
-                while (FileBin.good()) {
+                while (FileBin.good() && !FileBin.eof()) {
                     r = getNextInteger(FileBin);
                     g = getNextInteger(FileBin);
                     b = getNextInteger(FileBin);
@@ -83,7 +83,7 @@ private:
     }
 
     void readNum(fstream &stream, unsigned char *temp) {
-        if (stream.bad())
+        if (stream.bad() || stream.eof())
             throw invalid_argument("Got invalid stream as parameter!");
 
         stream.read((char *) temp, sizeof(*temp));

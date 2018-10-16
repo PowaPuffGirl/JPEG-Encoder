@@ -16,7 +16,7 @@ struct RawImage {
     RawImage(unsigned int width, unsigned int height, unsigned int colorDepth)
     : width(width), height(height), colorDepth(colorDepth), colorDepth_f(colorDepth), Y(), Cb(), Cr()
     {
-        const auto vsize = width * height * sizeof(float);
+        const auto vsize = width * height;
         Y.resize(vsize, 0);
         Cb.resize(vsize, 0);
         Cr.resize(vsize, 0);
