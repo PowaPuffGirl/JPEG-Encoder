@@ -1,7 +1,8 @@
 #include <iostream>
-#include "PixelTypes.h"
+#include "PPMParser.h"
 
 int main() {
-    RGB test = RGB(2,2,2);
+    PPMParser test;
+    test.parsePPM();
     return 0;
 }

@@ -3,7 +3,7 @@
 
 const int width = 5;
 const int height = 5;
-const int depth = 255;
+const int depth = 65000;
 
 std::string createHeaderOfPPM();
 void writePPMFile(const std::string &fileName, const std::string &fileText);
