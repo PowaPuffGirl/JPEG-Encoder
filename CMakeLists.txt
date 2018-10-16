@@ -3,5 +3,5 @@ project(MedienInfo)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(MedienInfo main.cpp helper/parseFloat.h helper/parseFloat.cpp)
+add_executable(MedienInfo main.cpp helper/parseFloat.h helper/parseFloat.cpp Image.h)
 add_executable(PPMCreator ppmCreator.cpp)
