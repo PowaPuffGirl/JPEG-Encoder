@@ -1,7 +1,3 @@
-//
-// Created by proj on 10/16/18.
-//
-
 #ifndef MEDIENINFO_IMAGE_H
 #define MEDIENINFO_IMAGE_H
 
