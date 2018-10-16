@@ -3,6 +3,7 @@
 
 const int width = 5;
 const int height = 5;
+const int depth = 255;
 
 std::string createHeaderOfPPM();
 void writePPMFile(const std::string &fileName, const std::string &fileText);
@@ -21,9 +22,9 @@ int main() {
 void createRandomPixels(std::string &fileText) {
     for (int row = 0; row < height; row++) {
         for (int column = 0; column < width; column++) {
-            int red = (int) (((double) std::rand() / (RAND_MAX)) * 255);
-            int green = (int) (((double) std::rand() / (RAND_MAX)) * 255);
-            int blue = (int) (((double) std::rand() / (RAND_MAX)) * 255);
+            int red = (int) (((double) std::rand() / (RAND_MAX)) * depth);
+            int green = (int) (((double) std::rand() / (RAND_MAX)) * depth);
+            int blue = (int) (((double) std::rand() / (RAND_MAX)) * depth);
             fileText.append(std::to_string(red) + " " + std::to_string(green) + " " + std::to_string(blue) + "\t");
         }
         fileText.append("\n");
@@ -31,7 +32,7 @@ void createRandomPixels(std::string &fileText) {
 }
 
 void createPixelChangeingColorRows(std::string &fileText) {
-    int red = 255;
+    int red = depth;
     int green = 0;
     int blue = 0;
     for (int row = 0; row < height; row++) {
@@ -39,14 +40,14 @@ void createPixelChangeingColorRows(std::string &fileText) {
             fileText.append(std::to_string(red) + " " + std::to_string(green) + " " + std::to_string(blue) + "\t");
         }
         fileText.append("\n");
-        if (red == 255) {
-            green = 255;
+        if (red == depth) {
+            green = depth;
             red = 0;
-        } else if (green == 255) {
-            blue = 255;
+        } else if (green == depth) {
+            blue = depth;
             green = 0;
-        } else if (blue == 255) {
-            red = 255;
+        } else if (blue == depth) {
+            red = depth;
             blue = 0;
         }
     }
@@ -63,6 +64,6 @@ std::string createHeaderOfPPM() {
     std::string header = std::string("");
     header.append("P3\n");
     header.append( std::to_string(width) + " " + std::to_string(height) + "\n");
-    header.append("255\n");
+    header.append( std::to_string(depth) + "\n");
     return header;
 }
