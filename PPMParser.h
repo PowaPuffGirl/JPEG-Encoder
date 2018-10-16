@@ -89,6 +89,15 @@ private:
             throw invalid_argument("Got invalid stream as parameter!");
 
         stream.read((char *) temp, sizeof(*temp));
+
+        if(*temp == '#') {
+            const unsigned char delim = static_cast<const unsigned char>('\n' - '0');
+            do {
+                readNum(stream, temp);
+            }
+            while(*temp != delim);
+        }
+
         *temp -= '0';
     }
 
