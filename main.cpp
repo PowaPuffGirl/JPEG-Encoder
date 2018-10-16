@@ -1,6 +1,7 @@
 #include <iostream>
+#include "PixelTypes.h"
 
 int main() {
-    std::cout << "Hello, World!" << std::endl;
+    RGB test = RGB(2,2,2);
     return 0;
 }
