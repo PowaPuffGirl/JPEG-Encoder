@@ -1,37 +1,35 @@
 #include <iostream>
 #include <fstream>
+#include "ppmCreator.h"
 
-const int width = 15;
-const int height = 15;
-const int depth = 65000;
+void writePPM(std::string filename, int width, int height, int depth, std::function<RGB(int)> pixelSource) {
+    std::string fileText = createHeaderOfPPM(width, height, depth);
 
-std::string createHeaderOfPPM();
-void writePPMFile(const std::string &fileName, const std::string &fileText);
-void createPixelChangeingColorRows(std::string &fileText);
-void createRandomPixels(std::string &fileText);
-
-int main() {
-    std::string fileText = createHeaderOfPPM();
-    createRandomPixels(fileText);
-
-    writePPMFile("test", fileText);
-    std::cout << fileText << std::endl;
-    return 0;
-}
-
-void createRandomPixels(std::string &fileText) {
+    int offset = 0;
     for (int row = 0; row < height; row++) {
         for (int column = 0; column < width; column++) {
-            int red = (int) (((double) std::rand() / (RAND_MAX)) * depth);
-            int green = (int) (((double) std::rand() / (RAND_MAX)) * depth);
-            int blue = (int) (((double) std::rand() / (RAND_MAX)) * depth);
-            fileText.append(std::to_string(red) + " " + std::to_string(green) + " " + std::to_string(blue) + "\t");
+            RGB dt = pixelSource(offset++);
+            fileText.append(std::to_string(
+                    (int)(dt.red * depth)) + " " +
+                    std::to_string((int)(dt.green*depth)) + " " +
+                    std::to_string((int)(dt.blue*depth)) + "\t"
+                );
         }
         fileText.append("\n");
     }
+
+    writePPMFile(filename, fileText);
+    std::cout << fileText << std::endl;
 }
 
-void createPixelChangeingColorRows(std::string &fileText) {
+RGB createRandomPixel() {
+    float red = (double) std::rand() / (RAND_MAX);
+    float green = (double) std::rand() / (RAND_MAX);
+    float blue = (double) std::rand() / (RAND_MAX);
+    return RGB(red, green, blue);
+}
+
+void createPixelChangeingColorRows(std::string &fileText, int width, int height, int depth) {
     int red = depth;
     int green = 0;
     int blue = 0;
@@ -60,7 +58,7 @@ void writePPMFile(const std::string &fileName, const std::string &fileText) {
     file.close();
 }
 
-std::string createHeaderOfPPM() {
+std::string createHeaderOfPPM(int width, int height, int depth) {
     std::string header = std::string("");
     header.append("P3\n");
     header.append( std::to_string(width) + " " + std::to_string(height) + "\n");
