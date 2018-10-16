@@ -38,19 +38,19 @@ struct RawImage {
 
     void exportYPpm(std::string filename) {
         writePPM(filename, width, height, 255, [this] (int offset) {
-            return RGB().fromYCbCr(Y.at(offset), 0, 0);
+            return RGB().fromYCbCr(Y.at(offset), 0.5f, 0.5f);
         });
     }
 
     void exportCbPpm(std::string filename) {
         writePPM(filename, width, height, 255, [this] (int offset) {
-            return RGB().fromYCbCr(0, Cb.at(offset), 0);
+            return RGB().fromYCbCr(1.0f, Cb.at(offset), 0.5f);
         });
     }
 
     void exportCrPpm(std::string filename) {
         writePPM(filename, width, height, 255, [this] (int offset) {
-            return RGB().fromYCbCr(0, 0, Cr.at(offset));
+            return RGB().fromYCbCr(1.0f, 0.5f, Cr.at(offset));
         });
     }
 
