@@ -3,6 +3,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <stdexcept>
 
 #include "PixelTypes.h"
 
@@ -19,9 +20,13 @@ public:
     void parsePPM() {
         fstream FileBin("../output/test.ppm", ios::in|ios::binary);
         if (FileBin.is_open()) {
-            char buffer[80] = {};
-            FileBin.read(buffer, 80);
-            cout <<"here it is:"<< buffer;
+            uint16_t header = 0;
+            FileBin.read((char *) &header, sizeof(header));
+            cout << header;
+            if ('3P' != header) {
+                throw invalid_argument("Invalid Magic Number");
+            }
+            uint8_t temp;
         }
     }
 };
