@@ -91,9 +91,12 @@ private:
         stream.read((char *) temp, sizeof(*temp));
 
         if(*temp == '#') {
-            const unsigned char delim = static_cast<const unsigned char>('\n' - '0');
+            const unsigned char delim = '\n';
             do {
-                readNum(stream, temp);
+                if (stream.bad() || stream.eof())
+                    throw invalid_argument("Got invalid stream as parameter!");
+
+                stream.read((char *) temp, sizeof(*temp));
             }
             while(*temp != delim);
         }
