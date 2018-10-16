@@ -1,8 +1,8 @@
 #include <iostream>
 #include <fstream>
 
-const int width = 5;
-const int height = 5;
+const int width = 15;
+const int height = 15;
 const int depth = 65000;
 
 std::string createHeaderOfPPM();
