@@ -18,7 +18,7 @@ public:
 
     }
 
-    void parsePPM() {
+    RawImage parsePPM() {
         fstream FileBin("../output/test.ppm", ios::in | ios::binary);
         if (FileBin.is_open() && FileBin.good()) {
 
@@ -52,6 +52,8 @@ public:
             catch (invalid_argument &ia) {
                 cout << "end of stream";
             }
+
+            return rawImage;
         } else {
             throw invalid_argument("Couldn't open file!");
         }
