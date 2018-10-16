@@ -19,7 +19,6 @@ void writePPM(std::string filename, int width, int height, int depth, std::funct
     }
 
     writePPMFile(filename, fileText);
-    std::cout << fileText << std::endl;
 }
 
 RGB createRandomPixel() {
