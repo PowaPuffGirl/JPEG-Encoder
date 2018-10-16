@@ -20,38 +20,48 @@ public:
     void parsePPM() {
         fstream FileBin("../output/test.ppm", ios::in|ios::binary);
         if (FileBin.is_open()) {
-            // header
+
+            // read the first two bytes (header)
             uint16_t header = 0;
             FileBin.read((char *) &header, sizeof(header));
-            cout << header;
-            if ('3P' != header) {
+            if ('3P' != header && 'P3' != header) {
                 throw invalid_argument("Invalid Magic Number");
             }
 
-            // size
-            uint8_t temp;
+            // read the first three integeres (width, height, maxvalue)
+            int width = getNextInteger(FileBin);
+            int height = getNextInteger(FileBin);
+            int colordepth = getNextInteger(FileBin);
 
-            do {
-                FileBin.read((char *)&temp, sizeof(temp));
-                temp -= '0';
-            } while(temp >= 10);
-
-
-            int width = temp;
-
-            FileBin.read((char *)&temp, sizeof(temp));
-            temp -= '0';
-            
-            while (temp < 10) {
-                width *= 10;
-                width += temp;
-
-                FileBin.read((char *)&temp, sizeof(temp));
-                temp -= '0';
-            }
-
-            cout << "w: " << width;
+            cout << "w: " << width << " h:" << height << " mv:" << colordepth << "\n";
         }
+    }
+
+private:
+    int getNextInteger(fstream& stream) {
+        unsigned char temp;
+
+        // read single bytes until a number is found
+        do {
+            stream.read((char *)&temp, sizeof(temp));
+            temp -= '0';
+        } while(temp >= 10);
+
+        // when the whitespace loop exits temp contains the first ascii number
+        int result = temp;
+        stream.read((char *)&temp, sizeof(temp));
+        temp -= '0';
+
+        // loop until an non-number ascii value is found
+        while (temp < 10) {
+            result *= 10;
+            result += temp;
+
+            stream.read((char *)&temp, sizeof(temp));
+            temp -= '0';
+        }
+
+        return result;
     }
 
 
