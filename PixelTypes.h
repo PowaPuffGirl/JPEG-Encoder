@@ -13,10 +13,9 @@ struct YCBCR {
     }
 };
 
-
 struct RGB {
-    int red, green, blue;
-    RGB(const int red, const int green, const int blue) {
+    float red, green, blue;
+    RGB(const float red, const float green, const float blue) {
         this->red = red;
         this->green = green;
         this-> blue = blue;
