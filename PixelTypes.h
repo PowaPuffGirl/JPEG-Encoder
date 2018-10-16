@@ -1,6 +1,10 @@
 #ifndef MEDIENINFO_YCBCR_H
 #define MEDIENINFO_YCBCR_H
 
+#include <vector>
+
+using namespace std;
+
 struct RGB;
 struct YCBCR;
 
@@ -15,18 +19,11 @@ struct YCBCR {
 
 struct RGB {
     float red, green, blue;
-    RGB(const float red, const float green, const float blue) {
-        this->red = red;
-        this->green = green;
-        this-> blue = blue;
-    }
 
-    YCBCR transformToYCBCR() {
-        float a = 0.299f * this->red + 0.587f * this->green + 0.114f * this->blue;
-        float b = -0.1687f * this->red + -0.3312f * this->green + 0.5f * this->blue + 0.5f;
-        float c = 0.5f * this->red + -0.4186f * this->green + -0.0813f * this->blue + 0.5f;
-        YCBCR result = YCBCR(a,b,c);
-        return result;
+    RGB(const float Y, const float Cb, const float Cr) {
+        this->red = (Y + 1.402f * (Cr -0.5f));
+        this->green = (Y -0.344136f * (Cb -0.5f) -0.714135f * (Cr -0.5f));
+        this->blue = (Y + 1.772f * (Cb -0.5f));
     }
 };
 
