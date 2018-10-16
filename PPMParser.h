@@ -20,7 +20,7 @@ public:
 
     void parsePPM() {
         fstream FileBin("../output/test.ppm", ios::in | ios::binary);
-        if (FileBin.is_open()) {
+        if (FileBin.is_open() && FileBin.good()) {
 
             // read the first two bytes (header)
             uint16_t header = 0;
@@ -86,8 +86,8 @@ private:
         if (stream.bad())
             throw invalid_argument("Got invalid stream as parameter!");
 
-        stream.read((char *) &temp, sizeof(temp));
-        temp -= '0';
+        stream.read((char *) temp, sizeof(*temp));
+        *temp -= '0';
     }
 
 
