@@ -21,6 +21,24 @@ void writePPM(std::string filename, int width, int height, int depth, std::funct
     writePPMFile(filename, fileText);
 }
 
+void writePPM(std::string filename, int width, int height, int depth, std::function<RGB(int, int)> pixelSource) {
+    std::string fileText = createHeaderOfPPM(width, height, depth);
+
+    for (int row = 0; row < height; row++) {
+        for (int column = 0; column < width; column++) {
+            RGB dt = pixelSource(column, row);
+            fileText.append(std::to_string(
+                    (int)(dt.red * depth)) + " " +
+                    std::to_string((int)(dt.green * depth)) + " " +
+                    std::to_string((int)(dt.blue * depth)) + "\t"
+                );
+        }
+        fileText.append("\n");
+    }
+
+    writePPMFile(filename, fileText);
+}
+
 RGB createRandomPixel() {
     float red = (double) std::rand() / (RAND_MAX);
     float green = (double) std::rand() / (RAND_MAX);

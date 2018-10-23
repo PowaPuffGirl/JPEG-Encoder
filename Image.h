@@ -11,7 +11,7 @@ struct ColorChannel {
     const unsigned int stepX, stepY, blockSize;
 
     ColorChannel(unsigned int width, unsigned int height, unsigned int stepX, unsigned int stepY)
-    : blockSize(width * height), width(width), height(height), stepX(stepX), stepY(stepY),
+    : blockSize(stepX * stepY), width(width), height(height), stepX(stepX), stepY(stepY),
         widthPadded(width % stepX == 0 ? width : width + (stepX - (width % stepX))),
         heightPadded(height % stepY == 0 ? height : height + (stepY - (height % stepY)))
     {
@@ -37,7 +37,7 @@ struct ColorChannel {
             }
         }
 
-        return channel.at(x * width + y);
+        return channel.at(y * width + x);
     }
 
     inline float get(int offset) {
@@ -79,26 +79,26 @@ struct RawImage {
     }
 
     void exportYPpm(std::string filename) {
-        writePPM(filename, width, height, 255, [this] (int offset) {
-            return RGB().fromYCbCr(Y.channel.at(offset), 0.5f, 0.5f);
+        writePPM(filename, width, height, 255, [this] (int x, int y) {
+            return RGB().fromYCbCr(Y.get(x, y), 0.5f, 0.5f);
         });
     }
 
     void exportCbPpm(std::string filename) {
-        writePPM(filename, width, height, 255, [this] (int offset) {
-            return RGB().fromYCbCr(1.0f, Cb.channel.at(offset), 0.5f);
+        writePPM(filename, width, height, 255, [this] (int x, int y) {
+            return RGB().fromYCbCr(1.0f, Cb.get(x, y), 0.5f);
         });
     }
 
     void exportCrPpm(std::string filename) {
-        writePPM(filename, width, height, 255, [this] (int offset) {
-            return RGB().fromYCbCr(1.0f, 0.5f, Cr.channel.at(offset));
+        writePPM(filename, width, height, 255, [this] (int x, int y) {
+            return RGB().fromYCbCr(1.0f, 0.5f, Cr.get(x, y));
         });
     }
 
     void exportPpm(std::string filename) {
-        writePPM(filename, width, height, 255, [this] (int offset) {
-            return RGB().fromYCbCr(Y.channel.at(offset), Cb.channel.at(offset), Cr.channel.at(offset));
+        writePPM(filename, width, height, 255, [this] (int x, int y) {
+            return RGB().fromYCbCr(Y.get(x, y), Cb.get(x, y), Cr.get(x, y));
         });
     }
 };
