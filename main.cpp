@@ -7,11 +7,8 @@ int main() {
     PPMParser test(stepSize, stepSize);
     RawImage temp = test.parsePPM();
 
-    temp.exportYPpm("bw");
-    temp.exportCbPpm("cb");
-    temp.exportCrPpm("cr");
-    temp.exportPpm("full");
+    temp.exportPPMSubsampled422("422");
+    temp.exportPPMSubsampled444("444");
 
-    int i = 0;
     return 0;
 }

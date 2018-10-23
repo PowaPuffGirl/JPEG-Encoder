@@ -40,6 +40,17 @@ struct ColorChannel {
         return channel.at(y * width + x);
     }
 
+    std::function<float(int,int)> getPixelSubsampled422() {
+        return [this] (int x, int y) {
+            return get(x&~1, y);
+        };
+    }
+
+    std::function<float(int,int)> getPixelSubsampled444() {
+        return [this] (int x, int y) {
+            return get(x, y);
+        };
+    }
 };
 
 struct RawImage {
@@ -77,22 +88,37 @@ struct RawImage {
         });
     }
 
-    void exportCbPpm(std::string filename) {
-        writePPM(filename, width, height, 255, [this] (int x, int y) {
-            return RGB().fromYCbCr(1.0f, Cb.get(x, y), 0.5f);
+    void exportCbPpm(std::string filename, std::function<float(int, int)> getPixelCb) {
+        writePPM(filename, width, height, 255, [this, getPixelCb] (int x, int y) {
+            return RGB().fromYCbCr(1.0f, getPixelCb(x, y), 0.5f);
         });
     }
 
-    void exportCrPpm(std::string filename) {
-        writePPM(filename, width, height, 255, [this] (int x, int y) {
-            return RGB().fromYCbCr(1.0f, 0.5f, Cr.get(x, y));
+    void exportCrPpm(std::string filename, std::function<float(int, int)> getPixelCr) {
+        writePPM(filename, width, height, 255, [this, getPixelCr] (int x, int y) {
+            return RGB().fromYCbCr(1.0f, 0.5f, getPixelCr(x, y));
         });
     }
 
-    void exportPpm(std::string filename) {
-        writePPM(filename, width, height, 255, [this] (int x, int y) {
-            return RGB().fromYCbCr(Y.get(x, y), Cb.get(x, y), Cr.get(x, y));
+    void exportPpm(std::string filename, std::function<float(int, int)> getPixelCb, std::function<float(int, int)> getPixelCr) {
+        writePPM(filename, width, height, 255, [this, getPixelCb, getPixelCr] (int x, int y) {
+            return RGB().fromYCbCr(Y.get(x, y), getPixelCb(x, y), getPixelCr(x, y));
         });
+    }
+
+    void exportPPMSubsampled422(std::string filename) {
+        exportYPpm(filename + "_bw");
+        exportCbPpm(filename + "_cb", Cb.getPixelSubsampled422());
+        exportCrPpm(filename + "_cr", Cr.getPixelSubsampled422());
+        exportPpm(filename + "_full", Cb.getPixelSubsampled422() ,Cr.getPixelSubsampled422());
+    }
+
+    void exportPPMSubsampled444(std::string filename) {
+        exportYPpm(filename + "_bw");
+        exportCbPpm(filename + "_cb", Cb.getPixelSubsampled444());
+        exportCrPpm(filename + "_cr", Cr.getPixelSubsampled444());
+        exportPpm(filename + "_full", Cb.getPixelSubsampled444() ,Cr.getPixelSubsampled444());
+
     }
 };
 
