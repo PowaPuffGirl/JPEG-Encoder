@@ -28,9 +28,9 @@ void writePPM(std::string filename, int width, int height, int depth, std::funct
         for (int column = 0; column < width; column++) {
             RGB dt = pixelSource(column, row);
             fileText.append(
-                    std::to_string(std::min((int)(dt.red * depth), depth)) + " " +
-                    std::to_string(std::min((int)(dt.green * depth), depth)) + " " +
-                    std::to_string(std::min((int)(dt.blue * depth), depth)) + "\t"
+                    std::to_string(std::max(0, std::min((int)(dt.red * depth), depth))) + " " +
+                    std::to_string(std::max(0, std::min((int)(dt.green * depth), depth))) + " " +
+                    std::to_string(std::max(0, std::min((int)(dt.blue * depth), depth))) + "\t"
                 );
         }
         fileText.append("\n");
