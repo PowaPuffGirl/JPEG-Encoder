@@ -131,9 +131,9 @@ struct RawImage {
         });
     }
 
-    void exportPPMSubsampled(std::string filename, std::function<std::function<float(int, int)> (ColorChannel)> sampleLambdaGetter) {
-        const auto cbSubsamplingFunction = sampleLambdaGetter(Cb);
-        const auto crSubsamplingFunction = sampleLambdaGetter(Cr);
+    void exportPPMSubsampled(std::string filename, std::function<std::function<float(int, int)> (ColorChannel*)> sampleLambdaGetter) {
+        const auto cbSubsamplingFunction = sampleLambdaGetter(&Cb);
+        const auto crSubsamplingFunction = sampleLambdaGetter(&Cr);
         exportYPpm(filename + "_bw");
         exportCbPpm(filename + "_cb", cbSubsamplingFunction);
         exportCrPpm(filename + "_cr", crSubsamplingFunction);
@@ -141,33 +141,33 @@ struct RawImage {
     }
 
     void exportPPMSubsampled420simple(std::string filename) {
-        exportPPMSubsampled(filename, [this] (ColorChannel cc) {
-            return cc.getPixelSubsampled420simple();
+        exportPPMSubsampled(filename, [this] (ColorChannel* cc) {
+            return cc->getPixelSubsampled420simple();
         });
     }
 
     void exportPPMSubsampled420average(std::string filename) {
-        exportPPMSubsampled(filename, [this] (ColorChannel cc) {
-            return cc.getPixelSubsampled420average();
+        exportPPMSubsampled(filename, [this] (ColorChannel* cc) {
+            return cc->getPixelSubsampled420average();
         });
     }
 
 
     void exportPPMSubsampled411(std::string filename) {
-        exportPPMSubsampled(filename, [this] (ColorChannel cc) {
-            return cc.getPixelSubsampled411();
+        exportPPMSubsampled(filename, [this] (ColorChannel* cc) {
+            return cc->getPixelSubsampled411();
         });
     }
 
     void exportPPMSubsampled422(std::string filename) {
-        exportPPMSubsampled(filename, [this](ColorChannel cc) {
-            return cc.getPixelSubsampled422();
+        exportPPMSubsampled(filename, [this](ColorChannel* cc) {
+            return cc->getPixelSubsampled422();
         });
     }
 
     void exportPPMSubsampled444(std::string filename) {
-        exportPPMSubsampled(filename, [this] (ColorChannel cc) {
-            return cc.getPixelSubsampled444();
+        exportPPMSubsampled(filename, [this] (ColorChannel* cc) {
+            return cc->getPixelSubsampled444();
         });
     }
 };
