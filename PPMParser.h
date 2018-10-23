@@ -13,8 +13,9 @@ using namespace std;
 
 class PPMParser {
 public:
-
-    PPMParser() {
+    const unsigned int stepX, stepY;
+    PPMParser(unsigned int stepX, unsigned int stepY)
+    :stepX(stepX), stepY(stepY){
 
     }
 
@@ -36,7 +37,7 @@ public:
 
             cout << "w: " << width << " h:" << height << " mv:" << colordepth << "\n";
 
-            RawImage rawImage(width, height, colordepth);
+            RawImage rawImage(width, height, colordepth, stepX, stepY);
 
             unsigned int r, g, b, offset = 0;
             try {

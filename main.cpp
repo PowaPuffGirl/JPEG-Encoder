@@ -1,8 +1,10 @@
 #include <iostream>
 #include "PPMParser.h"
 
+const unsigned int stepSize = 16;
+
 int main() {
-    PPMParser test;
+    PPMParser test(stepSize, stepSize);
     RawImage temp = test.parsePPM();
 
     temp.exportYPpm("bw");

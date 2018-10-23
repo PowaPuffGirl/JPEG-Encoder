@@ -7,11 +7,12 @@
 
 struct RawImage {
     const unsigned int width, height, colorDepth;
+    const unsigned int stepX, stepY;
     const float colorDepth_f;
     std::vector<float> Y, Cb, Cr;
 
-    RawImage(unsigned int width, unsigned int height, unsigned int colorDepth)
-    : width(width), height(height), colorDepth(colorDepth), colorDepth_f(colorDepth), Y(), Cb(), Cr()
+    RawImage(unsigned int width, unsigned int height, unsigned int colorDepth, unsigned int stepX, unsigned int stepY)
+    : width(width), height(height), colorDepth(colorDepth), colorDepth_f(colorDepth), Y(), Cb(), Cr(), stepX(stepX), stepY(stepY)
     {
         const auto vsize = width * height;
         Y.resize(vsize, 0);
