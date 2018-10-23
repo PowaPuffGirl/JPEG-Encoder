@@ -7,13 +7,44 @@
 
 struct ColorChannel {
     std::vector<float> channel;
-    const unsigned int width, height;
+    const unsigned int width, height, widthPadded, heightPadded;
     const unsigned int stepX, stepY, blockSize;
 
     ColorChannel(unsigned int width, unsigned int height, unsigned int stepX, unsigned int stepY)
-    : blockSize(width * height), width(width), height(height), stepX(stepX), stepY(stepY) {
+    : blockSize(width * height), width(width), height(height), stepX(stepX), stepY(stepY),
+        widthPadded(width % stepX == 0 ? width : width + (stepX - (width % stepX))),
+        heightPadded(height % stepY == 0 ? height : height + (stepY - (height % stepY)))
+    {
         const auto vsize = width * height;
         channel.resize(vsize, 0);
+    }
+
+    inline float get(int x, int y) {
+        if(x >= width) {
+            if(x < widthPadded) {
+                x = width - 1;
+            }
+            else {
+                throw std::invalid_argument("Offset of pixel out of range!");
+            }
+        }
+
+        if(y >= height) {
+            if (y < heightPadded) {
+                y = height - 1;
+            } else {
+                throw std::invalid_argument("Offset of pixel out of range!");
+            }
+        }
+
+        return channel.at(x * width + y);
+    }
+
+    inline float get(int offset) {
+        if(offset >= channel.size())
+            throw std::invalid_argument("Offset of pixel out of range!");
+
+        return get(offset);
     }
 
 };
