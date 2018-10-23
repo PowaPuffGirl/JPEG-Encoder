@@ -40,13 +40,6 @@ struct ColorChannel {
         return channel.at(y * width + x);
     }
 
-    inline float get(int offset) {
-        if(offset >= channel.size())
-            throw std::invalid_argument("Offset of pixel out of range!");
-
-        return get(offset);
-    }
-
 };
 
 struct RawImage {
