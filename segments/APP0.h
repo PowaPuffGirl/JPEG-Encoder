@@ -8,7 +8,7 @@ struct APP0 {
 
     const uint16_t marker = 0xe0FF;
 
-    uint16_t len = 0x9000; // 144 in reverse order
+    uint16_t len = 0x1000; // 16 in reverse order, length is without the marker
 
     const uint32_t jfif = 0x4649464a; // 'jfif' in reverse byte order
     const uint8_t jfif_end_marker = 0; // trailing zero byte
