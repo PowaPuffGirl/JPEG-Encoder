@@ -8,7 +8,7 @@
 const unsigned int stepSize = 16;
 
 int main() {
-    /*BitStream bs("/tmp/test.bin", 16, 16);
+    BitStream bs("/tmp/test.bin", 16, 16);
 
     bs.appendBit(0xFF, 8);
     bs.appendBit(0b00011111, 5);
@@ -16,6 +16,7 @@ int main() {
     bs.appendBit(0b00000111, 3);
     bs.appendBit(0b00111111, 6);
     bs.fillByte(); //*/
+    bs.writeOut();
 
 
 

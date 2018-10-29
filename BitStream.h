@@ -100,6 +100,15 @@ public:
         }
     }
 
+    /**
+     * Save the stream to disk
+     */
+    void writeOut() {
+        fillByte();
+        auto file = std::fstream(fileName, std::ios::out | std::ios::binary);
+        file.write((char*)streamStart, position >> 3);
+        file.close();
+    }
 
 private:
     /**
