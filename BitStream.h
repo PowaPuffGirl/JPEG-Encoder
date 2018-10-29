@@ -33,7 +33,7 @@ public:
             throw std::bad_alloc();
     }
 
-    void writeBytes(void* bytes, size_t len) {
+    void writeBytes(const void* bytes, const size_t len) {
         assert((position + (static_cast<uint64_t>(len) << 3))  < size_bits);
 
         std::memcpy(streamStart + (position >> 3), bytes, len);
@@ -49,7 +49,7 @@ public:
     /**
      * Write up to 8 bits to the stream
      */
-    void appendBit(uint8_t data, uint8_t amount) {
+    void appendBit(const uint8_t data, uint8_t amount) {
         assert(amount > 0);
         assert(amount <= 8);
         assert((data & ~ones(amount)) == 0); // check all unimportant bytes are zero
@@ -122,7 +122,7 @@ private:
     /**
      * Return an uint64_t with the rightmost $amount bytes set to one
      */
-    inline uint64_t ones(int amount) {
+    inline uint64_t ones(const int amount) {
         assert(amount < 63);
         return (static_cast<uint64_t >(1) << amount) - 1;
     }
