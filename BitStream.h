@@ -9,6 +9,7 @@
 #include <assert.h>
 #include <cstring>
 
+#define _write_segment_ref(bitstream, segment) bitstream.writeBytes(&segment, sizeof(segment))
 
 class BitStream {
 private:
@@ -33,11 +34,12 @@ public:
     }
 
     void writeBytes(void* bytes, size_t len) {
-        position += static_cast<uint64_t>(len) << 3;
-        assert(position < size_bits);
+        assert((position + (static_cast<uint64_t>(len) << 3))  < size_bits);
 
-        memcpy(streamStart + (position >> 3), bytes, len);
+        std::memcpy(streamStart + (position >> 3), bytes, len);
+        position += static_cast<uint64_t>(len) << 3;
     }
+
 
     /**
      * Write up to 8 bits to the stream

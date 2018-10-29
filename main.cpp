@@ -15,10 +15,14 @@ int main() {
     bs.appendBit(0b00000011, 2);
     bs.appendBit(0b00000111, 3);
     bs.appendBit(0b00111111, 6);
-    bs.fillByte();
+    bs.fillByte();*/
+
+    APP0 seg(1, 1);
+    _write_segment_ref(bs, seg);
     bs.writeOut(); //*/
 
 
+    /*
     std::ios_base::sync_with_stdio(false);
     auto startTime = std::chrono::high_resolution_clock::now();
 
@@ -39,7 +43,7 @@ int main() {
 
     std::cout << "Time with write " << wO << " ms; without " << wW << " ms.\n";
 
-    return 0;
+    return 0;//*/
 
 
     PPMParser test(stepSize, stepSize);
