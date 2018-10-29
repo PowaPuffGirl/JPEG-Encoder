@@ -2,6 +2,7 @@
 #include <thread>
 #include "helper/EndianConvert.h"
 #include "PPMParser.h"
+#include "segments/APP0.h"
 
 const unsigned int stepSize = 16;
 
@@ -37,6 +38,7 @@ int main() {
     uint32_t xu = 0x11223344;
     uint32_t x = convert_u32(xu);
     */
+
 
     return 0;
 }
