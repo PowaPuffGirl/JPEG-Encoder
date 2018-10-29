@@ -2,9 +2,10 @@
 #define MEDIENINFO_SOF0_H
 
 #include <cstdint>
+#include "../helper/EndianConvert.h"
 
 struct SOF0 {
-    const uint16_t marker = 0xc0ff;
+    const uint16_t marker = 0xFFC0;
     const uint16_t len = 8+componentAmount*3; // segment length without marker
     const uint8_t BitsPerSample = 8; // prescicion of the data
     uint16_t imageHeight;   // image height
@@ -19,12 +20,14 @@ struct SOF0 {
     const uint8_t CBcompOversampling = 0x22;  // 0x22 = no subsampling, 0x11 = with subsampling
     const uint8_t CBcompTableNumber = 5; // used subsampling table
 
-
     const uint8_t CRcompNumber = 3;  // Component Number 1 = Y, 2 = Cb, 3 = Cr
     const uint8_t CRcompOversampling = 0x22;  // 0x22 = no subsampling, 0x11 = with subsampling
     const uint8_t CRcompTableNumber = 5; //used subsampling table
 
-
+    SOF0(const int height, const int width) {
+        imageHeight = convert_u16(static_cast<uint16_t>(height));
+        imageWidth = convert_u16(static_cast<uint16_t>(width));
+    }
 
 } __attribute__((packed));
 
