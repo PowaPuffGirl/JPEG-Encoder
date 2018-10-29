@@ -1,5 +1,6 @@
 #include <iostream>
 #include <thread>
+#include "helper/EndianConvert.h"
 #include "PPMParser.h"
 
 const unsigned int stepSize = 16;
@@ -27,6 +28,15 @@ int main() {
     t2.join();
     t3.join();
     t4.join();
+
+    /*
+    uint16_t au = 0xFF00;
+    uint16_t a = convert_u16(au);
+    uint16_t bu = 0x3311;
+    uint16_t b = convert_u16(bu);
+    uint32_t xu = 0x11223344;
+    uint32_t x = convert_u32(xu);
+    */
 
     return 0;
 }
