@@ -40,6 +40,11 @@ public:
         position += static_cast<uint64_t>(len) << 3;
     }
 
+    inline void writeByteAligned(const uint8_t b) {
+        assert((position + 8)  < size_bits);
+        *(streamStart + (position >> 3)) = b;
+        position += 8;
+    }
 
     /**
      * Write up to 8 bits to the stream
