@@ -3,10 +3,23 @@
 #include "helper/EndianConvert.h"
 #include "PPMParser.h"
 #include "segments/APP0.h"
+#include "BitStream.h"
 
 const unsigned int stepSize = 16;
 
 int main() {
+    /*BitStream bs("/tmp/test.bin", 16, 16);
+
+    bs.appendBit(0xFF, 8);
+    bs.appendBit(0b00011111, 5);
+    bs.appendBit(0b00000011, 2);
+    bs.appendBit(0b00000111, 3);
+    bs.appendBit(0b00111111, 6);
+    bs.fillByte(); //*/
+
+
+
+
     PPMParser test(stepSize, stepSize);
     RawImage temp = test.parsePPM();
 
