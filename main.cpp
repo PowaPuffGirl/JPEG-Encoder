@@ -8,17 +8,38 @@
 const unsigned int stepSize = 16;
 
 int main() {
-    BitStream bs("/tmp/test.bin", 16, 16);
+    BitStream bs("/tmp/test.bin", 1600, 1600);
 
-    bs.appendBit(0xFF, 8);
+    /*bs.appendBit(0xFF, 8);
     bs.appendBit(0b00011111, 5);
     bs.appendBit(0b00000011, 2);
     bs.appendBit(0b00000111, 3);
     bs.appendBit(0b00111111, 6);
-    bs.fillByte(); //*/
+    bs.fillByte();
+    bs.writeOut(); //*/
+
+
+    std::ios_base::sync_with_stdio(false);
+    auto startTime = std::chrono::high_resolution_clock::now();
+
+    for (int i = 0; i < 416667; ++i) {
+        bs.appendBit(0xFF, 8);
+        bs.appendBit(0b00011111, 5);
+        bs.appendBit(0b00000011, 2);
+        bs.appendBit(0b00000111, 3);
+        bs.appendBit(0b00111111, 6);
+    }
+
+    auto endTimeWithoutWrite = std::chrono::high_resolution_clock::now();
     bs.writeOut();
+    auto endTimeWithWrite = std::chrono::high_resolution_clock::now();
 
+    auto wW = std::chrono::duration_cast<std::chrono::milliseconds>(endTimeWithoutWrite - startTime).count();
+    auto wO = std::chrono::duration_cast<std::chrono::milliseconds>(endTimeWithWrite - startTime).count();
 
+    std::cout << "Time with write " << wO << " ms; without " << wW << " ms.\n";
+
+    return 0;
 
 
     PPMParser test(stepSize, stepSize);

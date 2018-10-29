@@ -46,6 +46,7 @@ public:
         assert(amount > 0);
         assert(amount <= 8);
         assert((data & ~ones(amount)) == 0); // check all unimportant bytes are zero
+        assert(size_bits > (position + amount));
 
         const auto pad = 8 - (position % 8);
 
