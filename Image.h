@@ -140,32 +140,32 @@ struct RawImage {
         exportPpm(filename + "_full", cbSubsamplingFunction, crSubsamplingFunction);
     }
 
-    void exportPPMSubsampled420simple(std::string filename) {
+    void exportPPMSubsampled420simple(const std::string &filename) {
         exportPPMSubsampled(filename, [this] (ColorChannel* cc) {
             return cc->getPixelSubsampled420simple();
         });
     }
 
-    void exportPPMSubsampled420average(std::string filename) {
+    void exportPPMSubsampled420average(const std::string &filename) {
         exportPPMSubsampled(filename, [this] (ColorChannel* cc) {
             return cc->getPixelSubsampled420average();
         });
     }
 
 
-    void exportPPMSubsampled411(std::string filename) {
+    void exportPPMSubsampled411(const std::string &filename) {
         exportPPMSubsampled(filename, [this] (ColorChannel* cc) {
             return cc->getPixelSubsampled411();
         });
     }
 
-    void exportPPMSubsampled422(std::string filename) {
+    void exportPPMSubsampled422(const std::string &filename) {
         exportPPMSubsampled(filename, [this](ColorChannel* cc) {
             return cc->getPixelSubsampled422();
         });
     }
 
-    void exportPPMSubsampled444(std::string filename) {
+    void exportPPMSubsampled444(const std::string &filename) {
         exportPPMSubsampled(filename, [this] (ColorChannel* cc) {
             return cc->getPixelSubsampled444();
         });

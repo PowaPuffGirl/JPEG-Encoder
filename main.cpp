@@ -20,6 +20,7 @@ int main() {
     std::thread t4([&temp](){
         temp.exportPPMSubsampled422("422");
     });
+
     temp.exportPPMSubsampled444("444");
 
     t1.join();
