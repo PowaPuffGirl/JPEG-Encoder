@@ -107,6 +107,24 @@ int bitstream_tests() {
         std::cout << "Time to write 10M bits with writeout " << wO << " ms; without " << wW << " ms.\n";
     }
 
+    {
+        auto startTime = std::chrono::high_resolution_clock::now();
+        BitStream bs("/tmp/test4.bin", 1600, 1600);
+
+        for (int i = 0; i < 10000000; ++i) {
+            bs.appendBit(0x01, 1);
+        }
+
+        auto endTimeWithoutWrite = std::chrono::high_resolution_clock::now();
+        bs.writeOut();
+        auto endTimeWithWrite = std::chrono::high_resolution_clock::now();
+
+        auto wW = std::chrono::duration_cast<std::chrono::milliseconds>(endTimeWithoutWrite - startTime).count();
+        auto wO = std::chrono::duration_cast<std::chrono::milliseconds>(endTimeWithWrite - startTime).count();
+
+        std::cout << "Time to write 10M bits single with writeout " << wO << " ms; without " << wW << " ms.\n";
+    }
+
     std::flush(std::cout);
     return 0;//*/
 }
