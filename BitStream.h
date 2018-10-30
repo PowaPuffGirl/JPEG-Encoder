@@ -42,6 +42,7 @@ public:
 
     inline void writeByteAligned(const uint8_t b) {
         assert((position + 8)  < size_bits);
+        assert(position % 8 == 0);
         *(streamStart + (position >> 3)) = b;
         position += 8;
     }
