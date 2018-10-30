@@ -4,9 +4,10 @@
 #include <cstdint>
 #include "../helper/EndianConvert.h"
 
+// this struct is fixed for 3 channels
 struct SOF0 {
     const uint16_t marker = 0xFFC0;
-    const uint16_t len = 8+componentAmount*3; // segment length without marker
+    const uint16_t len = 17; // segment length without marker = 8 + component_amount * 3
     const uint8_t BitsPerSample = 8; // prescicion of the data
     uint16_t imageHeight;   // image height
     uint16_t imageWidth;    // image width
