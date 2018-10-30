@@ -11,7 +11,7 @@ int bitstream_tests();
 
 int main() {
     bitstream_tests();
-
+/*
     PPMParser test(stepSize, stepSize);
     RawImage temp = test.parsePPM();
 
@@ -52,6 +52,8 @@ int bitstream_tests() {
     std::ios_base::sync_with_stdio(false);
 
     {
+        auto startTime = std::chrono::high_resolution_clock::now();
+
         BitStream bs("/tmp/test1.bin", 16, 16);
 
         bs.appendBit(0xFF, 8);
@@ -61,7 +63,11 @@ int bitstream_tests() {
         bs.appendBit(0b00111111, 6);
         bs.fillByte();
 
-        bs.writeOut(); //*/
+        bs.writeOut();
+
+        auto endTimeWithWrite = std::chrono::high_resolution_clock::now();
+        auto w = std::chrono::duration_cast<std::chrono::milliseconds>(endTimeWithWrite - startTime).count();
+        std::cout << "Time to write test blocks: " << w << " ms.\n";
     }
 
     {
