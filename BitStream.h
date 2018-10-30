@@ -15,7 +15,8 @@ class BitStream {
 private:
     uint8_t* streamStart;
     const std::string fileName;
-    u_int64_t position = 0; // bit position
+    u_int64_t position = 0; // byte position
+    u_int8_t position_bit = 0; // inner bit position
     u_int64_t size;
     u_int64_t size_bits;
     const int width;
@@ -34,17 +35,19 @@ public:
     }
 
     void writeBytes(const void* bytes, const size_t len) {
-        assert((position + (static_cast<uint64_t>(len) << 3))  < size_bits);
+        assert((position + static_cast<uint64_t>(len)) < size);
+        assert(position_bit == 0);
 
-        std::memcpy(streamStart + (position >> 3), bytes, len);
-        position += static_cast<uint64_t>(len) << 3;
+        std::memcpy(streamStart + position, bytes, len);
+        position += static_cast<uint64_t>(len);
     }
 
     inline void writeByteAligned(const uint8_t b) {
-        assert((position + 8)  < size_bits);
-        assert(position % 8 == 0);
-        *(streamStart + (position >> 3)) = b;
-        position += 8;
+        assert((position + 1)  < size);
+        assert(position_bit == 0);
+
+        *(streamStart + position) = b;
+        ++position;
     }
 
     /**
@@ -54,45 +57,57 @@ public:
         assert(amount > 0);
         assert(amount <= 8);
         assert((data & ~ones(amount)) == 0); // check all unimportant bytes are zero
-        assert(size_bits > (position + amount));
+        assert(size_bits > ((position << 3) + position_bit + amount));
 
-        const auto pad = 8 - (position % 8);
 
         // there's still a partial byte to write to
-        if(pad != 8) {
+        if(position_bit != 0) {
+            const auto pad = 8 - position_bit;
 
             if(amount > pad) {
                 // we have more bits to write than the partial byte can fit
-                // we need to write $pad bits and therefore need to crop $amount - $pad bits
+                // we need to write $pad bits and therefore need to crop ($amount - $pad) bits
                 // since this is the last use in this block we can directly subtract the written amount
+
                 amount -= pad;
                 const uint8_t append = data >> amount;
-                *(streamStart + (position >> 3)) |= append;
-                position += pad;
+                *(streamStart + position) |= append;
+                ++position; // increase the position by one since we filled the byte
+                position_bit = 0; // set the bit position to zero
             }
             else {
                 // we have exactly as much or less bits than the byte can fit
                 // so we shift our data to start at the first unused byte (this shift could be zero if amount == pad)
                 const uint8_t append = data << (pad - amount);
-                *(streamStart + (position >> 3)) |= append;
-                position += amount;
+                *(streamStart + position) |= append;
 
-                // and exit, since we've wrote everything
+                assert((amount + position_bit) <= 8); // it can't be >8 because this would be handled by the other if case
+                if(amount == pad) { // we exactly filled this byte
+                    // this was usually &= 0x07 or &= 0b00000111, but position bit can only be =8, since >8 will be
+                    // handled by the other if
+                    position_bit = 0;
+                    ++position; // update the position since we filled this byte
+                }
+                else {
+                    position_bit = amount + position_bit;
+                }
+
+                // exit, since we've wrote everything
                 return;
             }
         }
 
         if(amount == 8) {
             // this is the simplest case - write exactly one byte
-            *(streamStart + (position >> 3)) = data;
-            position += amount;
+            *(streamStart + position) = data;
+            ++position;
         }
         else { // amount < 8
             // if we start a new byte with less than 8 bits to write, we need to shift the first important bit to the
             // rightmost position
             const uint8_t append = data << (8 - amount);
-            *(streamStart + (position >> 3)) = append;
-            position += amount;
+            *(streamStart + position) = append;
+            position_bit += amount;
         }
     }
 
@@ -100,12 +115,12 @@ public:
      * Fill a partially filled byte with ones.
      */
     void fillByte() {
-        auto pad = (position % 8);
-        if (pad != 0) {
-            pad = 8-pad;
+        if (position_bit != 0) {
+            const uint8_t pad = 8 - position_bit;
             const uint8_t append = ones(pad);
-            *(streamStart + (position >> 3)) |= append;
-            position += pad;
+            *(streamStart + position) |= append;
+            ++position;
+            position_bit = 0;
         }
     }
 
@@ -115,7 +130,7 @@ public:
     void writeOut() {
         fillByte();
         auto file = std::fstream(fileName, std::ios::out | std::ios::binary);
-        file.write((char*)streamStart, position >> 3);
+        file.write((char*)streamStart, position);
         file.close();
     }
 
