@@ -59,7 +59,6 @@ public:
         assert((data & ~ones(amount)) == 0); // check all unimportant bytes are zero
         assert(size_bits > ((position << 3) + position_bit + amount));
 
-
         // there's still a partial byte to write to
         if(position_bit != 0) {
             const auto pad = 8 - position_bit;
@@ -139,8 +138,8 @@ private:
      * Return an uint64_t with the rightmost $amount bytes set to one
      */
     inline uint64_t ones(const int amount) {
-        assert(amount < 63);
-        return (static_cast<uint64_t >(1) << amount) - 1;
+        assert(amount < 63 && amount >= 0);
+        return (static_cast<uint64_t>(1) << amount) - 1;
     }
 
 };
