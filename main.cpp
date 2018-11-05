@@ -5,12 +5,15 @@
 #include "segments/APP0.h"
 #include "BitStream.h"
 #include "segments/SOF0.h"
+#include "HuffmanTree.h"
 
 const unsigned int stepSize = 16;
 int bitstream_tests();
+int huffman_tests();
 
 int main() {
-    bitstream_tests();
+    //bitstream_tests();
+    huffman_tests();
 /*
     PPMParser test(stepSize, stepSize);
     RawImage temp = test.parsePPM();
@@ -46,6 +49,22 @@ int main() {
 
 
     return 0;
+}
+
+int huffman_tests() {
+    {
+        std::array<uint8_t, 256> values;
+        for(uint16_t i = 0; i < 256; i++) {
+            values[i] = i;
+        }
+        auto startTime = std::chrono::high_resolution_clock::now();
+
+        HuffmanTree tree(&values[0]);
+
+        auto endTimeWithWrite = std::chrono::high_resolution_clock::now();
+        auto w = std::chrono::duration_cast<std::chrono::milliseconds>(endTimeWithWrite - startTime).count();
+        std::cout << "Time to write test blocks: " << w << " ms.\n";
+    }
 }
 
 int bitstream_tests() {
