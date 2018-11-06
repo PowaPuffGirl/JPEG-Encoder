@@ -26,7 +26,7 @@ private:
     std::array<Leaf, 256> leaves;
     Node startNode;
 
-    void sortToLeaves(const uint8_t values[]) {
+    void sortToLeaves(const std::array<uint8_t , 256>& values) {
         for(uint16_t i = 0; i < 256; i++) {
            const auto leaf = &leaves[i];
            leaf->value = i;
@@ -37,7 +37,7 @@ private:
     }
 
 public:
-    HuffmanTree(const uint8_t values[]) {
+    HuffmanTree(const std::array<uint8_t , 256>& values) {
         sortToLeaves(values);
     }
 };
