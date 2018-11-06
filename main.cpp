@@ -8,8 +8,9 @@
 #include "HuffmanTree.h"
 
 const unsigned int stepSize = 16;
-int bitstream_tests(int runs = 1000);
-int huffman_tests();
+
+void bitstream_tests(int runs = 10000);
+void huffman_tests(int runs = 1000);
 
 int main() {
     //bitstream_tests();
@@ -52,28 +53,36 @@ int main() {
     return 0;
 }
 
-int huffman_tests() {
-    {
-        std::array<uint8_t, 256> values;
-        for(uint16_t i = 0; i < 256; i++) {
-            values[i] = i;
-        }
-        auto startTime = std::chrono::high_resolution_clock::now();
-
-        HuffmanTree tree(&values[0]);
-
-        auto endTimeWithWrite = std::chrono::high_resolution_clock::now();
-        auto w = std::chrono::duration_cast<std::chrono::milliseconds>(endTimeWithWrite - startTime).count();
-        std::cout << "Time to write test blocks: " << w << " ms.\n";
-    }
-}
-
-int bitstream_tests(int runs) {
+void huffman_tests(int runs) {
     std::ios_base::sync_with_stdio(false);
 
     {
         long w = 0;
-        for(int i = 0; i < runs; ++i) {
+        std::array<uint8_t, 256> values;
+        for (uint16_t i = 0; i < 256; i++) {
+            values[i] = i;
+        }
+
+        for (int i = 0; i < runs; ++i) {
+            auto startTime = std::chrono::high_resolution_clock::now();
+
+
+            HuffmanTree tree(values);
+
+            auto endTimeWithWrite = std::chrono::high_resolution_clock::now();
+            w += std::chrono::duration_cast<std::chrono::nanoseconds>(endTimeWithWrite - startTime).count();
+        }
+        std::cout << "Time to sort values: " << static_cast<double>(w) / (runs) << " ns.\n";
+    }
+
+}
+
+void bitstream_tests(int runs) {
+    std::ios_base::sync_with_stdio(false);
+
+    {
+        long w = 0;
+        for (int i = 0; i < runs; ++i) {
             auto startTime = std::chrono::high_resolution_clock::now();
 
 
@@ -91,7 +100,7 @@ int bitstream_tests(int runs) {
             auto endTimeWithWrite = std::chrono::high_resolution_clock::now();
             w += std::chrono::duration_cast<std::chrono::milliseconds>(endTimeWithWrite - startTime).count();
         }
-        std::cout << "Time to write test blocks: " << static_cast<double>(w)/(runs) << " µs.\n";
+        std::cout << "Time to write test blocks: " << static_cast<double>(w) / (runs) << " µs.\n";
     }
 
     {
@@ -99,7 +108,7 @@ int bitstream_tests(int runs) {
         SOF0 sof0(16, 16);
 
         long w = 0;
-        for(int i = 0; i < runs; ++i) {
+        for (int i = 0; i < runs; ++i) {
             auto startTime = std::chrono::high_resolution_clock::now();
 
             BitStream bs("/tmp/test2.bin", 16, 16);
@@ -114,7 +123,7 @@ int bitstream_tests(int runs) {
             auto endTimeWithWrite = std::chrono::high_resolution_clock::now();
             w += std::chrono::duration_cast<std::chrono::milliseconds>(endTimeWithWrite - startTime).count();
         }
-        std::cout << "Time to write segments: " << static_cast<double>(w)/(runs) << " µs.\n";
+        std::cout << "Time to write segments: " << static_cast<double>(w) / (runs) << " µs.\n";
 
     }
 
@@ -122,7 +131,7 @@ int bitstream_tests(int runs) {
     {
         long wW = 0;
         long wO = 0;
-        for(int i = 0; i < runs; ++i) {
+        for (int i = 0; i < runs; ++i) {
             auto startTime = std::chrono::high_resolution_clock::now();
 
 
@@ -144,13 +153,14 @@ int bitstream_tests(int runs) {
             wO += std::chrono::duration_cast<std::chrono::microseconds>(endTimeWithWrite - startTime).count();
         }
 
-        std::cout << "Time to write 10M bits with writeout " << static_cast<double>(wO)/(1000*runs) << " ms; without " << static_cast<double>(wW)/(1000*runs) << " ms.\n";
+        std::cout << "Time to write 10M bits with writeout " << static_cast<double>(wO) / (1000 * runs)
+                  << " ms; without " << static_cast<double>(wW) / (1000 * runs) << " ms.\n";
     }
 
     {
         long wW = 0;
         long wO = 0;
-        for(int i = 0; i < runs; ++i) {
+        for (int i = 0; i < runs; ++i) {
             auto startTime = std::chrono::high_resolution_clock::now();
 
             BitStream bs("/tmp/test4.bin", 1600, 1600);
@@ -168,9 +178,9 @@ int bitstream_tests(int runs) {
             wO += std::chrono::duration_cast<std::chrono::microseconds>(endTimeWithWrite - startTime).count();
         }
 
-        std::cout << "Time to write 10M bits single with writeout " << static_cast<double>(wO)/(1000*runs) << " ms; without " << static_cast<double>(wW)/(1000*runs) << " ms.\n";
+        std::cout << "Time to write 10M bits single with writeout " << static_cast<double>(wO) / (1000 * runs)
+                  << " ms; without " << static_cast<double>(wW) / (1000 * runs) << " ms.\n";
     }
 
     std::flush(std::cout);
-    return 0;//*/
 }
