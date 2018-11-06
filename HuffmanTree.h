@@ -28,10 +28,11 @@ private:
 
     void sortToLeaves(const std::array<uint8_t , 256>& values) {
         for(uint16_t i = 0; i < 256; i++) {
-           const auto leaf = &leaves[i];
+           const auto leaf = &leaves.at(i);
            leaf->value = i;
-           leaf->amount = values[i];
+           leaf->amount = values.at(i);
         }
+        leaves[0].value = 0;
 
         std::sort(leaves.begin(), leaves.end());
     }

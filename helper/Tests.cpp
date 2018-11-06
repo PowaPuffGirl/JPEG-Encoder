@@ -20,6 +20,7 @@ int huffman_tests() {
     }
 }
 
+/*
 int bitstream_tests(int runs) {
     std::ios_base::sync_with_stdio(false);
 
@@ -124,5 +125,5 @@ int bitstream_tests(int runs) {
     }
 
     std::flush(std::cout);
-    return 0;//*/
-}
+    return 0;
+}//*/
