@@ -117,8 +117,7 @@ public:
                     auto newNode = initNode();
                     auto first = lowest.begin();
                     newNode->setValueSwap(*first, *second);
-                    lowest.erase(first);
-                    lowest.erase(lowest.begin());
+                    lowest.erase(first, second);
 
                     lowest.insert(newNode);
                     lowest_value = (*lowest.begin())->weight;
