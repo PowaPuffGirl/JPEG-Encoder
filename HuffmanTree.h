@@ -68,8 +68,6 @@ private:
 
            nodes[i].setValue(leaf);
         }
-
-        std::sort(nodes.begin(), nodes.end());
     }
 
     inline Node* initNode() {
@@ -85,17 +83,12 @@ public:
 
         while(n.size() > 1) {
             auto nn = initNode();
+            auto second = ++(n.begin());
             auto first = n.begin();
 
-            // for some reason, *(++first) did not work but instead returned the pointer before incrementing
-            auto fp = *first;
-            ++first;
-            auto sp = *first;
+            nn->setValueSwap(*first, *second);
 
-            nn->setValueSwap(fp, sp);
-
-            n.erase(first);
-            n.erase(n.begin());
+            n.erase(first, second);
             n.insert(nn);
         }
 
@@ -103,6 +96,8 @@ public:
     }
 
     void sebsort() {
+        std::sort(nodes.begin(), nodes.end());
+
         std::set<Node*> lowest;
         uint32_t leaves_offset = 2;
 
@@ -169,7 +164,7 @@ public:
                 break;
             }
 
-            if(lowest_value < nodes[leaves_offset].weight || lowest_value < nodes[leaves_offset+1].weight) {
+            if(lowest_value < nodes[leaves_offset+1].weight || lowest_value < nodes[leaves_offset].weight) {
                 // at this point, a second set element can't be lower than the leaf since that would've been catched above
                 auto lowestNode = lowest.begin();
                 assert(!lowest.empty());
