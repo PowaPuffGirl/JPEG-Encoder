@@ -19,6 +19,7 @@ struct Leaf {
 struct Node {
     Leaf* value = nullptr;
     uint32_t weight = 0;
+    uint32_t level = 0;
     //Node* parentNode;
     Node* left = nullptr;
     Node* right = nullptr;
@@ -27,10 +28,11 @@ struct Node {
         this->right = right;
         this->left = left;
         weight = left->weight + right->weight;
+        this->level = std::max(left->level, right->level) + 1;
     }
 
     void setValueSwap(Node *left, Node *right) {
-        if(left->weight < right->weight) {
+        if(left->level > right->level) {
             setValue(right, left);
         }
         else {
@@ -41,6 +43,7 @@ struct Node {
     void setValue(Leaf *value) {
         this->value = value;
         weight = value->amount;
+        level = 0;
     }
 
     bool operator<(const Node& a) const {
@@ -89,7 +92,7 @@ public:
             ++first;
             auto sp = *first;
 
-            nn->setValue(fp, sp);
+            nn->setValueSwap(fp, sp);
 
             n.erase(first);
             n.erase(n.begin());
@@ -118,7 +121,7 @@ public:
                 if((*second)->weight < nodes[leaves_offset].weight) {
                     auto newNode = initNode();
                     auto first = lowest.begin();
-                    newNode->setValue(*first, *second);
+                    newNode->setValueSwap(*first, *second);
                     lowest.erase(first);
                     lowest.erase(lowest.begin());
 
@@ -181,7 +184,7 @@ public:
             else {
                 // at this point, the two lowest values must be in the tree
                 auto newNode = initNode();
-                newNode->setValue(&nodes[leaves_offset++], &nodes[leaves_offset++]);
+                newNode->setValueSwap(&nodes[leaves_offset++], &nodes[leaves_offset++]);
 
                 lowest.insert(newNode);
                 lowest_value = (*lowest.begin())->weight;
