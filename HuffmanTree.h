@@ -21,12 +21,13 @@ struct Node {
     Node* right;
 };
 
+template<uint32_t max_values>
 class HuffmanTree {
 private:
-    std::array<Leaf, 256> leaves;
+    std::array<Leaf, max_values> leaves;
     Node startNode;
 
-    void sortToLeaves(const std::array<uint8_t, 256>& values) {
+    void sortToLeaves(const std::array<uint8_t, max_values>& values) {
         for(auto i = 0; i < values.size(); i++) {
            const auto leaf = &leaves[i];
            leaf->value = i;
@@ -37,7 +38,7 @@ private:
     }
 
 public:
-    HuffmanTree(const std::array<uint8_t, 256>& values) {
+    HuffmanTree(const std::array<uint8_t, max_values>& values) {
         sortToLeaves(values);
     }
 };
