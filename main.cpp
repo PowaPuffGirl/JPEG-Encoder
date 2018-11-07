@@ -60,14 +60,14 @@ void huffman_tests(int runs) {
         long w = 0;
         std::array<uint8_t, 256> values;
         for (uint16_t i = 0; i < 256; i++) {
-            values[i] = i;
+            values[i] = ~i;
         }
 
         for (int i = 0; i < runs; ++i) {
             auto startTime = std::chrono::high_resolution_clock::now();
 
 
-            HuffmanTree<256> tree(values);
+            HuffmanTree<values.size()> tree(values);
 
             auto endTimeWithWrite = std::chrono::high_resolution_clock::now();
             w += std::chrono::duration_cast<std::chrono::nanoseconds>(endTimeWithWrite - startTime).count();

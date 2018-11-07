@@ -15,16 +15,33 @@ struct Leaf {
 };
 
 struct Node {
-    Leaf* value;
-    Node* parentNode;
-    Node* left;
-    Node* right;
+    Leaf* value = nullptr;
+    uint32_t weight = 0;
+    //Node* parentNode;
+    Node* left = nullptr;
+    Node* right = nullptr;
+
+    void setValue(Node *left, Node *right) {
+        this->right = right;
+        this->left = left;
+        weight = left->weight + right->weight;
+    }
+
+    void setValue(Leaf *value) {
+        this->value = value;
+        weight = value->amount;
+    }
+
+    bool operator<(const Node& a) const {
+        return weight < a.weight;
+    }
 };
 
 template<uint32_t max_values>
 class HuffmanTree {
 private:
     std::array<Leaf, max_values> leaves;
+    std::array<Node, max_values> nodes;
     Node startNode;
 
     void sortToLeaves(const std::array<uint8_t, max_values>& values) {
@@ -32,9 +49,11 @@ private:
            const auto leaf = &leaves[i];
            leaf->value = i;
            leaf->amount = values[i];
+
+           nodes[i].setValue(leaf);
         }
 
-        std::sort(leaves.begin(), leaves.end());
+        std::sort(nodes.begin(), nodes.end());
     }
 
 public:
