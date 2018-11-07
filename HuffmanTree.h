@@ -15,10 +15,10 @@ struct Leaf {
 };
 
 struct Node {
-    Leaf leftLeaf;
-    Leaf rightLeaf;
+    Leaf* value;
     Node* parentNode;
-    Node* childNode;
+    Node* left;
+    Node* right;
 };
 
 class HuffmanTree {
