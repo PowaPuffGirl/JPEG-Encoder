@@ -83,8 +83,8 @@ public:
 
         while(n.size() > 1) {
             auto nn = initNode();
-            auto second = ++(n.begin());
             auto first = n.begin();
+            auto second = ++(n.begin());
 
             nn->setValueSwap(*first, *second);
 
@@ -144,14 +144,13 @@ public:
 
                     while(lowest.size() > 1) {
                         newNode = initNode();
-                        begin = lowest.begin();
 
-                        auto fp = *begin;
-                        ++begin;
-                        auto sp = *begin;
+                        auto fp = lowest.begin();
+                        auto sp = ++lowest.begin();
 
-                        newNode->setValueSwap(fp, sp);
-                        lowest.erase(begin);
+                        newNode->setValueSwap(*fp, *sp);
+                        //lowest.erase(fp, sp);
+                        lowest.erase(fp);
                         lowest.erase(lowest.begin());
 
                         lowest.insert(newNode);
