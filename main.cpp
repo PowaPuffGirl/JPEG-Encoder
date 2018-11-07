@@ -83,7 +83,7 @@ void huffman_tests(int runs) {
 
 
             HuffmanTree<values.size()> tree(values);
-            tree.sebsort();
+            tree.sebsort_simple();
 
             auto endTimeWithWrite = std::chrono::high_resolution_clock::now();
             w += std::chrono::duration_cast<std::chrono::nanoseconds >(endTimeWithWrite - startTime).count();

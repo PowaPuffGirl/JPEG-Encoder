@@ -88,7 +88,8 @@ public:
 
             nn->setValueSwap(*first, *second);
 
-            n.erase(first, second);
+            n.erase(first);
+            n.erase(n.begin());
             n.insert(nn);
         }
 
