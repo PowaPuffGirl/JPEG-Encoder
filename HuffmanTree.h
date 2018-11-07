@@ -40,6 +40,15 @@ struct Node {
         }
     }
 
+    void setDeadNode(Node *left) {
+        // a "dead" node is a tree node without a left child
+        this->left = left;
+        this->weight = left->weight;
+        this->level = left->level + 1;
+
+        this->right = nullptr;
+    }
+
     void setValue(Leaf *value) {
         this->value = value;
         weight = value->amount;
@@ -56,7 +65,7 @@ class HuffmanTree {
 private:
     std::array<Leaf, max_values> leaves;
     std::array<Node, max_values> nodes;
-    std::array<Node, max_values> node_buffer;
+    std::array<Node, max_values+1> node_buffer;
     uint32_t node_buffer_offset = 0;
     Node* startNode;
 
@@ -81,6 +90,12 @@ public:
         for(int i = 0; i < nodes.size(); ++i)
             n.insert(&nodes[i]);
 
+        auto dn = initNode();
+        auto bg = n.begin();
+        dn->setDeadNode(*bg);
+        n.erase(bg);
+        n.insert(dn);
+
         while(n.size() > 1) {
             auto nn = initNode();
             auto first = n.begin();
@@ -102,8 +117,12 @@ public:
         std::set<Node*> lowest;
         uint32_t leaves_offset = 2;
 
+        auto dn = initNode();
+        dn->setDeadNode(&nodes[0]);
+
         auto firstNode = initNode();
-        firstNode->setValue(&nodes[0], &nodes[1]);
+        firstNode->setValue(&nodes[1], dn);
+        
         lowest.insert(firstNode);
 
         auto lowest_value = firstNode->weight;
