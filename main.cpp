@@ -56,13 +56,13 @@ int main() {
 void huffman_tests(int runs) {
     std::ios_base::sync_with_stdio(false);
 
+    std::array<uint8_t, 256> values;
+    for (uint16_t i = 0; i < values.size(); i++) {
+        values[i] = i;
+    }
+
     {
         long w = 0;
-        std::array<uint8_t, 256> values;
-        for (uint16_t i = 0; i < 256; i++) {
-            values[i] = ~i;
-        }
-
         for (int i = 0; i < runs; ++i) {
             auto startTime = std::chrono::high_resolution_clock::now();
 
@@ -73,6 +73,38 @@ void huffman_tests(int runs) {
             w += std::chrono::duration_cast<std::chrono::nanoseconds>(endTimeWithWrite - startTime).count();
         }
         std::cout << "Time to sort values: " << static_cast<double>(w) / (runs) << " ns.\n";
+    }
+
+
+    {
+        long w = 0;
+        for (int i = 0; i < runs; ++i) {
+            auto startTime = std::chrono::high_resolution_clock::now();
+
+
+            HuffmanTree<values.size()> tree(values);
+            tree.sebsort();
+
+            auto endTimeWithWrite = std::chrono::high_resolution_clock::now();
+            w += std::chrono::duration_cast<std::chrono::nanoseconds >(endTimeWithWrite - startTime).count();
+        }
+        std::cout << "Time to huffman (sebsort_simple): " << static_cast<double>(w) / (runs * 1000) << " µs.\n";
+    }
+
+
+    {
+        long w = 0;
+       for (int i = 0; i < runs; ++i) {
+            auto startTime = std::chrono::high_resolution_clock::now();
+
+
+            HuffmanTree<values.size()> tree(values);
+            tree.sebsort();
+
+            auto endTimeWithWrite = std::chrono::high_resolution_clock::now();
+            w += std::chrono::duration_cast<std::chrono::nanoseconds >(endTimeWithWrite - startTime).count();
+        }
+        std::cout << "Time to huffman (sebsort): " << static_cast<double>(w) / (runs * 1000) << " µs.\n";
     }
 
 }
