@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <cassert>
 #include <set>
+#include <math.h>
 
 struct Leaf {
     uint8_t value;
@@ -67,7 +68,7 @@ private:
     std::array<Node, max_values> nodes;
     std::array<Node, max_values+1> node_buffer;
     uint32_t node_buffer_offset = 0;
-    Node* startNode;
+    Node* startNode = nullptr;
 
     void sortToLeaves(const std::array<uint8_t, max_values>& values) {
         for(auto i = 0; i < values.size(); i++) {
@@ -122,7 +123,7 @@ public:
 
         auto firstNode = initNode();
         firstNode->setValue(&nodes[1], dn);
-        
+
         lowest.insert(firstNode);
 
         auto lowest_value = firstNode->weight;
@@ -206,9 +207,46 @@ public:
         } while(true);
     }
 
-public:
-    HuffmanTree(const std::array<uint8_t, max_values>& values) {
+    explicit HuffmanTree(const std::array<uint8_t, max_values>& values) {
         sortToLeaves(values);
+    }
+
+    uint64_t sumWeight() const {
+        uint64_t sum = 0;
+        for (auto lv : leaves)
+            sum += lv.amount;
+
+        return sum;
+    }
+
+    // returns the bits used when 8 bit keys are used for every occurence
+    double Efficiency_fullkey() const {
+        return 8 * sizeof(uint8_t) * sumWeight();
+    }
+
+    // returns the bits used when bit-amount fitting keys are used for every occurence
+    double Efficiency_logkey() const {
+        return log2(max_values) * sumWeight();
+    }
+
+private:
+    double node_iter(Node* cur, uint32_t level) const {
+        if(cur == nullptr)
+            return 0;
+
+        if(cur->value != nullptr) {
+            return cur->value->amount * level;
+        } else {
+            ++level;
+            return this->node_iter(cur->left, level) + this->node_iter(cur->right, level);
+        }
+    }
+
+public:
+    // returns the bits used when the huffman code is used
+    double Efficiency_huffman() const {
+        assert(startNode != nullptr);
+        return this->node_iter(startNode, 0);
     }
 };
 

@@ -1,5 +1,6 @@
 #include <iostream>
 #include <thread>
+#include <random>
 #include "helper/EndianConvert.h"
 #include "PPMParser.h"
 #include "segments/APP0.h"
@@ -80,6 +81,7 @@ void huffman_tests(int runs) {
 
     {
         long w = 0;
+        double sum_eff = 0, sum_eff_log = 0, sum_eff_huff = 0;
         for (int i = 0; i < runs; ++i) {
             auto startTime = std::chrono::high_resolution_clock::now();
 
@@ -89,19 +91,34 @@ void huffman_tests(int runs) {
 
             auto endTimeWithWrite = std::chrono::high_resolution_clock::now();
             w += std::chrono::duration_cast<std::chrono::nanoseconds>(endTimeWithWrite - startTime).count();
+
+            sum_eff += tree.Efficiency_fullkey();
+            sum_eff_log += tree.Efficiency_logkey();
+            sum_eff_huff += tree.Efficiency_huffman();
         }
         std::cout << "Time to huffman (sebsort_simple): " << static_cast<double>(w) / (runs * 1000) << " µs.\n";
+
+        sum_eff /= runs;
+        sum_eff_log /= runs;
+        sum_eff_huff /= runs;
+        std::cout << " > Efficiency: full_key(log_key): " << sum_eff << "(" << sum_eff_log << ") bits, huffman " <<
+            sum_eff_huff << " bits => compressed to " << ((sum_eff_huff / sum_eff) * 100) << "% (" <<
+            ((sum_eff_huff / sum_eff_log) * 100) << "%)\n";
     }
 
     {
         long w = 0;
+        double sum_eff = 0, sum_eff_log = 0, sum_eff_huff = 0;
         std::array<uint8_t, 256> rand_values;
         std::srand(42);
 
         for (int i = 0; i < runs; ++i) {
+            std::lognormal_distribution<double> distribution(0.0,1.0);
+            std::default_random_engine generator(42);
 
             for (uint16_t i = 0; i < rand_values.size(); i++) {
-                rand_values[i] = static_cast<uint8_t>(std::rand() % 256);
+                //rand_values[i] = static_cast<uint8_t>(std::rand() % 256);
+                rand_values[i] = static_cast<uint8_t>(distribution(generator) * 50);
             }
 
             auto startTime = std::chrono::high_resolution_clock::now();
@@ -112,8 +129,19 @@ void huffman_tests(int runs) {
 
             auto endTimeWithWrite = std::chrono::high_resolution_clock::now();
             w += std::chrono::duration_cast<std::chrono::nanoseconds>(endTimeWithWrite - startTime).count();
+
+            sum_eff += tree.Efficiency_fullkey();
+            sum_eff_log += tree.Efficiency_logkey();
+            sum_eff_huff += tree.Efficiency_huffman();
         }
         std::cout << "Time to huffman (sebsort_simple, random): " << static_cast<double>(w) / (runs * 1000) << " µs.\n";
+
+        sum_eff /= runs;
+        sum_eff_log /= runs;
+        sum_eff_huff /= runs;
+        std::cout << " > Efficiency: full_key(log_key): " << sum_eff << "(" << sum_eff_log << ") bits, huffman " <<
+            sum_eff_huff << " bits => compressed to " << ((sum_eff_huff / sum_eff) * 100) << "% (" <<
+            ((sum_eff_huff / sum_eff_log) * 100) << "%)\n";
     }
 
 
@@ -138,9 +166,12 @@ void huffman_tests(int runs) {
         std::srand(42);
 
         for (int i = 0; i < runs; ++i) {
+            std::lognormal_distribution<double> distribution(0.0,1.0);
+            std::default_random_engine generator(42);
 
             for (uint16_t i = 0; i < rand_values.size(); i++) {
-                rand_values[i] = static_cast<uint8_t>(std::rand() % 256);
+                //rand_values[i] = static_cast<uint8_t>(std::rand() % 256);
+                rand_values[i] = static_cast<uint8_t>(distribution(generator) * 50);
             }
 
             auto startTime = std::chrono::high_resolution_clock::now();
