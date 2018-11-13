@@ -92,7 +92,7 @@ private:
 
 public:
     void sebsort_simple() {
-        std::set<Node*, NodePtrComp> n;
+        std::multiset<Node*, NodePtrComp> n;
         for(int i = 0; i < nodes.size(); ++i)
             n.insert(&nodes[i]);
 
@@ -122,7 +122,7 @@ public:
     void sebsort() {
         std::sort(nodes.begin(), nodes.end());
 
-        std::set<Node*, NodePtrComp> lowest;
+        std::multiset<Node*, NodePtrComp> lowest;
         uint32_t leaves_offset = 2;
 
         auto dn = initNode();
@@ -145,7 +145,8 @@ public:
                     auto newNode = initNode();
                     auto first = lowest.begin();
                     newNode->setValueSwap(*first, *second);
-                    lowest.erase(first, second);
+                    lowest.erase(first);
+                    lowest.erase(lowest.begin());
 
                     lowest.insert(newNode);
                     lowest_value = (*lowest.begin())->weight;
