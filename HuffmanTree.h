@@ -93,7 +93,7 @@ private:
     }
 
 public:
-    void sebsort_simple() {
+    void sort_simple() {
         std::multiset<Node*, NodePtrComp> n;
         for(int i = 0; i < nodes.size(); ++i)
             n.insert(&nodes[i]);
@@ -121,7 +121,7 @@ public:
         startNode = *(n.begin());
     }
 
-    void sebsort() {
+    void sort() {
         std::sort(nodes.begin(), nodes.end());
 
         std::multiset<Node*, NodePtrComp> lowest;

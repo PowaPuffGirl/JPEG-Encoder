@@ -88,13 +88,13 @@ void huffman_tests(int runs) {
 
 
             HuffmanTree<values.size()> tree(values);
-            tree.sebsort_simple();
+            tree.sort_simple();
 
             auto endTimeWithWrite = std::chrono::high_resolution_clock::now();
             w += std::chrono::duration_cast<std::chrono::nanoseconds>(endTimeWithWrite - startTime).count();
             tem.sample(tree);
         }
-        std::cout << "Time to huffman (sebsort_simple): " << static_cast<double>(w) / (runs * 1000) << " µs.\n";
+        std::cout << "Time to huffman (sort_simple): " << static_cast<double>(w) / (runs * 1000) << " µs.\n";
         std::cout << " > " << tem << "\n";
     }
 
@@ -116,13 +116,13 @@ void huffman_tests(int runs) {
 
 
             HuffmanTree<rand_values.size()> tree(rand_values);
-            tree.sebsort_simple();
+            tree.sort_simple();
 
             auto endTimeWithWrite = std::chrono::high_resolution_clock::now();
             w += std::chrono::duration_cast<std::chrono::nanoseconds>(endTimeWithWrite - startTime).count();
             tem.sample(tree);
         }
-        std::cout << "Time to huffman (sebsort_simple, random): " << static_cast<double>(w) / (runs * 1000) << " µs.\n";
+        std::cout << "Time to huffman (sort_simple, random): " << static_cast<double>(w) / (runs * 1000) << " µs.\n";
         std::cout << " > " << tem << "\n";
     }
 
@@ -135,13 +135,13 @@ void huffman_tests(int runs) {
 
 
             HuffmanTree<values.size()> tree(values);
-            tree.sebsort();
+            tree.sort();
 
             auto endTimeWithWrite = std::chrono::high_resolution_clock::now();
             w += std::chrono::duration_cast<std::chrono::nanoseconds>(endTimeWithWrite - startTime).count();
             tem.sample(tree);
         }
-        std::cout << "Time to huffman (sebsort): " << static_cast<double>(w) / (runs * 1000) << " µs.\n";
+        std::cout << "Time to huffman (sort): " << static_cast<double>(w) / (runs * 1000) << " µs.\n";
         std::cout << " > " << tem << "\n";
     }
 
@@ -162,14 +162,14 @@ void huffman_tests(int runs) {
 
 
             HuffmanTree<rand_values.size()> tree(rand_values);
-            tree.sebsort();
+            tree.sort();
 
             auto endTimeWithWrite = std::chrono::high_resolution_clock::now();
             w += std::chrono::duration_cast<std::chrono::nanoseconds>(endTimeWithWrite - startTime).count();
             tem.sample(tree);
         }
 
-        std::cout << "Time to huffman (sebsort, random): " << static_cast<double>(w) / (runs * 1000) << " µs.\n";
+        std::cout << "Time to huffman (sort, random): " << static_cast<double>(w) / (runs * 1000) << " µs.\n";
         std::cout << " > " << tem << "\n";
     }
 }
