@@ -61,6 +61,11 @@ struct Node {
     }
 };
 
+struct NodePtrComp
+{
+    bool operator()(const Node* lhs, const Node* rhs) const  { (*lhs) < (*rhs); }
+};
+
 template<uint32_t max_values>
 class HuffmanTree {
 private:
@@ -87,7 +92,7 @@ private:
 
 public:
     void sebsort_simple() {
-        std::set<Node*> n;
+        std::set<Node*, NodePtrComp> n;
         for(int i = 0; i < nodes.size(); ++i)
             n.insert(&nodes[i]);
 
@@ -98,14 +103,16 @@ public:
         n.insert(dn);
 
         while(n.size() > 1) {
-            auto nn = initNode();
-            auto first = n.begin();
-            auto second = ++(n.begin());
-
-            nn->setValueSwap(*first, *second);
-
+            const auto first = n.begin();
+            const auto fp = *first;
             n.erase(first);
-            n.erase(n.begin());
+
+            const auto second = n.begin();
+            const auto sp = *second;
+            n.erase(second);
+
+            auto nn = initNode();
+            nn->setValueSwap(*first, *second);
             n.insert(nn);
         }
 
@@ -115,7 +122,7 @@ public:
     void sebsort() {
         std::sort(nodes.begin(), nodes.end());
 
-        std::set<Node*> lowest;
+        std::set<Node*, NodePtrComp> lowest;
         uint32_t leaves_offset = 2;
 
         auto dn = initNode();

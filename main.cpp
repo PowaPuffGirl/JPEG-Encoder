@@ -101,8 +101,7 @@ void huffman_tests(int runs) {
     {
         long w = 0;
         TreeEfficiencyMeter tem;
-        std::array<uint8_t, 12> rand_values;
-        std::srand(42);
+        std::array<uint8_t, 256> rand_values;
 
         for (int i = 0; i < runs; ++i) {
             std::lognormal_distribution<double> distribution(0.0,1.0);
@@ -149,14 +148,13 @@ void huffman_tests(int runs) {
     {
         long w = 0;
         std::array<uint8_t, 256> rand_values;
-        std::srand(42);
+        TreeEfficiencyMeter tem;
 
         for (int i = 0; i < runs; ++i) {
             std::lognormal_distribution<double> distribution(0.0,1.0);
             std::default_random_engine generator(42);
 
             for (uint16_t i = 0; i < rand_values.size(); i++) {
-                //rand_values[i] = static_cast<uint8_t>(std::rand() % 256);
                 rand_values[i] = static_cast<uint8_t>(distribution(generator) * 50);
             }
 
@@ -164,12 +162,15 @@ void huffman_tests(int runs) {
 
 
             HuffmanTree<rand_values.size()> tree(rand_values);
-            //tree.sebsort();
+            tree.sebsort();
 
             auto endTimeWithWrite = std::chrono::high_resolution_clock::now();
             w += std::chrono::duration_cast<std::chrono::nanoseconds>(endTimeWithWrite - startTime).count();
+            tem.sample(tree);
         }
+
         std::cout << "Time to huffman (sebsort, random): " << static_cast<double>(w) / (runs * 1000) << " µs.\n";
+        std::cout << " > " << tem << "\n";
     }
 }
 
