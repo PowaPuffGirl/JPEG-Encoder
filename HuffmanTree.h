@@ -57,13 +57,15 @@ struct Node {
     }
 
     bool operator<(const Node& a) const {
+        if(weight == a.weight)
+            return level < a.level;
         return weight < a.weight;
     }
 };
 
 struct NodePtrComp
 {
-    bool operator()(const Node* lhs, const Node* rhs) const  { (*lhs) < (*rhs); }
+    bool operator()(const Node* lhs, const Node* rhs) const  { return (*lhs) < (*rhs); }
 };
 
 template<uint32_t max_values>
