@@ -8,8 +8,9 @@
 #include <set>
 #include <math.h>
 
+template<typename KeyType>
 struct Leaf {
-    uint8_t value;
+    KeyType value;
     uint32_t amount;
 
     bool operator<(const Leaf& a) const {
@@ -17,21 +18,22 @@ struct Leaf {
     }
 };
 
+template<typename KeyType>
 struct Node {
-    Leaf* value = nullptr;
+    Leaf<KeyType>* value = nullptr;
     uint32_t weight = 0;
     uint32_t level = 0;
-    Node* left = nullptr;
-    Node* right = nullptr;
+    Node<KeyType>* left = nullptr;
+    Node<KeyType>* right = nullptr;
 
-    void setValue(Node *left, Node *right) {
+    void setValue(Node<KeyType> *left, Node<KeyType> *right) {
         this->right = right;
         this->left = left;
         weight = left->weight + right->weight;
         this->level = std::max(left->level, right->level) + 1;
     }
 
-    void setValueSwap(Node *left, Node *right) {
+    void setValueSwap(Node<KeyType> *left, Node<KeyType> *right) {
         if(left->level > right->level) {
             setValue(right, left);
         }
@@ -49,7 +51,7 @@ struct Node {
         this->right = nullptr;
     }
 
-    void setValue(Leaf *value) {
+    void setValue(Leaf<KeyType> *value) {
         this->value = value;
         weight = value->amount;
         level = 0;
@@ -62,21 +64,22 @@ struct Node {
     }
 };
 
+template<typename KeyType>
 struct NodePtrComp
 {
-    bool operator()(const Node* lhs, const Node* rhs) const  { return (*lhs) < (*rhs); }
+    bool operator()(const Node<KeyType>* lhs, const Node<KeyType>* rhs) const  { return (*lhs) < (*rhs); }
 };
 
-template<uint32_t max_values>
+template<uint32_t max_values, typename KeyType = uint8_t, bool skipSort = false>
 class HuffmanTree {
 private:
-    std::array<Leaf, max_values> leaves;
-    std::array<Node, max_values> nodes;
-    std::array<Node, max_values+1> node_buffer;
+    std::array<Leaf<KeyType>, max_values> leaves;
+    std::array<Node<KeyType>, max_values> nodes;
+    std::array<Node<KeyType>, max_values+1> node_buffer;
     uint32_t node_buffer_offset = 0;
-    Node* startNode = nullptr;
+    Node<KeyType>* startNode = nullptr;
 
-    void sortToLeaves(const std::array<uint8_t, max_values>& values) {
+    void sortToLeaves(const std::array<KeyType, max_values>& values) {
         for(auto i = 0; i < values.size(); i++) {
            const auto leaf = &leaves[i];
            leaf->value = i;
@@ -86,14 +89,14 @@ private:
         }
     }
 
-    inline Node* initNode() {
+    inline Node<KeyType>* initNode() {
         assert((node_buffer_offset) < max_values);
         return &node_buffer[node_buffer_offset++];
     }
 
 public:
     void sort_simple() {
-        std::multiset<Node*, NodePtrComp> n;
+        std::multiset<Node<KeyType>*, NodePtrComp<KeyType>> n;
         for(int i = 0; i < nodes.size(); ++i)
             n.insert(&nodes[i]);
 
@@ -123,7 +126,7 @@ public:
     void sort() {
         std::sort(nodes.begin(), nodes.end());
 
-        std::multiset<Node*, NodePtrComp> lowest;
+        std::multiset<Node<KeyType>*, NodePtrComp<KeyType>> lowest;
         uint32_t leaves_offset = 2;
 
         auto dn = initNode();
@@ -216,9 +219,12 @@ public:
         } while(true);
     }
 
-    explicit HuffmanTree(const std::array<uint8_t, max_values>& values) {
+    explicit HuffmanTree(const std::array<KeyType, max_values>& values) {
         assert(values.size() >= 2);
         sortToLeaves(values);
+
+        if constexpr (!skipSort)
+            sort();
     }
 
     uint64_t sumWeight() const {
@@ -231,7 +237,7 @@ public:
 
     // returns the bits used when 8 bit keys are used for every occurence
     double Efficiency_fullkey() const {
-        return 8 * sizeof(uint8_t) * sumWeight();
+        return 8 * sizeof(KeyType) * sumWeight();
     }
 
     // returns the bits used when bit-amount fitting keys are used for every occurence
@@ -240,7 +246,7 @@ public:
     }
 
 private:
-    double node_iter(Node* cur, uint32_t level) const {
+    double node_iter(Node<KeyType>* cur, uint32_t level) const {
         if(cur == nullptr)
             return 0;
 

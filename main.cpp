@@ -70,7 +70,7 @@ void huffman_tests(int runs) {
             auto startTime = std::chrono::high_resolution_clock::now();
 
 
-            HuffmanTree<values.size()> tree(values);
+            HuffmanTree<values.size(), uint8_t, true> tree(values);
 
             auto endTimeWithWrite = std::chrono::high_resolution_clock::now();
             w += std::chrono::duration_cast<std::chrono::nanoseconds>(endTimeWithWrite - startTime).count();
@@ -87,7 +87,7 @@ void huffman_tests(int runs) {
             auto startTime = std::chrono::high_resolution_clock::now();
 
 
-            HuffmanTree<values.size()> tree(values);
+            HuffmanTree<values.size(), uint8_t, true> tree(values);
             tree.sort_simple();
 
             auto endTimeWithWrite = std::chrono::high_resolution_clock::now();
@@ -115,7 +115,7 @@ void huffman_tests(int runs) {
             auto startTime = std::chrono::high_resolution_clock::now();
 
 
-            HuffmanTree<rand_values.size()> tree(rand_values);
+            HuffmanTree<rand_values.size(), uint8_t, true> tree(rand_values);
             tree.sort_simple();
 
             auto endTimeWithWrite = std::chrono::high_resolution_clock::now();
@@ -134,7 +134,7 @@ void huffman_tests(int runs) {
             auto startTime = std::chrono::high_resolution_clock::now();
 
 
-            HuffmanTree<values.size()> tree(values);
+            HuffmanTree<values.size(), uint8_t, true> tree(values);
             tree.sort();
 
             auto endTimeWithWrite = std::chrono::high_resolution_clock::now();
@@ -161,7 +161,7 @@ void huffman_tests(int runs) {
             auto startTime = std::chrono::high_resolution_clock::now();
 
 
-            HuffmanTree<rand_values.size()> tree(rand_values);
+            HuffmanTree<rand_values.size(), uint8_t, true> tree(rand_values);
             tree.sort();
 
             auto endTimeWithWrite = std::chrono::high_resolution_clock::now();
