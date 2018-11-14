@@ -218,6 +218,7 @@ public:
     }
 
     explicit HuffmanTree(const std::array<uint8_t, max_values>& values) {
+        assert(values.size() >= 2);
         sortToLeaves(values);
     }
 
