@@ -21,7 +21,6 @@ struct Node {
     Leaf* value = nullptr;
     uint32_t weight = 0;
     uint32_t level = 0;
-    //Node* parentNode;
     Node* left = nullptr;
     Node* right = nullptr;
 
