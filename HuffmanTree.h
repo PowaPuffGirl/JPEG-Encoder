@@ -13,7 +13,7 @@ struct Leaf {
     KeyType value;
     uint32_t amount;
 
-    bool operator<(const Leaf& a) const {
+    bool operator<(const Leaf &a) const {
         return amount < a.amount;
     }
 };
@@ -22,21 +22,21 @@ template<typename KeyType>
 struct LeafISO {
     KeyType value;
     uint32_t amount;
-    LeafISO* next = nullptr;
+    LeafISO *next = nullptr;
     int codesize = 0;
 
-    bool operator<(const LeafISO& a) const {
+    bool operator<(const LeafISO &a) const {
         return amount < a.amount;
     }
 };
 
 template<typename KeyType>
 struct Node {
-    Leaf<KeyType>* value = nullptr;
+    Leaf<KeyType> *value = nullptr;
     uint32_t weight = 0;
     uint32_t level = 0;
-    Node<KeyType>* left = nullptr;
-    Node<KeyType>* right = nullptr;
+    Node<KeyType> *left = nullptr;
+    Node<KeyType> *right = nullptr;
 
     void setValue(Node<KeyType> *left, Node<KeyType> *right) {
         this->right = right;
@@ -46,10 +46,9 @@ struct Node {
     }
 
     void setValueSwap(Node<KeyType> *left, Node<KeyType> *right) {
-        if(left->level > right->level) {
+        if (left->level > right->level) {
             setValue(right, left);
-        }
-        else {
+        } else {
             setValue(left, right);
         }
     }
@@ -69,60 +68,68 @@ struct Node {
         level = 0;
     }
 
-    bool operator<(const Node& a) const {
-        if(weight == a.weight)
+    bool operator<(const Node &a) const {
+        if (weight == a.weight)
             return level < a.level;
         return weight < a.weight;
     }
 };
 
 template<typename KeyType>
-struct NodePtrComp
-{
-    bool operator()(const Node<KeyType>* lhs, const Node<KeyType>* rhs) const  { return (*lhs) < (*rhs); }
+struct NodePtrComp {
+    bool operator()(const Node<KeyType> *lhs, const Node<KeyType> *rhs) const { return (*lhs) < (*rhs); }
+};
+
+template<typename KeyType>
+struct IsoLeafPtrComp {
+    bool operator()(const LeafISO<KeyType> *lhs, const LeafISO<KeyType> *rhs) const {
+        if (lhs->amount != rhs->amount)
+            return lhs->amount < rhs->amount;
+        return lhs->value > rhs->value;
+    }
 };
 
 template<uint32_t max_values, typename KeyType = uint8_t, bool skipSort = false>
 class HuffmanTree {
 private:
     std::array<Leaf<KeyType>, max_values> leaves;
-    std::array<LeafISO<KeyType>, max_values+1> leavesISO;
+    std::array<LeafISO<KeyType>, max_values + 1> leavesISO;
     std::array<Node<KeyType>, max_values> nodes;
-    std::array<Node<KeyType>, max_values+1> node_buffer;
+    std::array<Node<KeyType>, max_values + 1> node_buffer;
     uint32_t node_buffer_offset = 0;
-    Node<KeyType>* startNode = nullptr;
+    Node<KeyType> *startNode = nullptr;
 
-    void sortToLeaves(const std::array<KeyType, max_values>& values) {
-        for(auto i = 0; i < values.size(); i++) {
-           const auto leaf = &leaves[i];
-           leaf->value = i;
-           leaf->amount = values[i];
+    void sortToLeaves(const std::array<KeyType, max_values> &values) {
+        for (auto i = 0; i < values.size(); i++) {
+            const auto leaf = &leaves[i];
+            leaf->value = i;
+            leaf->amount = values[i];
 
-           nodes[i].setValue(leaf);
+            nodes[i].setValue(leaf);
         }
     }
 
-    void sortToLeavesISO(const std::array<KeyType, max_values>& values) {
-        for(auto i = 0; i < values.size(); i++) {
-           const auto leaf = &leavesISO[i];
-           leaf->value = i;
-           leaf->amount = values[i];
+    void sortToLeavesISO(const std::array<KeyType, max_values> &values) {
+        for (auto i = 0; i < values.size(); i++) {
+            const auto leaf = &leavesISO[i];
+            leaf->value = i;
+            leaf->amount = values[i];
         }
 
-        const auto leaf = &leavesISO[leavesISO.size()-1];
-        leaf->value = leavesISO.size()-1;
+        const auto leaf = &leavesISO[leavesISO.size() - 1];
+        leaf->value = leavesISO.size() - 1;
         leaf->amount = 1;
     }
 
-    inline Node<KeyType>* initNode() {
+    inline Node<KeyType> *initNode() {
         assert((node_buffer_offset) < max_values);
         return &node_buffer[node_buffer_offset++];
     }
 
 public:
     void sort_simple() {
-        std::multiset<Node<KeyType>*, NodePtrComp<KeyType>> n;
-        for(int i = 0; i < nodes.size(); ++i)
+        std::multiset<Node<KeyType> *, NodePtrComp<KeyType>> n;
+        for (int i = 0; i < nodes.size(); ++i)
             n.insert(&nodes[i]);
 
         auto dn = initNode();
@@ -131,7 +138,7 @@ public:
         n.erase(bg);
         n.insert(dn);
 
-        while(n.size() > 1) {
+        while (n.size() > 1) {
             const auto first = n.begin();
             const auto fp = *first;
             n.erase(first);
@@ -151,7 +158,7 @@ public:
     void sort() {
         std::sort(nodes.begin(), nodes.end());
 
-        std::multiset<Node<KeyType>*, NodePtrComp<KeyType>> lowest;
+        std::multiset<Node<KeyType> *, NodePtrComp<KeyType>> lowest;
         uint32_t leaves_offset = 2;
 
         auto dn = initNode();
@@ -166,11 +173,11 @@ public:
 
         do {
 
-            if(lowest.size() > 1) {
+            if (lowest.size() > 1) {
                 auto second = lowest.begin();
                 ++second;
 
-                if((*second)->weight < nodes[leaves_offset].weight) {
+                if ((*second)->weight < nodes[leaves_offset].weight) {
                     auto newNode = initNode();
                     auto first = lowest.begin();
                     newNode->setValueSwap(*first, *second);
@@ -184,7 +191,7 @@ public:
                 }
             }
 
-            if(leaves_offset >= nodes.size() - 1) {
+            if (leaves_offset >= nodes.size() - 1) {
                 // last element
                 // we know that if there is a second element in the set, it must be heavier than the last node and the
                 // first element since otherwise the condition above would've been triggered
@@ -192,15 +199,14 @@ public:
                 auto begin = lowest.begin();
                 newNode->setValueSwap(&nodes[leaves_offset], *begin);
 
-                if(lowest.size() == 1) {
+                if (lowest.size() == 1) {
                     // that was the last element, we're done
                     startNode = newNode;
-                }
-                else {
+                } else {
                     lowest.erase(begin);
                     lowest.insert(newNode);
 
-                    while(lowest.size() > 1) {
+                    while (lowest.size() > 1) {
                         newNode = initNode();
 
                         auto fp = lowest.begin();
@@ -220,7 +226,7 @@ public:
                 break;
             }
 
-            if(lowest_value < nodes[leaves_offset+1].weight || lowest_value < nodes[leaves_offset].weight) {
+            if (lowest_value < nodes[leaves_offset + 1].weight || lowest_value < nodes[leaves_offset].weight) {
                 // at this point, a second set element can't be lower than the leaf since that would've been catched above
                 auto lowestNode = lowest.begin();
                 assert(!lowest.empty());
@@ -231,8 +237,7 @@ public:
 
                 lowest.insert(newNode);
                 lowest_value = (*lowest.begin())->weight;
-            }
-            else {
+            } else {
                 // at this point, the two lowest values must be in the tree
                 auto newNode = initNode();
                 newNode->setValueSwap(&nodes[leaves_offset++], &nodes[leaves_offset++]);
@@ -241,45 +246,33 @@ public:
                 lowest_value = (*lowest.begin())->weight;
             }
 
-        } while(true);
+        } while (true);
     }
 
-     void findLowest(LeafISO<KeyType>** v1, LeafISO<KeyType>** v2) {
-        for (int i = 0; i < leavesISO.size(); i++) {
-            if (leavesISO[i].amount != 0) {
-                if ((*v1) == nullptr) {
-                    (*v1) = &leavesISO[i];
-                } else if ((*v1)->amount > leavesISO[i].amount) {
-                    (*v1) = &leavesISO[i];
-                }
-            }
+    void findLowest(LeafISO<KeyType> *& v1, LeafISO<KeyType> *& v2, std::multiset<LeafISO<KeyType>*, IsoLeafPtrComp<KeyType>>& set) {
+        v1 = *(set.begin());
+        if(set.size() <= 1) {
+            v2 = nullptr;
+            return;
         }
+        set.erase(set.begin());
+        v2 = *(set.begin());
+        set.erase(set.begin());
 
-        for (int i = 0; i < leavesISO.size(); i++) {
-            if (&leavesISO[i] != (*v1)) {
-                if (leavesISO[i].amount != 0) {
-                    if ((*v2) == nullptr) {
-                        (*v2) = &leavesISO[i];
-                    } else if ((*v2)->amount > leavesISO[i].amount) {
-                        (*v2) = &leavesISO[i];
-                    }
-                }
-            }
-        }
     }
 
     void adjustBits(int bits[]) {
         int i = 32;
         while (i > 16) {
             if (bits[i] > 0) {
-                int j = i -1;
+                int j = i - 1;
                 j--;
                 while (bits[j] <= 0) {
                     j--;
                 }
                 bits[i] = bits[i] - 2;
-                bits[i-1] = bits[i-1] + 1;
-                bits[j+1] = bits[j+1] + 2;
+                bits[i - 1] = bits[i - 1] + 1;
+                bits[j + 1] = bits[j + 1] + 2;
                 bits[j] = bits[j] - 1;
             }
             i--;
@@ -296,17 +289,20 @@ public:
         int bits[32]{0};
         for (int i = 0; i < leavesISO.size(); i++) {
             if (leavesISO[i].codesize != 0) {
-              bits[leavesISO[i].codesize]++;
+                bits[leavesISO[i].codesize]++;
             }
         }
         adjustBits(bits);
     }
 
     void iso_sort() {
-        LeafISO<KeyType>* v1 = nullptr;
-        LeafISO<KeyType>* v2 = nullptr;
-
-        findLowest(&v1, &v2);
+        std::multiset<LeafISO<KeyType> *, IsoLeafPtrComp<KeyType>> set;
+        for (auto &lv : leavesISO) {
+            if (lv.amount > 0)
+                set.insert(&lv);
+        }
+        LeafISO<KeyType>* v1, * v2;
+        findLowest(v1, v2, set);
 
         while (v2 != nullptr) {
             v1->amount = v1->amount + v2->amount;
@@ -322,14 +318,14 @@ public:
                 v2 = v2->next;
                 v2->codesize++;
             }
-            v1 = nullptr;
-            v2 = nullptr;
-            findLowest(&v1, &v2);
+
+            set.insert(v1);
+            findLowest(v1, v2, set);
         }
         countBits();
     }
 
-    explicit HuffmanTree(const std::array<KeyType, max_values>& values) {
+    explicit HuffmanTree(const std::array<KeyType, max_values> &values) {
         assert(values.size() >= 2);
         sortToLeaves(values);
         sortToLeavesISO(values);
@@ -357,11 +353,11 @@ public:
     }
 
 private:
-    double node_iter(Node<KeyType>* cur, uint32_t level) const {
-        if(cur == nullptr)
+    double node_iter(Node<KeyType> *cur, uint32_t level) const {
+        if (cur == nullptr)
             return 0;
 
-        if(cur->value != nullptr) {
+        if (cur->value != nullptr) {
             return cur->value->amount * level;
         } else {
             ++level;

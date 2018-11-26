@@ -63,7 +63,7 @@ void huffman_tests(int runs) {
     for (uint16_t i = 0; i < values.size(); i++) {
         values[i] = i;
     }
-/*
+//*
     {
         long w = 0;
         for (int i = 0; i < runs; ++i) {
@@ -77,7 +77,6 @@ void huffman_tests(int runs) {
         }
         std::cout << "Time to sort values: " << static_cast<double>(w) / (runs) << " ns.\n";
     }
-*/
     {
         long w = 0;
         TreeEfficiencyMeter tem;
@@ -171,6 +170,7 @@ void huffman_tests(int runs) {
         std::cout << " > " << tem << "\n";
     }
 
+//*/
     {
         long w = 0;
         for (int i = 0; i < runs; ++i) {
