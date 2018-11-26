@@ -59,7 +59,7 @@ int main() {
 void huffman_tests(int runs) {
     std::ios_base::sync_with_stdio(false);
 
-    std::array<uint8_t, 256> values;
+    std::array<uint8_t, 16> values;
     for (uint16_t i = 0; i < values.size(); i++) {
         values[i] = i;
     }

@@ -264,6 +264,20 @@ public:
         }
     }
 
+    void adjustBits() {
+
+    }
+
+    void countBits() {
+        uint16_t bits[32]{0};
+        for (int i = 0; i < leavesISO.size(); i++) {
+            if (leavesISO[i].codesize != 0) {
+              bits[leavesISO[i].codesize]++;
+            }
+        }
+        adjustBits();
+    }
+
     void code_size() {
         LeafISO<KeyType>* v1 = nullptr;
         LeafISO<KeyType>* v2 = nullptr;
@@ -274,13 +288,13 @@ public:
             v1->amount = v1->amount + v2->amount;
             v2->amount = 0;
             v1->codesize++;
-            if (v1->next != nullptr) {
+            while (v1->next != nullptr) {
                 v1 = v1->next;
                 v1->codesize++;
             }
             v1->next = v2;
             v2->codesize++;
-            if (v2->next != nullptr) {
+            while (v2->next != nullptr) {
                 v2 = v2->next;
                 v2->codesize++;
             }
@@ -288,6 +302,7 @@ public:
             v2 = nullptr;
             findLowest(&v1, &v2);
         }
+        countBits();
     }
 
     explicit HuffmanTree(const std::array<KeyType, max_values>& values) {
