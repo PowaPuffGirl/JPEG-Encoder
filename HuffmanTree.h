@@ -86,7 +86,7 @@ template<uint32_t max_values, typename KeyType = uint8_t, bool skipSort = false>
 class HuffmanTree {
 private:
     std::array<Leaf<KeyType>, max_values> leaves;
-    std::array<LeafISO<KeyType>, max_values> leavesISO;
+    std::array<LeafISO<KeyType>, max_values+1> leavesISO;
     std::array<Node<KeyType>, max_values> nodes;
     std::array<Node<KeyType>, max_values+1> node_buffer;
     uint32_t node_buffer_offset = 0;
@@ -108,6 +108,10 @@ private:
            leaf->value = i;
            leaf->amount = values[i];
         }
+
+        const auto leaf = &leavesISO[leavesISO.size()-1];
+        leaf->value = leavesISO[leavesISO.size()-2];
+        leaf->amount = 1;
     }
 
     inline Node<KeyType>* initNode() {
@@ -264,18 +268,38 @@ public:
         }
     }
 
-    void adjustBits() {
+    void adjustBits(int bits[]) {
+        int i = 32;
+        while (i > 16) {
+            if (bits[i] > 0) {
+                int j = i -1;
+                j--;
+                while (bits[j] <= 0) {
+                    j--;
+                }
+                bits[i] = bits[i] - 2;
+                bits[i-1] = bits[i-1] + 1;
+                bits[j+1] = bits[j+1] + 2;
+                bits[j] = bits[j] - 1;
+            }
+            i--;
+        }
 
+        while (bits[i] > 0) {
+            i--;
+        }
+        bits[i] = bits[i] - 1;
+        int k = 0;
     }
 
     void countBits() {
-        uint16_t bits[32]{0};
+        int bits[32]{0};
         for (int i = 0; i < leavesISO.size(); i++) {
             if (leavesISO[i].codesize != 0) {
               bits[leavesISO[i].codesize]++;
             }
         }
-        adjustBits();
+        adjustBits(bits);
     }
 
     void code_size() {
