@@ -19,6 +19,18 @@ struct Leaf {
 };
 
 template<typename KeyType>
+struct LeafISO {
+    KeyType value;
+    uint32_t amount;
+    LeafISO* next = nullptr;
+    int codesize = 0;
+
+    bool operator<(const LeafISO& a) const {
+        return amount < a.amount;
+    }
+};
+
+template<typename KeyType>
 struct Node {
     Leaf<KeyType>* value = nullptr;
     uint32_t weight = 0;
@@ -74,6 +86,7 @@ template<uint32_t max_values, typename KeyType = uint8_t, bool skipSort = false>
 class HuffmanTree {
 private:
     std::array<Leaf<KeyType>, max_values> leaves;
+    std::array<LeafISO<KeyType>, max_values> leavesISO;
     std::array<Node<KeyType>, max_values> nodes;
     std::array<Node<KeyType>, max_values+1> node_buffer;
     uint32_t node_buffer_offset = 0;
@@ -86,6 +99,14 @@ private:
            leaf->amount = values[i];
 
            nodes[i].setValue(leaf);
+        }
+    }
+
+    void sortToLeavesISO(const std::array<KeyType, max_values>& values) {
+        for(auto i = 0; i < values.size(); i++) {
+           const auto leaf = &leavesISO[i];
+           leaf->value = i;
+           leaf->amount = values[i];
         }
     }
 
@@ -219,10 +240,62 @@ public:
         } while(true);
     }
 
+     void findLowest(LeafISO<KeyType>** v1, LeafISO<KeyType>** v2) {
+        for (int i = 0; i < leavesISO.size(); i++) {
+            if (leavesISO[i].amount != 0) {
+                if ((*v1) == nullptr) {
+                    (*v1) = &leavesISO[i];
+                } else if ((*v1)->amount > leavesISO[i].amount) {
+                    (*v1) = &leavesISO[i];
+                }
+            }
+        }
+
+        for (int i = 0; i < leavesISO.size(); i++) {
+            if (&leavesISO[i] != (*v1)) {
+                if (leavesISO[i].amount != 0) {
+                    if ((*v2) == nullptr) {
+                        (*v2) = &leavesISO[i];
+                    } else if ((*v2)->amount > leavesISO[i].amount) {
+                        (*v2) = &leavesISO[i];
+                    }
+                }
+            }
+        }
+    }
+
+    void code_size() {
+        LeafISO<KeyType>* v1 = nullptr;
+        LeafISO<KeyType>* v2 = nullptr;
+
+        findLowest(&v1, &v2);
+
+        while (v2 != nullptr) {
+            v1->amount = v1->amount + v2->amount;
+            v2->amount = 0;
+            v1->codesize++;
+            if (v1->next != nullptr) {
+                v1 = v1->next;
+                v1->codesize++;
+            }
+            v1->next = v2;
+            v2->codesize++;
+            if (v2->next != nullptr) {
+                v2 = v2->next;
+                v2->codesize++;
+            }
+            v1 = nullptr;
+            v2 = nullptr;
+            findLowest(&v1, &v2);
+        }
+    }
+
     explicit HuffmanTree(const std::array<KeyType, max_values>& values) {
         assert(values.size() >= 2);
         sortToLeaves(values);
-
+        sortToLeavesISO(values);
+        code_size();
+        int i = 0;
         if constexpr (!skipSort)
             sort();
     }
