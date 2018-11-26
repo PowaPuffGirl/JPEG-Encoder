@@ -110,7 +110,7 @@ private:
         }
 
         const auto leaf = &leavesISO[leavesISO.size()-1];
-        leaf->value = leavesISO[leavesISO.size()-2];
+        leaf->value = leavesISO.size()-1;
         leaf->amount = 1;
     }
 
@@ -302,7 +302,7 @@ public:
         adjustBits(bits);
     }
 
-    void code_size() {
+    void iso_sort() {
         LeafISO<KeyType>* v1 = nullptr;
         LeafISO<KeyType>* v2 = nullptr;
 
@@ -333,7 +333,6 @@ public:
         assert(values.size() >= 2);
         sortToLeaves(values);
         sortToLeavesISO(values);
-        code_size();
         int i = 0;
         if constexpr (!skipSort)
             sort();
