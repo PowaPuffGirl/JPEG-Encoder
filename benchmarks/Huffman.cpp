@@ -30,7 +30,7 @@ static void BM_WriteDhtSegment(benchmark::State& state) {
         bs.writeByteAligned(0xD8);
         _write_segment_ref(bs, app0);
         _write_segment_ref(bs, sof0);
-        ht.writeSegmentToStream(bs, 0, true);
+        ht.writeSegmentToStream(bs, 0, false);
         bs.writeByteAligned(0xFF);
         bs.writeByteAligned(0xD9);
         bs.writeOut();
