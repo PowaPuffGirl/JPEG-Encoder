@@ -30,7 +30,7 @@ private:
     }
 
     inline Node<InputKeyType, AmountType> *initNode() {
-        assert((node_buffer_offset) < max_values);
+        assert((node_buffer_offset) < node_buffer.size());
         return &node_buffer[node_buffer_offset++];
     }
 
@@ -40,6 +40,80 @@ private:
             sum += lv.amount;
 
         return sum;
+    }
+
+    void convertToOutput() {
+        std::vector<Node<InputKeyType, AmountType>*> a, b;
+        std::vector<Node<InputKeyType, AmountType>*> *cur = &a, *prev = &b;
+        std::vector<uint8_t> vbits(startNode->level + 1);
+
+        a.reserve(max_values);
+        b.reserve(max_values);
+        this->huffval.reserve(max_values);
+
+        prev->push_back(startNode);
+
+        // first, go through the tree layer-by-layer while outputting the nodes pre-order and saving the bit values
+        int depth = 0;
+        do {
+            while(!prev->empty()) {
+                const Node<InputKeyType, AmountType>* ptr = prev->back();
+                prev->pop_back();
+
+                if(ptr->value != nullptr) {
+                    this->huffval.push_back(ptr->value->value);
+                    ++vbits[depth];
+                }
+                else {
+                    cur->push_back(ptr->left);
+                    if(ptr->right != nullptr)
+                        cur->push_back(ptr->right);
+                }
+            }
+
+            ++depth;
+
+            // std::swap dereferences these values and doesn't work here
+            std::vector<Node<InputKeyType, AmountType>*> * x = cur;
+            cur = prev;
+            prev = x;
+        } while(!prev->empty());
+
+        // second, do the adjust_bits procedure from ISO
+        // since the order of the nodes will not be changed (and it would not produce errors even if it would), we just
+        // need to push the numbers a bit
+        int i = startNode->level + 1; // basically our max level. Since we start counting at zero, increase it by one
+
+        while (i > max_tree_depth) {
+            if (vbits[i] > 0) {
+                int j = i - 1;
+                j--;
+                while (vbits[j] <= 0) {
+                    j--;
+                }
+                vbits[i] = vbits[i] - 2;
+                vbits[i - 1] = vbits[i - 1] + 1;
+                vbits[j + 1] = vbits[j + 1] + 2;
+                vbits[j] = vbits[j] - 1;
+            }
+            i--;
+        }
+
+        // this would remove the padding bit we do not have
+//        while (vbits[i] == 0) {
+//            i--;
+//        }
+//        vbits[i] = vbits[i] - 1;
+
+        if(vbits.size() >= this->bits.size()) {
+            // the vector is bigger - everything is fine
+            std::memcpy(&this->bits[0], &vbits[0], sizeof(this->bits));
+        }
+        else {
+            // the vectort is smaller, so we need to copy the values and then memset the rest of the array to 0
+            std::memcpy(&this->bits[0], &vbits[0], vbits.size());
+            std::memset(&this->bits[vbits.size()], 0, sizeof(this->bits) - vbits.size());
+        }
     }
 
     void sort() {
@@ -134,12 +208,12 @@ private:
             }
 
         } while (true);
+
+        this->convertToOutput();
     }
 
 public:
-    HuffmanTreeSort() {
-
-    }
+    HuffmanTreeSort() = default;
 
     void sortTree(const std::array<AmountType, max_values> &values) override {
         sortToLeaves(values);

@@ -31,7 +31,7 @@ private:
     }
 
     inline Node<InputKeyType, AmountType> *initNode() {
-        assert((node_buffer_offset) < max_values);
+        assert((node_buffer_offset) < node_buffer.size());
         return &node_buffer[node_buffer_offset++];
     }
 
