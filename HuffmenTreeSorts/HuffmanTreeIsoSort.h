@@ -46,10 +46,12 @@ private:
     }
 
     void sort_input() {
+        int k = 0;
         for(int i = 0; i <= 32; i++) {
             for(int j = 0; j < leavesISO.size(); j++) {
                 if (leavesISO.at(j).codesize == i) {
-                    this->huffval.push_back(j);
+                    //this->huffval.push_back(j); // uneeded since we resized it at the beginning of iso_sort
+                    this->huffval[k++] = j;
                 }
             }
         }
@@ -98,6 +100,8 @@ private:
             if (lv.amount > 0)
                 set.insert(&lv);
         }
+        this->huffval.resize(set.size()); // the elements in the set now account for all non-zero values
+
         LeafISO<InputKeyType, AmountType>* v1, * v2;
         findLowest(v1, v2, set);
 
@@ -123,9 +127,7 @@ private:
     }
 
 public:
-    HuffmanTreeIsoSort() {
-
-    }
+    HuffmanTreeIsoSort() = default;
 
     void sortTree(const std::array<AmountType, max_values> &values) override {
         sortToLeaves(values);
