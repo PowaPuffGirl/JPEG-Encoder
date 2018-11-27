@@ -33,48 +33,35 @@ private:
         assert(std::accumulate(bits.begin(), bits.end(), 0); == huffval.size());
         assert(std::max_element(huffval.begin(), huffval.end()) < lookupTable.size());
 
-        std::vector<CountType> huffsize;
-        std::vector<OutputCodeType> huffcode;
-        huffsize.reserve(huffval.size());
-        huffcode.reserve(huffval.size());
+        std::vector<CountType> huffsize(huffval.size());
+        std::vector<OutputCodeType> huffcode(huffval.size());
 
         // generate the code sizes for all values, basically set every bits[n] values to n
-        //TODO: use iterators
-        int voffset = 0;
+        // this is Generate_size_table in ISO/IEC 10918-1
+        auto voffset = huffsize.begin();
         for(int i = 1; i < bits.size(); ++i) {
-            const auto c = bits[i];
             // bits is zero-based while our algorithm starts at one bit
-            const auto bitcount = static_cast<uint8_t>(i + 1);
-
-            for (int j = 0; j < c; ++j) {
-                huffsize[voffset++] = bitcount;
-            }
+            std::fill(voffset, voffset + bits[i], static_cast<uint8_t>(i + 1));
         }
 
         // generate the codes
+        // this is Generate_code_table in ISO/IEC 10918-1
         OutputCodeType code = 0;
         CountType si = huffsize[0];
-        int k = 0;
         const auto sz = huffval.size();
-        for(;;) {
-            do {
-                huffcode[k] = code;
-                ++code;
-                ++k;
-            }
-            while (k < sz && huffsize[k] == si);
 
-            if(k >= sz)
-                break;
-
-            do {
-                code <<= 1;
-                ++si;
+        for(int k = 0; k < huffcode.size(); ++k) {
+            if(huffsize[k] != si) {
+                code <<= huffsize[k] - si;
+                si = huffsize[k];
             }
-            while (huffsize[k] != si);
+
+            huffcode[k] = code;
+            ++code;
         }
 
         // generate the encoding lookup table
+        // this is Order_codes in ISO/IEC 10918-1
         for (int l = 0; l < huffval.size(); ++l) {
             const auto val = huffval[l];
             lookupTable[val] = huffcode[l];
