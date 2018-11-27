@@ -55,7 +55,7 @@ private:
         }
     }
 
-    void adjustBits(std::array<int, 33>& bits) {
+    void adjustBits(std::array<uint8_t, 33>& bits) {
         int i = 32;
         while (i > max_tree_depth) {
             if (bits[i] > 0) {
@@ -72,7 +72,7 @@ private:
             i--;
         }
 
-        while (bits[i] > 0) {
+        while (bits[i] == 0) {
             i--;
         }
         bits[i] = bits[i] - 1;
@@ -81,7 +81,7 @@ private:
     }
 
     void countBits() {
-        std::array<int, 33> bits = {0};
+        std::array<uint8_t , 33> bits = {0};
         for (int i = 0; i < leavesISO.size(); i++) {
             if (leavesISO[i].codesize != 0) {
                 // the standard assumes that a depth greater than 32 will not occur, but
@@ -103,7 +103,7 @@ private:
 
         while (v2 != nullptr) {
             v1->amount = v1->amount + v2->amount;
-            //v2->amount = 0;
+            v2->amount = 0;
             v1->codesize++;
             set.insert(v1);
             while (v1->next != nullptr) {
