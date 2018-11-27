@@ -10,6 +10,8 @@
 #include <immintrin.h>
 #include <math.h>
 #include "HelperStructs.h"
+#include "../BitStream.h"
+#include "../segments/DHT.h"
 
 
 template<uint32_t max_values, typename InputKeyType = uint8_t, typename AmountType = uint32_t, typename OutputKeyType = uint16_t, uint8_t max_tree_depth = 16>
@@ -19,9 +21,8 @@ public:
     std::array<uint8_t, max_tree_depth+1> bits;
     std::vector<InputKeyType> huffval;
 
-    HuffmanTree() {
-        huffval.reserve(max_values);
-    }
+
+    HuffmanTree() = default;
 
     virtual void sortTree(const std::array<AmountType, max_values> &values) = 0;
 
@@ -33,6 +34,14 @@ public:
 
     // returns the bits used when bit-amount fitting keys are used for every occurence
     virtual double Efficiency_logkey() const = 0;
+
+    void writeSegmentToStream(BitStream& stream, const uint8_t htinfo) {
+        DHT::write<max_tree_depth>(stream, htinfo, bits, huffval);
+    }
+
+    void writeSegmentToStream(BitStream& stream, const uint8_t tree_num, const uint8_t is_ac) {
+        DHT::write<max_tree_depth>(stream, tree_num, is_ac, bits, huffval);
+    }
 
 protected:
     virtual void sortToLeaves(const std::array<AmountType, max_values> &values) = 0;
@@ -49,5 +58,6 @@ protected:
         }
     }
 };
+
 
 #endif //MEDIENINFO_HUFFMANNTREE_H
