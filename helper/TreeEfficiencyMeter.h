@@ -16,8 +16,8 @@ private:
     double sum_eff = 0, sum_eff_log = 0, sum_eff_huff = 0;
 
 public:
-    template<uint32_t max_values, typename KeyType, bool skipSort>
-    void sample(const HuffmanTree<max_values, KeyType, skipSort>& tree) {
+    template<uint32_t max_values, typename InputKeyType = uint8_t, typename AmountType = uint32_t, bool skipSort = false, typename OutputKeyType = uint16_t>
+    void sample(const HuffmanTree<max_values, InputKeyType, AmountType, skipSort, OutputKeyType>& tree) {
         ++runs;
 
         sum_eff += tree.Efficiency_fullkey();

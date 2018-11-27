@@ -6,22 +6,23 @@
 #include <algorithm>
 #include <cassert>
 #include <set>
+#include <immintrin.h>
 #include <math.h>
 
-template<typename KeyType>
+template<typename KeyType, typename AmountType>
 struct Leaf {
     KeyType value;
-    uint32_t amount;
+    AmountType amount;
 
     bool operator<(const Leaf &a) const {
         return amount < a.amount;
     }
 };
 
-template<typename KeyType>
+template<typename KeyType, typename AmountType>
 struct LeafISO {
     KeyType value;
-    uint32_t amount;
+    AmountType amount;
     LeafISO *next = nullptr;
     int codesize = 0;
 
@@ -30,22 +31,25 @@ struct LeafISO {
     }
 };
 
-template<typename KeyType>
+template<typename KeyType, typename AmountType>
 struct Node {
-    Leaf<KeyType> *value = nullptr;
-    uint32_t weight = 0;
-    uint32_t level = 0;
-    Node<KeyType> *left = nullptr;
-    Node<KeyType> *right = nullptr;
+    using LeafT = Leaf<KeyType, AmountType>;
+    using NodeT = Node<KeyType, AmountType>;
 
-    void setValue(Node<KeyType> *left, Node<KeyType> *right) {
+    LeafT *value = nullptr;
+    AmountType weight = 0;
+    uint32_t level = 0;
+    NodeT *left = nullptr;
+    NodeT *right = nullptr;
+
+    void setValue(NodeT *left, NodeT *right) {
         this->right = right;
         this->left = left;
         weight = left->weight + right->weight;
         this->level = std::max(left->level, right->level) + 1;
     }
 
-    void setValueSwap(Node<KeyType> *left, Node<KeyType> *right) {
+    void setValueSwap(NodeT *left, NodeT *right) {
         if (left->level > right->level) {
             setValue(right, left);
         } else {
@@ -53,7 +57,7 @@ struct Node {
         }
     }
 
-    void setDeadNode(Node *left) {
+    void setDeadNode(NodeT *left) {
         // a "dead" node is a tree node without a left child
         this->left = left;
         this->weight = left->weight;
@@ -62,44 +66,46 @@ struct Node {
         this->right = nullptr;
     }
 
-    void setValue(Leaf<KeyType> *value) {
+    void setValue(LeafT *value) {
         this->value = value;
         weight = value->amount;
         level = 0;
     }
 
-    bool operator<(const Node &a) const {
+    bool operator<(const NodeT &a) const {
         if (weight == a.weight)
             return level < a.level;
         return weight < a.weight;
     }
 };
 
-template<typename KeyType>
+template<typename KeyType, typename AmountType>
 struct NodePtrComp {
-    bool operator()(const Node<KeyType> *lhs, const Node<KeyType> *rhs) const { return (*lhs) < (*rhs); }
+    bool operator()(const Node<KeyType, AmountType> *lhs, const Node<KeyType, AmountType> *rhs) const {
+        return (*lhs) < (*rhs);
+    }
 };
 
-template<typename KeyType>
+template<typename KeyType, typename AmountType>
 struct IsoLeafPtrComp {
-    bool operator()(const LeafISO<KeyType> *lhs, const LeafISO<KeyType> *rhs) const {
+    bool operator()(const LeafISO<KeyType, AmountType> *lhs, const LeafISO<KeyType, AmountType> *rhs) const {
         if (lhs->amount != rhs->amount)
             return lhs->amount < rhs->amount;
         return lhs->value > rhs->value;
     }
 };
 
-template<uint32_t max_values, typename KeyType = uint8_t, bool skipSort = false>
+template<uint32_t max_values, typename InputKeyType = uint8_t, typename AmountType = uint32_t, bool skipSort = false, typename OutputKeyType = uint16_t>
 class HuffmanTree {
 private:
-    std::array<Leaf<KeyType>, max_values> leaves;
-    std::array<LeafISO<KeyType>, max_values + 1> leavesISO;
-    std::array<Node<KeyType>, max_values> nodes;
-    std::array<Node<KeyType>, max_values + 1> node_buffer;
+    std::array<Leaf<InputKeyType, AmountType>, max_values> leaves;
+    std::array<LeafISO<InputKeyType, AmountType>, max_values + 1> leavesISO;
+    std::array<Node<InputKeyType, AmountType>, max_values> nodes;
+    std::array<Node<InputKeyType, AmountType>, max_values + 1> node_buffer;
     uint32_t node_buffer_offset = 0;
-    Node<KeyType> *startNode = nullptr;
+    Node<InputKeyType, AmountType> *startNode = nullptr;
 
-    void sortToLeaves(const std::array<KeyType, max_values> &values) {
+    void sortToLeaves(const std::array<AmountType, max_values> &values) {
         for (auto i = 0; i < values.size(); i++) {
             const auto leaf = &leaves[i];
             leaf->value = i;
@@ -109,7 +115,7 @@ private:
         }
     }
 
-    void sortToLeavesISO(const std::array<KeyType, max_values> &values) {
+    void sortToLeavesISO(const std::array<AmountType, max_values> &values) {
         for (auto i = 0; i < values.size(); i++) {
             const auto leaf = &leavesISO[i];
             leaf->value = i;
@@ -121,14 +127,14 @@ private:
         leaf->amount = 1;
     }
 
-    inline Node<KeyType> *initNode() {
+    inline Node<InputKeyType, AmountType> *initNode() {
         assert((node_buffer_offset) < max_values);
         return &node_buffer[node_buffer_offset++];
     }
 
 public:
     void sort_simple() {
-        std::multiset<Node<KeyType> *, NodePtrComp<KeyType>> n;
+        std::multiset<Node<InputKeyType, AmountType> *, NodePtrComp<InputKeyType, AmountType>> n;
         for (int i = 0; i < nodes.size(); ++i)
             n.insert(&nodes[i]);
 
@@ -158,7 +164,7 @@ public:
     void sort() {
         std::sort(nodes.begin(), nodes.end());
 
-        std::multiset<Node<KeyType> *, NodePtrComp<KeyType>> lowest;
+        std::multiset<Node<InputKeyType, AmountType> *, NodePtrComp<InputKeyType, AmountType>> lowest;
         uint32_t leaves_offset = 2;
 
         auto dn = initNode();
@@ -249,7 +255,11 @@ public:
         } while (true);
     }
 
-    void findLowest(LeafISO<KeyType> *& v1, LeafISO<KeyType> *& v2, std::multiset<LeafISO<KeyType>*, IsoLeafPtrComp<KeyType>>& set) {
+    void findLowest(
+            LeafISO<InputKeyType, AmountType> *& v1,
+            LeafISO<InputKeyType, AmountType> *& v2,
+            std::multiset<LeafISO<InputKeyType, AmountType>*, IsoLeafPtrComp<InputKeyType, AmountType>>& set
+    ) {
         v1 = *(set.begin());
         if(set.size() <= 1) {
             v2 = nullptr;
@@ -296,12 +306,12 @@ public:
     }
 
     void iso_sort() {
-        std::multiset<LeafISO<KeyType> *, IsoLeafPtrComp<KeyType>> set;
+        std::multiset<LeafISO<InputKeyType, AmountType> *, IsoLeafPtrComp<InputKeyType, AmountType>> set;
         for (auto &lv : leavesISO) {
             if (lv.amount > 0)
                 set.insert(&lv);
         }
-        LeafISO<KeyType>* v1, * v2;
+        LeafISO<InputKeyType, AmountType>* v1, * v2;
         findLowest(v1, v2, set);
 
         while (v2 != nullptr) {
@@ -325,7 +335,7 @@ public:
         countBits();
     }
 
-    explicit HuffmanTree(const std::array<KeyType, max_values> &values) {
+    explicit HuffmanTree(const std::array<AmountType, max_values> &values) {
         assert(values.size() >= 2);
         sortToLeaves(values);
         sortToLeavesISO(values);
@@ -344,7 +354,7 @@ public:
 
     // returns the bits used when 8 bit keys are used for every occurence
     double Efficiency_fullkey() const {
-        return 8 * sizeof(KeyType) * sumWeight();
+        return 8 * sizeof(InputKeyType) * sumWeight();
     }
 
     // returns the bits used when bit-amount fitting keys are used for every occurence
@@ -353,7 +363,7 @@ public:
     }
 
 private:
-    double node_iter(Node<KeyType> *cur, uint32_t level) const {
+    double node_iter(Node<InputKeyType, AmountType> *cur, uint32_t level) const {
         if (cur == nullptr)
             return 0;
 
