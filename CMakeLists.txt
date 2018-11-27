@@ -10,6 +10,6 @@ SET(CMAKE_CXX_FLAGS_RELEASE  "${CMAKE_CXX_FLAGS_RELEASE} -Ofast -DNDEBUG -fbuilt
 SET(MI_FILES Image.h ppmCreator.h ppmCreator.cpp BitStream.h segments/APP0.h segments/SOF0.h helper/EndianConvert.h helper/TreeEfficiencyMeter.h HuffmanEncoder.h segments/DHT.h HuffmenTreeSorts/HuffmanTreeSimpleSort.h HuffmenTreeSorts/HelperStructs.h HuffmenTreeSorts/HuffmanTreeIsoSort.h HuffmenTreeSorts/HuffmanTreeSort.h HuffmenTreeSorts/HuffmanTree.h)
 
 add_executable(MedienInfo main.cpp ${MI_FILES})
-add_executable(Benchmarks ${MI_FILES} benchmarks/BitStream.cpp benchmarks/Huffman.cpp benchmarks/Huffman.h)
+add_executable(Benchmarks ${MI_FILES} benchmarks/BitStream.cpp benchmarks/Huffman.cpp)
 target_link_libraries(Benchmarks benchmark_main benchmark)
 add_executable(PPMCreator ppmCreatorMain.cpp ppmCreator.h ppmCreator.cpp)

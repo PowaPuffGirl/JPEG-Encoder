@@ -101,7 +101,7 @@ void huffman_tests(int runs) {
             auto startTime = std::chrono::high_resolution_clock::now();
 
 
-            HuffmanTreeSimpleSort<values.size(), uint8_t, uint32_t, uint16_t>  tree;
+            HuffmanTreeSimpleSort<rand_values.size(), uint8_t, uint32_t, uint16_t>  tree;
             tree.sortTree(rand_values);
 
             auto endTimeWithWrite = std::chrono::high_resolution_clock::now();
@@ -145,7 +145,7 @@ void huffman_tests(int runs) {
 
             auto startTime = std::chrono::high_resolution_clock::now();
 
-            HuffmanTreeSort<values.size(), uint8_t, uint32_t, uint16_t>  tree;
+            HuffmanTreeSort<rand_values.size(), uint8_t, uint32_t, uint16_t>  tree;
             tree.sortTree(rand_values);
 
             auto endTimeWithWrite = std::chrono::high_resolution_clock::now();
