@@ -20,7 +20,7 @@ public:
     std::vector<InputKeyType> huffval;
 
     HuffmanTree() {
-
+        huffval.reserve(max_values);
     }
 
     virtual void sortTree(const std::array<AmountType, max_values> &values) = 0;

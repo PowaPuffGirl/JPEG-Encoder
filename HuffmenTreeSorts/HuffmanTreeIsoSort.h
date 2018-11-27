@@ -9,6 +9,7 @@
 #include <vector>
 #include "HelperStructs.h"
 #include "HuffmanTree.h"
+#include <cstring>
 
 template<uint32_t max_values, typename InputKeyType = uint8_t, typename AmountType = uint32_t, typename OutputKeyType = uint16_t, uint8_t max_tree_depth = 16>
 class HuffmanTreeIsoSort: public HuffmanTree<max_values, InputKeyType, AmountType, OutputKeyType, max_tree_depth> {
@@ -42,6 +43,16 @@ private:
         set.erase(set.begin());
     }
 
+    void sort_input() {
+        for(int i = 0; i <= 32; i++) {
+            for(int j = 0; j <= max_values+1; j++) {
+                if (leavesISO[j].codesize == i) {
+                    this->huffval.push_back(j);
+                }
+            }
+        }
+    }
+
     void adjustBits(int bits[]) {
         int i = 32;
         while (i > max_tree_depth) {
@@ -57,13 +68,14 @@ private:
                 bits[j] = bits[j] - 1;
             }
             i--;
+            sort_input();
         }
 
         while (bits[i] > 0) {
             i--;
         }
         bits[i] = bits[i] - 1;
-        int k = 0;
+        std::memcpy(&this->bits[0], &bits[0], sizeof(this->bits));
     }
 
     void countBits() {
