@@ -1,14 +1,10 @@
-//
-// Created by proj on 11/13/18.
-//
-
 #ifndef MEDIENINFO_TREEEFFIENCYMETER_H
 #define MEDIENINFO_TREEEFFIENCYMETER_H
 
 
 #include <cstdint>
 #include <sstream>
-#include "../HuffmanTree.h"
+#include "../HuffmenTreeSorts/HuffmanTree.h"
 
 class TreeEfficiencyMeter {
 private:
@@ -17,7 +13,7 @@ private:
 
 public:
     template<uint32_t max_values, typename InputKeyType = uint8_t, typename AmountType = uint32_t, bool skipSort = false, typename OutputKeyType = uint16_t>
-    void sample(const HuffmanTree<max_values, InputKeyType, AmountType, skipSort, OutputKeyType>& tree) {
+    void sample(const HuffmanTree<max_values, InputKeyType, AmountType, OutputKeyType>& tree) {
         ++runs;
 
         sum_eff += tree.Efficiency_fullkey();
