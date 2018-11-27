@@ -95,7 +95,7 @@ struct IsoLeafPtrComp {
     }
 };
 
-template<uint32_t max_values, typename InputKeyType = uint8_t, typename AmountType = uint32_t, bool skipSort = false, typename OutputKeyType = uint16_t>
+template<uint32_t max_values, typename InputKeyType = uint8_t, typename AmountType = uint32_t, bool skipSort = false, typename OutputKeyType = uint16_t, uint8_t tree_depth = 16>
 class HuffmanTree {
 private:
     std::array<Leaf<InputKeyType, AmountType>, max_values> leaves;
@@ -273,7 +273,7 @@ public:
 
     void adjustBits(int bits[]) {
         int i = 32;
-        while (i > 16) {
+        while (i > tree_depth) {
             if (bits[i] > 0) {
                 int j = i - 1;
                 j--;
