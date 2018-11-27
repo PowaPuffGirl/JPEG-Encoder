@@ -27,6 +27,11 @@ public:
         generateEncodingTable(bits, huffval);
     }
 
+    template <typename InputType>
+    inline void write(BitStream& bs, const InputType it) {
+        bs.writeBytes(lookupTable[it], sizeLookupTable[it]);
+    }
+
 private:
     void generateEncodingTable(const std::array<CountType, max_tree_depth+1>& bits, const std::vector<InputKeyType>& huffval) {
         assert(huffval.size() > 0);
