@@ -53,9 +53,8 @@ public:
         const double nsum_eff_log = sum_eff_log / runs;
         const double nsum_eff_huff = sum_eff_huff / runs;
 
-        state.counters["eff"] = nsum_eff;
-        state.counters["eff log"] = nsum_eff_log;
-        state.counters["eff huff"] = nsum_eff_huff;
+        state.counters["eff log"] = (nsum_eff_log / nsum_eff) * 100;
+        state.counters["eff huff"] = (nsum_eff_huff / nsum_eff) * 100;
     }
 
 };
