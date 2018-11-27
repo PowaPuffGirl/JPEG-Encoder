@@ -89,6 +89,7 @@ private:
             v1->amount = v1->amount + v2->amount;
             v2->amount = 0;
             v1->codesize++;
+            set.insert(v1);
             while (v1->next != nullptr) {
                 v1 = v1->next;
                 v1->codesize++;
@@ -100,7 +101,6 @@ private:
                 v2->codesize++;
             }
 
-            set.insert(v1);
             findLowest(v1, v2, set);
         }
         countBits();
