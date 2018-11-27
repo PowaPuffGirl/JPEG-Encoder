@@ -7,5 +7,9 @@ SET(CMAKE_CXX_FLAGS_RELEASE  "${CMAKE_CXX_FLAGS_RELEASE} -Ofast -DNDEBUG -fbuilt
 # -fno-fnalias is -fno-alias only within functions
 #SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -pragma-optimization-level=Intel -fno-alias -fast -Oa")
 
-add_executable(MedienInfo main.cpp Image.h ppmCreator.h ppmCreator.cpp BitStream.h segments/APP0.h segments/SOF0.h helper/EndianConvert.h HuffmanTree.h helper/TreeEfficiencyMeter.h HuffmanEncoder.h segments/DHT.h)
+SET(MI_FILES Image.h ppmCreator.h ppmCreator.cpp BitStream.h segments/APP0.h segments/SOF0.h helper/EndianConvert.h HuffmanTree.h helper/TreeEfficiencyMeter.h HuffmanEncoder.h segments/DHT.h)
+
+add_executable(MedienInfo main.cpp ${MI_FILES})
+add_executable(Benchmarks ${MI_FILES} benchmarks/BitStream.cpp)
+target_link_libraries(Benchmarks benchmark_main benchmark)
 add_executable(PPMCreator ppmCreatorMain.cpp ppmCreator.h ppmCreator.cpp)

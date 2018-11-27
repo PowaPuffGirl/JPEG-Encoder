@@ -8,6 +8,8 @@
 #include <new>          // std::bad_alloc
 #include <assert.h>
 #include <cstring>
+#include <iostream>
+#include <fstream>
 
 #define _write_segment_ref(bitstream, segment) bitstream.writeBytes(&segment, sizeof(segment))
 
