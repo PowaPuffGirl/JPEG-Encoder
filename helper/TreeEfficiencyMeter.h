@@ -4,6 +4,7 @@
 
 #include <cstdint>
 #include <sstream>
+#include <benchmark/benchmark.h>
 #include "../HuffmenTreeSorts/HuffmanTree.h"
 
 class TreeEfficiencyMeter {
@@ -21,6 +22,13 @@ public:
         sum_eff_huff += tree.Efficiency_huffman();
     }
 
+    template<uint32_t max_values, typename InputKeyType = uint8_t, typename AmountType = uint32_t, bool skipSort = false, typename OutputKeyType = uint16_t>
+    inline void gsample(benchmark::State& state, const HuffmanTree<max_values, InputKeyType, AmountType, OutputKeyType>& tree) {
+        state.PauseTiming();
+        sample(tree);
+        state.ResumeTiming();
+    }
+
     std::string print() const {
         if(runs == 0)
             return "<No data available>";
@@ -35,6 +43,19 @@ public:
             ((nsum_eff_huff / nsum_eff_log) * 100) << "%)\n";
 
         return oss.str();
+    }
+
+    void gWriteOutput(benchmark::State& state) {
+        if(runs == 0)
+            return;
+
+        const double nsum_eff = sum_eff / runs;
+        const double nsum_eff_log = sum_eff_log / runs;
+        const double nsum_eff_huff = sum_eff_huff / runs;
+
+        state.counters["eff"] = nsum_eff;
+        state.counters["eff log"] = nsum_eff_log;
+        state.counters["eff huff"] = nsum_eff_huff;
     }
 
 };
