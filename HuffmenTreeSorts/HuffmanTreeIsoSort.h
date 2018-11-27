@@ -21,11 +21,13 @@ private:
             const auto leaf = &leavesISO[i];
             leaf->value = i;
             leaf->amount = values[i];
+            leaf->next = nullptr;
         }
 
         const auto leaf = &leavesISO[leavesISO.size() - 1];
         leaf->value = leavesISO.size() - 1;
         leaf->amount = 1;
+        leaf->next = nullptr;
     }
 
     void findLowest(
@@ -45,15 +47,15 @@ private:
 
     void sort_input() {
         for(int i = 0; i <= 32; i++) {
-            for(int j = 0; j <= max_values+1; j++) {
-                if (leavesISO[j].codesize == i) {
+            for(int j = 0; j < leavesISO.size(); j++) {
+                if (leavesISO.at(j).codesize == i) {
                     this->huffval.push_back(j);
                 }
             }
         }
     }
 
-    void adjustBits(int bits[]) {
+    void adjustBits(std::array<int, 33>& bits) {
         int i = 32;
         while (i > max_tree_depth) {
             if (bits[i] > 0) {
@@ -68,7 +70,6 @@ private:
                 bits[j] = bits[j] - 1;
             }
             i--;
-            sort_input();
         }
 
         while (bits[i] > 0) {
@@ -76,13 +77,16 @@ private:
         }
         bits[i] = bits[i] - 1;
         std::memcpy(&this->bits[0], &bits[0], sizeof(this->bits));
+        sort_input();
     }
 
     void countBits() {
-        int bits[32]{0};
+        std::array<int, 33> bits = {0};
         for (int i = 0; i < leavesISO.size(); i++) {
             if (leavesISO[i].codesize != 0) {
-                bits[leavesISO[i].codesize]++;
+                // the standard assumes that a depth greater than 32 will not occur, but
+                // I do doubt this
+                ++bits.at(leavesISO[i].codesize);
             }
         }
         adjustBits(bits);
@@ -99,7 +103,7 @@ private:
 
         while (v2 != nullptr) {
             v1->amount = v1->amount + v2->amount;
-            v2->amount = 0;
+            //v2->amount = 0;
             v1->codesize++;
             set.insert(v1);
             while (v1->next != nullptr) {
