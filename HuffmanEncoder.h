@@ -35,7 +35,7 @@ public:
 private:
     void generateEncodingTable(const std::array<CountType, max_tree_depth+1>& bits, const std::vector<InputKeyType>& huffval) {
         assert(huffval.size() > 0);
-        assert(std::accumulate(bits.begin(), bits.end(), 0); == huffval.size());
+        assert(std::accumulate(bits.begin(), bits.end(), 0) == huffval.size());
         assert(std::max_element(huffval.begin(), huffval.end()) < lookupTable.size());
 
         std::vector<CountType> huffsize(huffval.size());
@@ -47,6 +47,7 @@ private:
         for(int i = 1; i < bits.size(); ++i) {
             // bits is zero-based while our algorithm starts at one bit
             std::fill(voffset, voffset + bits[i], static_cast<uint8_t>(i + 1));
+            voffset += bits[i];
         }
 
         // generate the codes
