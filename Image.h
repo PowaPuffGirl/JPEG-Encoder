@@ -5,8 +5,9 @@
 #include <stdexcept>
 #include "ppmCreator.h"
 
+template<typename T>
 struct ColorChannel {
-    std::vector<float> channel;
+    std::vector<T> channel;
     const unsigned int width, height, widthPadded, heightPadded;
     const unsigned int stepX, stepY, blockSize;
 
@@ -40,11 +41,11 @@ struct ColorChannel {
         return channel.at(y * width + x);
     }
 
-    std::function<float(int,int)> getPixelSubsampled420average() {
+    std::function<T(int,int)> getPixelSubsampled420average() {
         return [this] (int x, int y) {
             x&=~1;
             y&=~1;
-            float sum = 0;
+            T sum = 0;
             sum += get(x,y);
             sum += get(x+1,y);
             sum += get(x,y+1);
@@ -53,25 +54,25 @@ struct ColorChannel {
         };
     }
 
-    std::function<float(int,int)> getPixelSubsampled420simple() {
+    std::function<T(int,int)> getPixelSubsampled420simple() {
         return [this] (int x, int y) {
             return get(x&~1, y&~1);
         };
     }
 
-    std::function<float(int,int)> getPixelSubsampled411() {
+    std::function<T(int,int)> getPixelSubsampled411() {
         return [this] (int x, int y) {
             return get(x&~3, y);
         };
     }
 
-    std::function<float(int,int)> getPixelSubsampled422() {
+    std::function<T(int,int)> getPixelSubsampled422() {
         return [this] (int x, int y) {
             return get(x&~1, y);
         };
     }
 
-    std::function<float(int,int)> getPixelSubsampled444() {
+    std::function<T(int,int)> getPixelSubsampled444() {
         return [this] (int x, int y) {
             return get(x, y);
         };
@@ -79,6 +80,7 @@ struct ColorChannel {
 };
 
 struct RawImage {
+    using ColorChannel = ColorChannel<float>;
     const unsigned int width, height, colorDepth;
     const float colorDepth_f;
     ColorChannel Y, Cb, Cr;
