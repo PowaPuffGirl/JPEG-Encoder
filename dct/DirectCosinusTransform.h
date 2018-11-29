@@ -4,25 +4,9 @@
 #include <math.h>
 #include "AbstractCosinusTransform.h"
 
-template<typename T>
+template<typename T, unsigned int blocksize = 8>
 class DirectCosinusTransform : AbstractCosinusTransform<T> {
-
-    void transformChannel(const ColorChannel<T> &channel, std::vector<T> &output) override {
-        int size = 8;
-        for(int i = 0; i < output.size(); i++) {
-            for(int j = 0; j < output.size(); j++) {
-               double sum = 0;
-                for (int x = 0; x < size; x++) {
-                    for (int y = 0; y < size; y++) {
-                        sum += channel[x*y]*cos(((2*x+1)*i*M_PI)/2*size) * cos(((2*y +1)*j*M_PI)/2*size);
-                     }
-                }
-                output[i*j] = 2/size * C(i)*C(j)*sum;
-            }
-        }
-
-    }
-
+private:
     double C(int value) {
         if (value == 0) {
             return M_SQRT1_2;
@@ -30,6 +14,22 @@ class DirectCosinusTransform : AbstractCosinusTransform<T> {
             return 1;
         }
     }
+
+public:
+    void transformChannel(const std::function<T&(uint, uint)>& get, const std::function<T&(uint, uint)>& set) override {
+        for(unsigned int i = 0; i < blocksize; i++) {
+            for(unsigned int j = 0; j < blocksize; j++) {
+               double sum = 0;
+                for (unsigned int x = 0; x < blocksize; x++) {
+                    for (unsigned int y = 0; y < blocksize; y++) {
+                        sum += get(x, y)*cos(((2*x+1)*i*M_PI)/2*blocksize) * cos(((2*y +1)*j*M_PI)/2*blocksize);
+                     }
+                }
+                set(i,j) = 2/blocksize * C(i)*C(j)*sum;
+            }
+        }
+    }
+
 };
 
 

@@ -10,7 +10,7 @@ class EncodingProcessor {
 public:
     EncodingProcessor() = default;
 
-    void ProcessChannel(const ColorChannel<T>& channel, const AbstractCosinusTransform<T>& dct, SampledWriter<T>& output) {
+    void processChannel(const ColorChannel<T>& channel, const AbstractCosinusTransform<T>& dct, SampledWriter<T>& output) {
         unsigned int blocksx = channel.widthPadded >> 3;
         unsigned int blocksy = channel.heightPadded >> 3;
 
