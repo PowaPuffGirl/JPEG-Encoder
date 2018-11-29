@@ -2,12 +2,13 @@
 #define MEDIENINFO_DISCRETECOSINUSTRANSFORM_H
 
 #include <vector>
+#include "../Image.h"
 
 template<typename T>
 class AbstractCosinusTransform {
 public:
     AbstractCosinusTransform() = default;
-    virtual void transformChannel(const std::vector<T>& channel, std::vector<T>& output, int xsize, int ysize) = 0;
+    virtual void transformChannel(const ColorChannel<T>& channel, std::vector<T>& output) = 0;
 };
 
 
