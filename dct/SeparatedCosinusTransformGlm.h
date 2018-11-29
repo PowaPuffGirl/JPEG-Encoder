@@ -25,7 +25,7 @@ private:
 
     mat8x8 generateA() {
         mat8x8 A;
-        const T N = blocksize * blocksize;
+        const T N = blocksize;
         const double prefix = sqrt(2./N);
         const double suffix = M_PI_2 * N;
 
