@@ -4,11 +4,10 @@
 #include <math.h>
 #include "AbstractCosinusTransform.h"
 
-#define csqrt 1/sqrt(2);
-
 template<typename T>
 class DirectCosinusTransform : AbstractCosinusTransform<T> {
 
+    const double csqrt = 1/sqrt(2);
 
     void transformChannel(const std::vector<T>& channel, std::vector<T>& output, int xsize, int ysize) {
         int size = 8;
