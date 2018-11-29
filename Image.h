@@ -4,6 +4,8 @@
 #include <vector>
 #include <stdexcept>
 #include "ppmCreator.h"
+#include "helper/BlockIterator.h"
+
 
 template<typename T>
 struct ColorChannel {
@@ -76,6 +78,17 @@ struct ColorChannel {
         return [this] (int x, int y) {
             return get(x, y);
         };
+    }
+
+    inline T getValue(int x, int y) const {
+        return getPixelSubsampled444(x, y);
+    }
+
+    BlockIterator<T> getBlockIterator(unsigned int blockx, unsigned int blocky) {
+        blockx <<= 3; // *8
+        blocky <<= 3; // *8
+        
+        const unsigned int startpos = xsie
     }
 };
 
