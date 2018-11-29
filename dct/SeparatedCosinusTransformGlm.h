@@ -50,9 +50,20 @@ private:
         }
     }
 
+    void writeMat(const std::function<T&(uint, uint)>& set, mat8x8& matrix) {
+        for (uint y = 0; y < blocksize; ++y) {
+            for (uint x = 0; x < blocksize; ++x) {
+                set(x, y) = matrix(x, y);
+            }
+        }
+    }
+
 public:
     void transformBlock(const std::function<T&(uint, uint)>& get, const std::function<T&(uint, uint)>& set) {
-
+        mat8x8 X;
+        generateMatFromChannel(get, X);
+        mat8x8 Y = generateA() * X * generateAT();
+        writeMat(set, Y);
     }
 };
 
