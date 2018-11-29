@@ -7,8 +7,6 @@
 template<typename T>
 class DirectCosinusTransform : AbstractCosinusTransform<T> {
 
-    const double csqrt = 1/sqrt(2);
-
     void transformChannel(const std::vector<T>& channel, std::vector<T>& output, int xsize, int ysize) {
         int size = 8;
         for(int i = 0; i < output.size(); i++) {
@@ -27,7 +25,7 @@ class DirectCosinusTransform : AbstractCosinusTransform<T> {
 
     double C(int value) {
         if (value == 0) {
-            return csqrt;
+            return M_SQRT1_2;
         } else {
             return 1;
         }
