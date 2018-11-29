@@ -25,10 +25,10 @@ SET(MI_FILES    Image.h
                 dct/DirectCosinusTransform.h
                 dct/AbstractCosinusTransform.h
                 dct/AraiCosinusTransform.h
-                dct/SeparatedCosinusTransform.h
+                dct/SeparatedCosinusTransformGlm.h
         )
 
 add_executable(MedienInfo main.cpp ${MI_FILES})
-add_executable(Benchmarks ${MI_FILES} benchmarks/BitStream.cpp benchmarks/Huffman.cpp)
+add_executable(Benchmarks ${MI_FILES} benchmarks/BitStream.cpp benchmarks/Huffman.cpp benchmarks/DCT.cpp)
 target_link_libraries(Benchmarks benchmark_main benchmark)
 add_executable(PPMCreator ppmCreatorMain.cpp ppmCreator.h ppmCreator.cpp)

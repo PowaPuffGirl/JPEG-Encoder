@@ -10,7 +10,7 @@ template<typename T>
 class DirectCosinusTransform : AbstractCosinusTransform<T> {
 
 
-    void transformChannel(const std::vector<T>& channel, std::vector<T>& output) {
+    void transformChannel(const std::vector<T>& channel, std::vector<T>& output, int xsize, int ysize) {
         int size = 8;
         for(int i = 0; i < output.size(); i++) {
             for(int j = 0; j < output.size(); j++) {
