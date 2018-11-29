@@ -2,7 +2,6 @@
 #define MEDIENINFO_DISCRETECOSINTRANSFORM_H
 
 #include <math.h>
-#include <vector>
 #include "AbstractCosinusTransform.h"
 
 #define csqrt 1/sqrt(2);
@@ -11,7 +10,7 @@ template<typename T>
 class DirectCosinusTransform : AbstractCosinusTransform<T> {
 
 
-    void directTransform(const std::vector<T>& channel, std::vector<T>& output) {
+    void transformChannel(const std::vector<T>& channel, std::vector<T>& output) {
         int size = 8;
         for(int i = 0; i < output.size(); i++) {
             for(int j = 0; j < output.size(); j++) {
