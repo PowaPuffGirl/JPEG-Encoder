@@ -4,9 +4,8 @@
 #include "AbstractCosinusTransform.h"
 
 template<typename T>
-class DirectCosinusTransform : AbstractCosinusTransform<T> {
-
-    void transformChannel(const ColorChannel<T> &channel, std::vector<T> &output) override {
+class DirectCosinusTransform : AbstractCosinusTransform<T, 8> {
+    void transformBlock(std::function<T &(uint, uint)> get, std::function<T &(uint, uint)> set) override {
 
     }
 
