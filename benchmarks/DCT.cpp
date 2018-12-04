@@ -9,7 +9,7 @@
 template<typename Transform, typename T = float>
 static void TestConversionDeinzer(benchmark::State& state) {
 //    auto sampleBuffer = generateDeinzerBuffer<T>();
-    auto sampleBuffer = generateTestBuffer<T>(256, 256);
+    auto sampleBuffer = generateTestBuffer<T>(8, 8);
     SampledWriter<T> outBuffer(sampleBuffer.widthPadded, sampleBuffer.heightPadded);
     SampledWriter<T> outBuffer2(sampleBuffer.widthPadded, sampleBuffer.heightPadded);
 

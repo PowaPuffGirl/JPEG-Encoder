@@ -6,7 +6,7 @@
 
 const double a1 = cos(4*M_PI/16);
 const double a2 = cos(2*M_PI/16) - cos(6*M_PI/16);
-const double a3 = a1;
+const double a3 = cos(4*M_PI/16);
 const double a4 = cos(6*M_PI/16) + cos(2*M_PI/16);
 const double a5 = cos(6*M_PI/16);
 
@@ -39,7 +39,7 @@ public:
             ty1 = y1 + y2;
             ty2 = y1 - y2;
             ty3 = y0 - y3;
-            ty4 = y4 - (-y5);
+            ty4 = (-y4) - y5;
             ty5 = y5 + y6;
             ty6 = y6 + y7;
             ty7 = y7;
@@ -57,9 +57,9 @@ public:
             ty1 = y1;
             ty2 = y2 * a1;
             ty3 = y3;
-            ty4 = (y4 * (-a2)) - (y4 * a5);
+            ty4 = (-(y4 * (a2))) - (y4 * a5);
             ty5 = y5 * a3;
-            ty6 = (y6 * a4) + (y6 * a5);
+            ty6 = (y6 * a4) - (y6 * a5);
             ty7 = y7;
 
             y0 = ty0;
@@ -105,7 +105,7 @@ public:
             ty1 = y1 + y2;
             ty2 = y1 - y2;
             ty3 = y0 - y3;
-            ty4 = y4 - (-y5);
+            ty4 = (-y4) - y5;
             ty5 = y5 + y6;
             ty6 = y6 + y7;
             ty7 = y7;
@@ -123,9 +123,9 @@ public:
             ty1 = y1;
             ty2 = y2 * a1;
             ty3 = y3;
-            ty4 = (y4 * (-a2)) - (y4 * a5);
+            ty4 = (-(y4 * (a2))) - (y4 * a5);
             ty5 = y5 * a3;
-            ty6 = (y6 * a4) + (y6 * a5);
+            ty6 = (y6 * a4) - (y6 * a5);
             ty7 = y7;
 
             y0 = ty0;
