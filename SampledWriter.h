@@ -28,6 +28,16 @@ public:
             return (*vector).at(pos + (y << 3) + x);
         };
     }
+
+    bool compareWith(SampledWriter<T> other) {
+        assert(other.output.size() == output.size());
+        for (int i = 0; i < output.size(); i++) {
+            if (output[i] != other.output[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
 };
 
 
