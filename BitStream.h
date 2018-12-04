@@ -36,6 +36,10 @@ public:
             throw std::bad_alloc();
     }
 
+    ~BitStream() {
+        free(streamStart);
+    }
+
     void writeBytes(const void* bytes, const size_t len) {
         assert((position + static_cast<uint64_t>(len)) < size);
         assert(position_bit == 0);
