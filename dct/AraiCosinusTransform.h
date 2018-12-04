@@ -20,8 +20,9 @@ const double s6 = 1/(4*cos(6*M_PI/16));
 const double s7 = 1/(4*cos(7*M_PI/16));
 
 template<typename T>
-class AraiCosinusTransform : AbstractCosinusTransform<T, 8> {
-    void transformBlock(std::function<T &(uint, uint)> get, std::function<T &(uint, uint)> set) override {
+class AraiCosinusTransform {
+public:
+    void transformBlock(const std::function<const T &(uint, uint)>& get, const std::function<T &(uint, uint)>& set) const {
         for(uint i = 0; i < 8; i++) {
             double y0,y1,y2,y3,y4,y5,y6,y7 = 0;
             double ty0, ty1, ty2, ty3, ty4, ty5, ty6, ty7 = 0;
