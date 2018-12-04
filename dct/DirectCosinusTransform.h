@@ -5,9 +5,9 @@
 #include "AbstractCosinusTransform.h"
 
 template<typename T, unsigned int blocksize = 8>
-class DirectCosinusTransform : AbstractCosinusTransform<T> {
+class DirectCosinusTransform {
 private:
-    double C(int value) {
+    double C(int value) const {
         if (value == 0) {
             return M_SQRT1_2;
         } else {
@@ -16,9 +16,9 @@ private:
     }
 
 public:
-    void transformBlock(std::function<T&(uint, uint)> get, std::function<T&(uint, uint)> set) override {
-        for(unsigned int i = 0; i < blocksize; i++) {
-            for(unsigned int j = 0; j < blocksize; j++) {
+    void transformBlock(std::function<const T&(uint, uint)> get, std::function<T&(uint, uint)> set) const {
+        for (unsigned int i = 0; i < blocksize; i++) {
+            for (unsigned int j = 0; j < blocksize; j++) {
                double sum = 0;
                 for (unsigned int x = 0; x < blocksize; x++) {
                     for (unsigned int y = 0; y < blocksize; y++) {

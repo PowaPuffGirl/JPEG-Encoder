@@ -24,8 +24,8 @@ public:
 
         auto vector = &output;
         const auto pos = blocky * xsize + blockx;
-        return [vector, pos](uint x, uint y) {
-            return &((*vector).at(pos + (y << 3) + x));
+        return [vector, pos](uint x, uint y) -> T& {
+            return (*vector).at(pos + (y << 3) + x);
         };
     }
 };

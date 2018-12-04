@@ -26,7 +26,7 @@ SET(MI_FILES    Image.h
                 dct/AbstractCosinusTransform.h
                 dct/AraiCosinusTransform.h
                 dct/SeparatedCosinusTransformGlm.h
-        EncodingProcessor.h SampledWriter.h helper/BlockIterator.h)
+        EncodingProcessor.h SampledWriter.h helper/BlockIterator.h helper/ExampleBufferGen.h)
 
 add_executable(MedienInfo main.cpp ${MI_FILES})
 add_executable(Benchmarks ${MI_FILES} benchmarks/BitStream.cpp benchmarks/Huffman.cpp benchmarks/DCT.cpp)

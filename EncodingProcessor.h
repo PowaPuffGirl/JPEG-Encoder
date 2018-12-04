@@ -10,19 +10,18 @@ class EncodingProcessor {
 public:
     EncodingProcessor() = default;
 
-    void processChannel(const ColorChannel<T>& channel, const AbstractCosinusTransform<T>& dct, SampledWriter<T>& output) {
+    template<typename Transform, typename Channel = ColorChannel<T>>
+    void processChannel(const Channel& channel, const Transform& dct, SampledWriter<T>& output) {
         unsigned int blocksx = channel.widthPadded >> 3;
         unsigned int blocksy = channel.heightPadded >> 3;
 
         for(unsigned int x = 0; x < blocksx; ++x) {
             for(unsigned int y = 0; y < blocksy; ++y) {
-                const auto setter = output.getBlockSetter(x, y);
-                const unsigned int xoffset = x << 3;
-                const unsigned int yoffset = (y << 3);
 
-                const auto getter = [yoffset, xoffset, &channel] (unsigned int x, unsigned int y) -> T& {
-                    return &channel.get(xoffset + x, yoffset + y);
-                };
+                auto setter = output.getBlockSetter(x, y);
+                const auto getter = channel.getBlockGetter(x, y);
+
+                dct.transformBlock(getter, setter);
             }
         }
     }

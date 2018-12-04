@@ -22,6 +22,27 @@ struct ColorChannel {
         channel.resize(vsize, 0);
     }
 
+    inline const T& get(int x, int y) const {
+        if(x >= width) {
+            if(x < widthPadded) {
+                x = width - 1;
+            }
+            else {
+                throw std::invalid_argument("Offset of pixel out of range!");
+            }
+        }
+
+        if(y >= height) {
+            if (y < heightPadded) {
+                y = height - 1;
+            } else {
+                throw std::invalid_argument("Offset of pixel out of range!");
+            }
+        }
+
+        return channel.at(y * width + x);
+    }
+
     inline T& get(int x, int y) {
         if(x >= width) {
             if(x < widthPadded) {
@@ -41,6 +62,15 @@ struct ColorChannel {
         }
 
         return channel.at(y * width + x);
+    }
+
+    std::function<const T&(unsigned int, unsigned int)> getBlockGetter(unsigned int blockx, unsigned int blocky) const {
+        const unsigned int xoffset = blockx << 3;
+        const unsigned int yoffset = blocky << 3;
+
+        return [xoffset, yoffset, this] (unsigned int x, unsigned int y) -> const T& {
+            return this->get(xoffset + x, yoffset + y);
+        };
     }
 
     std::function<T(int,int)> getPixelSubsampled420average() {
