@@ -16,7 +16,7 @@ private:
     }
 
 public:
-    void transformChannel(const std::function<T&(uint, uint)>& get, const std::function<T&(uint, uint)>& set) override {
+    void transformBlock(std::function<T&(uint, uint)> get, std::function<T&(uint, uint)> set) override {
         for(unsigned int i = 0; i < blocksize; i++) {
             for(unsigned int j = 0; j < blocksize; j++) {
                double sum = 0;
