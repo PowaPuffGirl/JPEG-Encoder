@@ -65,7 +65,7 @@ private:
             n.erase(second);
 
             auto nn = initNode();
-            nn->setValueSwap(*first, *second);
+            nn->setValueSwap(fp, sp);
             n.insert(nn);
         }
 
