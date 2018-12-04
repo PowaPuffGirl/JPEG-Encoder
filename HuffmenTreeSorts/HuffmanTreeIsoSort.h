@@ -47,7 +47,7 @@ private:
 
     void sort_input() {
         int k = 0;
-        for(int i = 0; i <= 32; i++) {
+        for(int i = 1; i <= 32; i++) {
             for(int j = 0; j < leavesISO.size(); j++) {
                 if (leavesISO.at(j).codesize == i) {
                     //this->huffval.push_back(j); // uneeded since we resized it at the beginning of iso_sort
