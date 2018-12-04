@@ -29,10 +29,10 @@ class AraiCosinusTransform : AbstractCosinusTransform<T, 8> {
             y1 = get(i,1) + get(i,6);
             y2 = get(i,2) + get(i,5);
             y3 = get(i,3) + get(i,4);
-            y4 = get(i,3) + get(i,4);
-            y5 = get(i,2) + get(i,5);
-            y6 = get(i,1) + get(i,6);
-            y7 = get(i,0) + get(i,7);
+            y4 = get(i,3) - get(i,4);
+            y5 = get(i,2) - get(i,5);
+            y6 = get(i,1) - get(i,6);
+            y7 = get(i,0) - get(i,7);
 
             ty0 = y0 + y3;
             ty1 = y1 + y2;
@@ -89,16 +89,16 @@ class AraiCosinusTransform : AbstractCosinusTransform<T, 8> {
             set(i, 7) += ty7 * s3;
         }
         for(uint i = 0; i < 8; i++) {
-            double y0,y1,y2,y3,y4,y5,y6,y7 = 0;
-            double ty0, ty1, ty2, ty3, ty4, ty5, ty6, ty7 = 0;
+            double y0,y1,y2,y3,y4,y5,y6,y7;
+            double ty0, ty1, ty2, ty3, ty4, ty5, ty6, ty7;
             y0 = get(0,i) + get(7,i);
             y1 = get(1,i) + get(6,i);
             y2 = get(2,i) + get(5,i);
             y3 = get(3,i) + get(4,i);
-            y4 = get(3,i) + get(4,i);
-            y5 = get(2,i) + get(5,i);
-            y6 = get(1,i) + get(6,i);
-            y7 = get(0,i) + get(7,i);
+            y4 = get(3,i) - get(4,i);
+            y5 = get(2,i) - get(5,i);
+            y6 = get(1,i) - get(6,i);
+            y7 = get(0,i) - get(7,i);
 
             ty0 = y0 + y3;
             ty1 = y1 + y2;
