@@ -38,6 +38,17 @@ public:
         }
         return true;
     }
+
+    double errorTo(SampledWriter<T> other) {
+        assert(other.output.size() == output.size());
+        double errsum = 0;
+        for (int i = 0; i < output.size(); i++) {
+            if (output[i] != other.output[i]) {
+                errsum += abs(output[i] - other.output[i]);
+            }
+        }
+        return errsum / output.size();
+    }
 };
 
 
