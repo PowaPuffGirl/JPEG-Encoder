@@ -45,7 +45,8 @@ private:
     void convertToOutput() {
         std::vector<Node<InputKeyType, AmountType>*> a, b;
         std::vector<Node<InputKeyType, AmountType>*> *cur = &a, *prev = &b;
-        std::vector<uint8_t> vbits(startNode->level + 1);
+        // plus 2 - one bc. the tree is zero-based, one bc. the "real" index starts at 1
+        std::vector<uint8_t> vbits(startNode->level + 2);
 
         a.reserve(max_values);
         b.reserve(max_values);
