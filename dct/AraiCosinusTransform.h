@@ -57,9 +57,10 @@ public:
             ty1 = y1;
             ty2 = y2 * a1;
             ty3 = y3;
-            ty4 = (-(y4 * (a2))) - (y4 * a5);
+            auto a5a = (y4+y6) * a5;
+            ty4 = (-(y4 * (a2))) - a5a;
             ty5 = y5 * a3;
-            ty6 = (y6 * a4) - (y6 * a5);
+            ty6 = (y6 * a4) - a5a;
             ty7 = y7;
 
             y0 = ty0;
@@ -123,9 +124,10 @@ public:
             ty1 = y1;
             ty2 = y2 * a1;
             ty3 = y3;
-            ty4 = (-(y4 * (a2))) - (y4 * a5);
+            auto a5a = (y4+y6) * a5;
+            ty4 = (-(y4 * (a2))) - a5a;
             ty5 = y5 * a3;
-            ty6 = (y6 * a4) - (y6 * a5);
+            ty6 = (y6 * a4) - a5a;
             ty7 = y7;
 
             y0 = ty0;
