@@ -11,7 +11,7 @@ public:
     EncodingProcessor() = default;
 
     template<typename Transform, typename Channel = ColorChannel<T>>
-    void processChannel(const Channel& channel, const Transform& dct, SampledWriter<T>& output) {
+    void processChannel(const Channel& channel, Transform& dct, SampledWriter<T>& output) {
         unsigned int blocksx = channel.widthPadded >> 3;
         unsigned int blocksy = channel.heightPadded >> 3;
 
