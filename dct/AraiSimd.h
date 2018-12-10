@@ -111,6 +111,15 @@ private:
         x4 = (x7c + x4) * s[5];
         x6 = (x5c - x6) * s[7];
 
+        x0c = x1;
+        x1 = x4;
+        x4 = x5;
+        x5 = x0c;
+
+        x0c = x3;
+        x3 = x6;
+        x6 = x7;
+        x7 = x0c;
     }
 
     rowBlock hor, vert;

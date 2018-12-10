@@ -23,11 +23,13 @@ template<typename T>
 class AraiCosinusTransform {
 public:
     void transformBlock(const std::function<const T &(uint, uint)>& get, const std::function<T &(uint, uint)>& set) const {
-       for (uint i = 0; i < 8; i++) {
-            for (uint j = 0; j < 8; j++) {
-                set(i,j) = 0;
+        for (auto x = 0; x < 8; ++x) {
+            for (auto y = 0; y < 8 ; ++y) {
+                set(x, y) = 0;
             }
         }
+
+
         for(uint i = 0; i < 8; i++) {
             double y0,y1,y2,y3,y4,y5,y6,y7 = 0;
             double ty0, ty1, ty2, ty3, ty4, ty5, ty6, ty7 = 0;
@@ -86,13 +88,13 @@ public:
             ty7 = y7 - y4;
 
             set(i, 0) += ty0 * s0;
-            set(i, 1) += ty1 * s4;
+            set(i, 4) += ty1 * s4;
             set(i, 2) += ty2 * s2;
-            set(i, 3) += ty3 * s6;
-            set(i, 4) += ty4 * s5;
-            set(i, 5) += ty5 * s1;
-            set(i, 6) += ty6 * s7;
-            set(i, 7) += ty7 * s3;
+            set(i, 6) += ty3 * s6;
+            set(i, 5) += ty4 * s5;
+            set(i, 1) += ty5 * s1;
+            set(i, 7) += ty6 * s7;
+            set(i, 3) += ty7 * s3;
         }
         for(uint i = 0; i < 8; i++) {
             double y0,y1,y2,y3,y4,y5,y6,y7 = 0;
@@ -152,13 +154,13 @@ public:
             ty7 = y7 - y4;
 
             set(0,i) += ty0 * s0;
-            set(1,i) += ty1 * s4;
+            set(4,i) += ty1 * s4;
             set(2,i) += ty2 * s2;
-            set(3,i) += ty3 * s6;
-            set(4,i) += ty4 * s5;
-            set(5,i) += ty5 * s1;
-            set(6,i) += ty6 * s7;
-            set(7,i) += ty7 * s3;
+            set(6,i) += ty3 * s6;
+            set(5,i) += ty4 * s5;
+            set(1,i) += ty5 * s1;
+            set(7,i) += ty6 * s7;
+            set(3,i) += ty7 * s3;
         }
     }
 };
