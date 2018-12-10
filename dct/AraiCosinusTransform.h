@@ -23,6 +23,11 @@ template<typename T>
 class AraiCosinusTransform {
 public:
     void transformBlock(const std::function<const T &(uint, uint)>& get, const std::function<T &(uint, uint)>& set) const {
+       for (uint i = 0; i < 8; i++) {
+            for (uint j = 0; j < 8; j++) {
+                set(i,j) = 0;
+            }
+        }
         for(uint i = 0; i < 8; i++) {
             double y0,y1,y2,y3,y4,y5,y6,y7 = 0;
             double ty0, ty1, ty2, ty3, ty4, ty5, ty6, ty7 = 0;
@@ -57,16 +62,15 @@ public:
             ty1 = y1;
             ty2 = y2 * a1;
             ty3 = y3;
-            auto a5a = (y4+y6) * a5;
-            ty4 = (-(y4 * (a2))) - a5a;
+            ty4 = (-(y4+y6)*a5)-y4*a2;
             ty5 = y5 * a3;
-            ty6 = (y6 * a4) - a5a;
+            ty6 = y6*a4 - (y6+y4)*a5;
             ty7 = y7;
 
             y0 = ty0;
             y1 = ty1;
             y2 = ty2 + ty3;
-            y3 = ty2 - ty3;
+            y3 = ty3 - ty2;
             y4 = ty4;
             y5 = ty5 + ty7;
             y6 = ty6;
@@ -91,8 +95,8 @@ public:
             set(i, 7) += ty7 * s3;
         }
         for(uint i = 0; i < 8; i++) {
-            double y0,y1,y2,y3,y4,y5,y6,y7;
-            double ty0, ty1, ty2, ty3, ty4, ty5, ty6, ty7;
+            double y0,y1,y2,y3,y4,y5,y6,y7 = 0;
+            double ty0, ty1, ty2, ty3, ty4, ty5, ty6, ty7 = 0;
             y0 = get(0,i) + get(7,i);
             y1 = get(1,i) + get(6,i);
             y2 = get(2,i) + get(5,i);
@@ -124,16 +128,15 @@ public:
             ty1 = y1;
             ty2 = y2 * a1;
             ty3 = y3;
-            auto a5a = (y4+y6) * a5;
-            ty4 = (-(y4 * (a2))) - a5a;
+            ty4 = (-(y4+y6)*a5)-y4*a2;
             ty5 = y5 * a3;
-            ty6 = (y6 * a4) - a5a;
+            ty6 = y6*a4 - (y6+y4)*a5;
             ty7 = y7;
 
             y0 = ty0;
             y1 = ty1;
             y2 = ty2 + ty3;
-            y3 = ty2 - ty3;
+            y3 = ty3 - ty2;
             y4 = ty4;
             y5 = ty5 + ty7;
             y6 = ty6;
