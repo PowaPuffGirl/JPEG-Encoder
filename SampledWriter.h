@@ -16,7 +16,7 @@ private:
 
 public:
     SampledWriter(const uint xsize, const uint ysize) : xsize(xsize), ysize(ysize) {
-        output.resize(xsize * ysize);
+        output.resize(xsize * ysize, 0);
     }
 
     std::function<T&(uint, uint)> getBlockSetter(uint blockx, uint blocky) {
