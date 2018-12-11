@@ -23,12 +23,6 @@ template<typename T>
 class AraiCosinusTransform {
 public:
     void transformBlock(const std::function<const T &(uint, uint)>& get, const std::function<T &(uint, uint)>& set) const {
-        for (auto x = 0; x < 8; ++x) {
-            for (auto y = 0; y < 8 ; ++y) {
-                set(x, y) = 0;
-            }
-        }
-
 
         for(uint i = 0; i < 8; i++) {
             double y0,y1,y2,y3,y4,y5,y6,y7 = 0;
@@ -87,26 +81,26 @@ public:
             ty6 = y5 - y6;
             ty7 = y7 - y4;
 
-            set(i, 0) += ty0 * s0;
-            set(i, 4) += ty1 * s4;
-            set(i, 2) += ty2 * s2;
-            set(i, 6) += ty3 * s6;
-            set(i, 5) += ty4 * s5;
-            set(i, 1) += ty5 * s1;
-            set(i, 7) += ty6 * s7;
-            set(i, 3) += ty7 * s3;
+            set(i, 0) = ty0 * s0;
+            set(i, 4) = ty1 * s4;
+            set(i, 2) = ty2 * s2;
+            set(i, 6) = ty3 * s6;
+            set(i, 5) = ty4 * s5;
+            set(i, 1) = ty5 * s1;
+            set(i, 7) = ty6 * s7;
+            set(i, 3) = ty7 * s3;
         }
         for(uint i = 0; i < 8; i++) {
             double y0,y1,y2,y3,y4,y5,y6,y7 = 0;
             double ty0, ty1, ty2, ty3, ty4, ty5, ty6, ty7 = 0;
-            y0 = get(0,i) + get(7,i);
-            y1 = get(1,i) + get(6,i);
-            y2 = get(2,i) + get(5,i);
-            y3 = get(3,i) + get(4,i);
-            y4 = get(3,i) - get(4,i);
-            y5 = get(2,i) - get(5,i);
-            y6 = get(1,i) - get(6,i);
-            y7 = get(0,i) - get(7,i);
+            y0 = set(0,i) + set(7,i);
+            y1 = set(1,i) + set(6,i);
+            y2 = set(2,i) + set(5,i);
+            y3 = set(3,i) + set(4,i);
+            y4 = set(3,i) - set(4,i);
+            y5 = set(2,i) - set(5,i);
+            y6 = set(1,i) - set(6,i);
+            y7 = set(0,i) - set(7,i);
 
             ty0 = y0 + y3;
             ty1 = y1 + y2;
@@ -153,14 +147,14 @@ public:
             ty6 = y5 - y6;
             ty7 = y7 - y4;
 
-            set(0,i) += ty0 * s0;
-            set(4,i) += ty1 * s4;
-            set(2,i) += ty2 * s2;
-            set(6,i) += ty3 * s6;
-            set(5,i) += ty4 * s5;
-            set(1,i) += ty5 * s1;
-            set(7,i) += ty6 * s7;
-            set(3,i) += ty7 * s3;
+            set(0,i) = ty0 * s0;
+            set(4,i) = ty1 * s4;
+            set(2,i) = ty2 * s2;
+            set(6,i) = ty3 * s6;
+            set(5,i) = ty4 * s5;
+            set(1,i) = ty5 * s1;
+            set(7,i) = ty6 * s7;
+            set(3,i) = ty7 * s3;
         }
     }
 };

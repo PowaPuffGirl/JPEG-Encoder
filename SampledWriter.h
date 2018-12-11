@@ -4,6 +4,7 @@
 #include <vector>
 #include <functional>
 #include <cassert>
+#include <cmath>
 
 template<typename T>
 class SampledWriter {
@@ -45,8 +46,11 @@ public:
         for (int i = 0; i < output.size(); i++) {
             if (output[i] != other.output[i]) {
                 errsum += abs(output[i] - other.output[i]);
+                //auto err = abs(output[i] - other.output[i]);
+                //errsum += err*err;
             }
         }
+        //return sqrt(errsum / output.size());
         return errsum / output.size();
     }
 };
