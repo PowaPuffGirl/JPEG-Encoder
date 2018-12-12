@@ -52,6 +52,7 @@ SET(MI_FILES
                 dct/AbstractCosinusTransform.h
                 dct/AraiCosinusTransform.h
                 dct/SeparatedCosinusTransformGlm.h
+                dct/AraiBookCosinusTransform.h
                 EncodingProcessor.h
                 SampledWriter.h
                 helper/BlockIterator.h
