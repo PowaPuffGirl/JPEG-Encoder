@@ -19,7 +19,7 @@ private:
 
     constexpr double C(int n) const {
         if(n == 0) {
-            return M_SQRT1_2;
+            return 1/sqrt(2);
         }
         return 1.;
     }
@@ -28,11 +28,10 @@ private:
         mat8x8 A(8, 8);
         const T N = blocksize;
         const double prefix = sqrt(2./N);
-        const double suffix = M_PI_2 * N;
 
         for (uint k = 0; k < blocksize; ++k) {
             for (uint n = 0; n < blocksize; ++n) {
-                A(k, n) = C(k) * prefix * cos(((n << 1) + 1) * k * suffix);
+                A(k, n) = C(k) * prefix * cos(((n << 1) + 1) * (k * M_PI) / (2*N) );
             }
         }
 
