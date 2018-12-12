@@ -14,9 +14,14 @@ include_directories(${CMAKE_SOURCE_DIR}/googletest/googletest/include)
 add_subdirectory( gbenchmark )
 include_directories(${CMAKE_SOURCE_DIR}/gbenchmarks/include)
 
-find_package (Vc 1.4 REQUIRED NO_MODULE)
-link_libraries(${Vc_LIBRARIES})
-include_directories(${Vc_INCLUDE_DIR})
+
+if( WIN32 ) # true if windows (32 and 64 bit)
+    include_directories("${CMAKE_SOURCE_DIR}/Vc/include")
+    set(Vc_LIBARIES "${CMAKE_SOURCE_DIR}/Vc/lib/libVc.a")
+else()
+    find_package (Vc 1.4 REQUIRED NO_MODULE)
+    include_directories(${Vc_INCLUDE_DIR})
+endif()
 
 SET(MI_FILES
                 Image.h
@@ -46,6 +51,7 @@ SET(MI_FILES
                 dct/SeparatedCosinusTransformSimd.h)
 
 add_executable(MedienInfo main.cpp ${MI_FILES})
+target_link_libraries(MedienInfo ${Vc_LIBRARIES})
 add_executable(Benchmarks ${MI_FILES} benchmarks/BitStream.cpp benchmarks/Huffman.cpp benchmarks/DCT.cpp)
-target_link_libraries(Benchmarks benchmark_main benchmark)
+target_link_libraries(Benchmarks benchmark_main benchmark ${Vc_LIBRARIES})
 add_executable(PPMCreator ppmCreatorMain.cpp ppmCreator.h ppmCreator.cpp)
