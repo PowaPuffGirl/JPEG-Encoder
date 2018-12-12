@@ -27,7 +27,7 @@ if( WIN32 ) # true if windows (32 and 64 bit)
 
     # manually include Vc
     include_directories("${CMAKE_SOURCE_DIR}/Vc/include")
-    set(Vc_LIBARIES "${CMAKE_SOURCE_DIR}/Vc/lib/libVc.a")
+    set(Vc_LIBRARIES "${CMAKE_SOURCE_DIR}/Vc/lib/libVc.a")
 
     # add compiler options for static std libs
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -static -static-libstdc++ -static-libgcc")
