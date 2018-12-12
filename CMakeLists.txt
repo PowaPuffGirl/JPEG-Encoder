@@ -7,12 +7,18 @@ SET(CMAKE_CXX_FLAGS_RELEASE  "${CMAKE_CXX_FLAGS_RELEASE} -Ofast -DNDEBUG -fbuilt
 # -fno-fnalias is -fno-alias only within functions
 #SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -pragma-optimization-level=Intel -fno-alias -fast -Oa")
 
-# include google test & google benchmark statically
-set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "Suppressing benchmark's tests" FORCE)
-add_subdirectory( googletest )
-include_directories(${CMAKE_SOURCE_DIR}/googletest/googletest/include)
-add_subdirectory( gbenchmark )
-include_directories(${CMAKE_SOURCE_DIR}/gbenchmarks/include)
+option(BENCHMARK_STATIC "Statically embedd google benchmark." ON)
+
+if( BENCHMARK_STATIC )
+    # include google test & google benchmark statically
+    set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "Suppressing benchmark's tests" FORCE)
+
+    add_subdirectory( googletest )
+    include_directories(${CMAKE_SOURCE_DIR}/googletest/googletest/include)
+
+    add_subdirectory( gbenchmark )
+    include_directories(${CMAKE_SOURCE_DIR}/gbenchmarks/include)
+endif()
 
 
 if( WIN32 ) # true if windows (32 and 64 bit)
