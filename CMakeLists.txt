@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.12)
 project(MedienInfo)
 
 set(CMAKE_CXX_STANDARD 17)
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 SET(CMAKE_CXX_FLAGS_RELEASE  "${CMAKE_CXX_FLAGS_RELEASE} -Ofast -DNDEBUG -fbuiltin -fdefer-pop -foptimize-sibling-calls -march=native -falign-jumps -falign-loops")
 # -fno-fnalias is -fno-alias only within functions
 #SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -pragma-optimization-level=Intel -fno-alias -fast -Oa")
@@ -16,11 +16,20 @@ include_directories(${CMAKE_SOURCE_DIR}/gbenchmarks/include)
 
 
 if( WIN32 ) # true if windows (32 and 64 bit)
+    # link boost location
+    include_directories("C:\\Users\\Administrator\\Desktop\\boost_1_69_0")
+
+    # manually include Vc
     include_directories("${CMAKE_SOURCE_DIR}/Vc/include")
     set(Vc_LIBARIES "${CMAKE_SOURCE_DIR}/Vc/lib/libVc.a")
+
+    # add compiler options for static std libs
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -static -static-libstdc++ -static-libgcc")
 else()
     find_package (Vc 1.4 REQUIRED NO_MODULE)
     include_directories(${Vc_INCLUDE_DIR})
+
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 endif()
 
 SET(MI_FILES
