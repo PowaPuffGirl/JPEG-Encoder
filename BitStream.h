@@ -17,10 +17,10 @@ class BitStream {
 private:
     uint8_t* streamStart;
     const std::string fileName;
-    u_int64_t position = 0; // byte position
-    u_int8_t position_bit = 0; // inner bit position
-    u_int64_t size;
-    u_int64_t size_bits;
+    uint64_t position = 0; // byte position
+    uint8_t position_bit = 0; // inner bit position
+    uint64_t size;
+    uint64_t size_bits;
     const int width;
     const int height;
 

@@ -4,26 +4,30 @@
 #include <math.h>
 #include "AbstractCosinusTransform.h"
 
-const double a1 = cos(4*M_PI/16);
-const double a2 = cos(2*M_PI/16) - cos(6*M_PI/16);
-const double a3 = cos(4*M_PI/16);
-const double a4 = cos(6*M_PI/16) + cos(2*M_PI/16);
-const double a5 = cos(6*M_PI/16);
+const double a1 = 0.707106781186547524400844362104849039284835937688474036588;
+const double a2 = 0.541196100146196984399723205366389420061072063378015444681;
+const double a3 = 0.707106781186547524400844362104849039284835937688474036588;
+const double a4 = 1.306562964876376527856643173427187153583761188349269527548;
+const double a5 = 0.382683432365089771728459984030398866761344562485627041433;
 
-const double s0 = 1/(2*sqrt(2));
-const double s1 = 1/(4*cos(1*M_PI/16));
-const double s2 = 1/(4*cos(2*M_PI/16));
-const double s3 = 1/(4*cos(3*M_PI/16));
-const double s4 = 1/(4*cos(4*M_PI/16));
-const double s5 = 1/(4*cos(5*M_PI/16));
-const double s6 = 1/(4*cos(6*M_PI/16));
-const double s7 = 1/(4*cos(7*M_PI/16));
+const double s0 = 0.353553390593273762200422181052424519642417968844237018294;
+const double s1 = 0.254897789552079584470969901993921956841309245954467684863;
+const double s2 = 0.270598050073098492199861602683194710030536031689007722340;
+const double s3 = 0.300672443467522640271860911954610917533627944800336361060;
+const double s4 = 0.353553390593273762200422181052424519642417968844237018294;
+const double s5 = 0.449988111568207852319254770470944197769000863706422492617;
+const double s6 = 0.653281482438188263928321586713593576791880594174634763774;
+const double s7 = 1.281457723870753089398043148088849954507561675693672456063;
 
 template<typename T>
 class AraiCosinusTransform {
 public:
     void transformBlock(const std::function<const T &(uint, uint)>& get, const std::function<T &(uint, uint)>& set) const {
-
+        for (int i = 0; i < 8; i++) {
+            for(int j = 0; j < 8; j++) {
+                set(i,j) = 0;
+            }
+        }
         for(uint i = 0; i < 8; i++) {
             double y0,y1,y2,y3,y4,y5,y6,y7 = 0;
             double ty0, ty1, ty2, ty3, ty4, ty5, ty6, ty7 = 0;
