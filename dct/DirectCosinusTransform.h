@@ -9,7 +9,7 @@ class DirectCosinusTransform {
 private:
     double C(int value) const {
         if (value == 0) {
-            return M_SQRT1_2;
+            return 1/sqrt(2);
         } else {
             return 1;
         }
@@ -22,15 +22,13 @@ public:
                double sum = 0;
                 for (unsigned int x = 0; x < blocksize; x++) {
                     for (unsigned int y = 0; y < blocksize; y++) {
-                        auto z = get(x, y);
-                        sum += get(x, y)*cos(((2.*x+1)*i*M_PI)/2.*blocksize) * cos(((2.*y +1)*j*M_PI)/2.*blocksize);
+                        sum += get(x, y)*cos(((2*x+1)*i*M_PI)/(2*blocksize)) * cos(((2*y+1)*j*M_PI)/(2*blocksize));
                      }
                 }
-                set(i,j) = 2./blocksize * C(i)*C(j)*sum;
+                set(i,j) = (2./blocksize) *C(i)*C(j) * sum;
             }
         }
     }
-
 };
 
 

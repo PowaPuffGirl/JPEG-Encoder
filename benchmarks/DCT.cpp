@@ -27,7 +27,7 @@ static void TestConversionDeinzer(benchmark::State& state) {
 template<typename T = float>
 static void TestConversionAll(benchmark::State& state) {
     auto sampleBuffer = generateDeinzerBuffer<T>();
-    //auto sampleBuffer = generateTestBuffer<T>(256, 256);
+    //auto sampleBuffer = generateTestBuffer<T>(8, 8);
     SampledWriter<T> outBufferDCT(sampleBuffer.widthPadded, sampleBuffer.heightPadded);
     SampledWriter<T> outBufferSCT(sampleBuffer.widthPadded, sampleBuffer.heightPadded);
     SampledWriter<T> outBufferArai(sampleBuffer.widthPadded, sampleBuffer.heightPadded);

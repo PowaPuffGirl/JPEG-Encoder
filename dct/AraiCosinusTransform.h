@@ -150,83 +150,10 @@ public:
             set(4,i) = ty1 * s4;
             set(2,i) = ty2 * s2;
             set(6,i) = ty3 * s6;
-            set(5,i) = ty5 * s5;
+            set(5,i) = ty4 * s5;
             set(1,i) = ty5 * s1;
             set(7,i) = ty6 * s7;
             set(3,i) = ty7 * s3;
-        }
-    }
-
-    void transformBlock1(const std::function<const T &(uint, uint)>& get, const std::function<T &(uint, uint)>& set) const {
-        for(uint i = 0; i < 8; i++) {
-            double s07 = get(i,0) + get(i,7);
-            double s16 = get(i,1) + get(i,6);
-            double s25 = get(i,2) + get(i,5);
-            double s34 = get(i,3) + get(i,4);
-
-            double d07 = get(i,0) - get(i,7);
-            double d16 = get(i,1) - get(i,6);
-            double d25 = get(i,2) - get(i,5);
-            double d34 = get(i,3) - get(i,4);
-
-            double m1 = 2 * ((s07 + s34) + (s25+s16));
-            double m2 = (s07 +s34) - (s25 +s16);
-            double m3 = (s07 - s34);
-            double m4 = d07;
-            double m5 = a1 * ((s16 - s25) + (s07 - s34));
-            double m6 = a1 * (d25 + d16);
-            double m7 = a5 * ((d16 + d07) - (d25 + d34));
-            double m8 = a4 * (d16 + d07);
-            double m9 = a2 * (d25 + d34);
-
-            double se5 = m4 + m6;
-            double se6 = m4 - m6;
-            double se7 = m8 - m7;
-            double se8 = m9 - m7;
-
-            set(i,0) = m1 * s0;
-            set(i,4) = m2 * s1;
-            set(i,2) = (m3 + m5) * s2;
-            set(i,6) = (m3 - m5) * s3;
-            set(i,3) = (se6 - se8) * s4;
-            set(i,5) = (se6 + se8) * s5;
-            set(i,1) = (se5 + se7) * s6;
-            set(i,7) = (se5 - se7) * s7;
-        }
-        for(uint i = 0; i < 8; i++) {
-            double s07 = set(0,i) + set(7,i);
-            double s16 = set(1,i) + set(6,i);
-            double s25 = set(2,i) + set(5,i);
-            double s34 = set(3,i) + set(4,i);
-
-            double d07 = set(0,i) - set(7,i);
-            double d16 = set(1,i) - set(6,i);
-            double d25 = set(2,i) - set(5,i);
-            double d34 = set(3,i) - set(4,i);
-
-            double m1 = 2 * ((s07 + s34) + (s25+s16));
-            double m2 = (s07 +s34) - (s25 +s16);
-            double m3 = (s07 - s34);
-            double m4 = d07;
-            double m5 = a1 * ((s16 - s25) + (s07 - s34));
-            double m6 = a1 * (d25 + d16);
-            double m7 = a5 * ((d16 + d07) - (d25 + d34));
-            double m8 = a4 * (d16 + d07);
-            double m9 = a2 * (d25 + d34);
-
-            double se5 = m4 + m6;
-            double se6 = m4 - m6;
-            double se7 = m8 - m7;
-            double se8 = m9 - m7;
-
-            set(0,i) = m1 * s0;
-            set(4,i) = m2 * s1;
-            set(2,i) = (m3 + m5) * s2;
-            set(6,i) = (m3 - m5) * s3;
-            set(3,i) = (se6 - se8) * s4;
-            set(5,i) = (se6 + se8) * s5;
-            set(1,i) = (se5 + se7) * s6;
-            set(7,i) = (se5 - se7) * s7;
         }
     }
 };
