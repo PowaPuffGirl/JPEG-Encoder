@@ -14,23 +14,23 @@ private:
 
     std::array<T, 6> a = {
             0,
-            a1,
-            a2,
-            a3,
-            a4,
-            a5
+            FixedPointConverter<T>::convert(a1),
+            FixedPointConverter<T>::convert(a2),
+            FixedPointConverter<T>::convert(a3),
+            FixedPointConverter<T>::convert(a4),
+            FixedPointConverter<T>::convert(a5)
     };
 
 
     std::array<T, 8> s = {
-            s0,
-            s1,
-            s2,
-            s3,
-            s4,
-            s5,
-            s6,
-            s7
+            FixedPointConverter<T>::convert(s0),
+            FixedPointConverter<T>::convert(s1),
+            FixedPointConverter<T>::convert(s2),
+            FixedPointConverter<T>::convert(s3),
+            FixedPointConverter<T>::convert(s4),
+            FixedPointConverter<T>::convert(s5),
+            FixedPointConverter<T>::convert(s6),
+            FixedPointConverter<T>::convert(s7)
     };
 
     vec8 y0,y1,y2,y3,y4,y5,y6,y7 = 0;

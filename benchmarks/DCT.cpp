@@ -68,3 +68,5 @@ BENCHMARK_TEMPLATE(TestConversionDeinzer, AraiCosinusTransform<float>);
 BENCHMARK_TEMPLATE(TestConversionDeinzer, SeparatedCosinusTransformSimd<float>);
 BENCHMARK_TEMPLATE(TestConversionDeinzer, AraiSimd<float>);
 BENCHMARK_TEMPLATE(TestConversionDeinzer, AraiSimdSimple<float>);
+BENCHMARK_TEMPLATE(TestConversionDeinzer, AraiSimdSimple<short>, short);
+BENCHMARK_TEMPLATE(TestConversionDeinzer, AraiSimdSimple<int32_t>, int32_t);
