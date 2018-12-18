@@ -58,15 +58,16 @@ SET(MI_FILES
                 dct/AbstractCosinusTransform.h
                 dct/AraiCosinusTransform.h
                 dct/SeparatedCosinusTransformGlm.h
-        EncodingProcessor.h
+                EncodingProcessor.h
                 SampledWriter.h
                 helper/BlockIterator.h
                 helper/ExampleBufferGen.h
                 dct/AraiSimd.h
-                dct/SeparatedCosinusTransformSimd.h)
+                dct/SeparatedCosinusTransformSimd.h
+                dct/AraiSimdSimple.h)
 
 add_executable(MedienInfo main.cpp ${MI_FILES})
 target_link_libraries(MedienInfo ${Vc_LIBRARIES})
-add_executable(Benchmarks ${MI_FILES} benchmarks/BitStream.cpp benchmarks/Huffman.cpp benchmarks/DCT.cpp)
+add_executable(Benchmarks ${MI_FILES} benchmarks/BitStream.cpp benchmarks/Huffman.cpp benchmarks/DCT.cpp )
 target_link_libraries(Benchmarks benchmark_main benchmark ${Vc_LIBRARIES})
 add_executable(PPMCreator ppmCreatorMain.cpp ppmCreator.h ppmCreator.cpp)
