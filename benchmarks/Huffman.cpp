@@ -126,7 +126,7 @@ static void BM_(benchmark::State& state) {
 typedef HuffmanTreeSimpleSort<256, uint8_t, uint32_t, uint16_t> HtSimple;
 typedef HuffmanTreeSort<256, uint8_t, uint32_t, uint16_t> HtNormal;
 typedef HuffmanTreeIsoSort<256, uint8_t, uint32_t, uint16_t> HtIso;
-
+/*
 BENCHMARK(BM_WriteDhtSegment);
 BENCHMARK(BM_WriteDhtSegmentIso);
 BENCHMARK_TEMPLATE(BM_HuffmantreeSimple, HtSimple);
@@ -135,3 +135,4 @@ BENCHMARK_TEMPLATE(BM_HuffmantreeSimple, HtIso);
 BENCHMARK_TEMPLATE(BM_HuffmantreeRandom, HtSimple);
 BENCHMARK_TEMPLATE(BM_HuffmantreeRandom, HtNormal);
 BENCHMARK_TEMPLATE(BM_HuffmantreeRandom, HtIso);
+ */

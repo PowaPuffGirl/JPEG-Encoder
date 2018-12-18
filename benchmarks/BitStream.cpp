@@ -59,7 +59,7 @@ static void BM_Defined10KKWrite(benchmark::State& state) {
 }
 
 
-BENCHMARK(BM_BasicBitAppending);
+/*BENCHMARK(BM_BasicBitAppending);
 BENCHMARK(BM_SegmentWrite);
 BENCHMARK(BM_Random10KKWrite);
-BENCHMARK(BM_Random10KKWrite);
+BENCHMARK(BM_Random10KKWrite);*/

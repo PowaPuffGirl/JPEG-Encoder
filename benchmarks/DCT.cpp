@@ -61,7 +61,7 @@ static void TestConversionAll(benchmark::State& state) {
     state.counters["AraiS <-> SCT"] = outBufferAraiS.errorTo(outBufferSCT);
 }
 
-BENCHMARK(TestConversionAll);
+//BENCHMARK(TestConversionAll);
 BENCHMARK_TEMPLATE(TestConversionDeinzer, DirectCosinusTransform<float>);
 BENCHMARK_TEMPLATE(TestConversionDeinzer, SeparatedCosinusTransform<float>);
 BENCHMARK_TEMPLATE(TestConversionDeinzer, AraiCosinusTransform<float>);
