@@ -42,16 +42,18 @@ public:
 
     double errorTo(SampledWriter<T> other) {
         assert(other.output.size() == output.size());
-        double errsum = 0;
+        double errsum = -1;
         for (int i = 0; i < output.size(); i++) {
             if (output[i] != other.output[i]) {
-                errsum += abs(output[i] - other.output[i]);
+                //errsum += abs(output[i] - other.output[i]);
                 //auto err = abs(output[i] - other.output[i]);
                 //errsum += err*err;
+                errsum = std::max(errsum, (double)abs(output[i] - other.output[i]));
             }
         }
         //return sqrt(errsum / output.size());
-        return errsum / output.size();
+        //return errsum / output.size();
+        return errsum;
     }
 };
 

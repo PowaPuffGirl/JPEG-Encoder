@@ -19,7 +19,7 @@ public:
 
     }
 
-    RawImage parsePPM() {
+    RawImage<float, ColorChannel<float>> parsePPM() {
         fstream FileBin("../output/test.ppm", ios::in | ios::binary);
         if (FileBin.is_open() && FileBin.good()) {
 

@@ -5,6 +5,8 @@
 #include <stdexcept>
 #include "ppmCreator.h"
 #include "helper/BlockIterator.h"
+#include <Vc/Vc>
+#include <Vc/IO>
 
 
 template<typename T>
@@ -64,6 +66,10 @@ struct ColorChannel {
         return channel.at(y * width + x);
     }
 
+    inline void set(int x, int y, T value) {
+        get(x, y) = value;
+    }
+
     std::function<const T&(unsigned int, unsigned int)> getBlockGetter(unsigned int blockx, unsigned int blocky) const {
         const unsigned int xoffset = blockx << 3;
         const unsigned int yoffset = blocky << 3;
@@ -116,8 +122,124 @@ struct ColorChannel {
 
 };
 
+template<typename T>
+struct ColorChannelSimd {
+    using vec8 = Vc::fixed_size_simd<T, 8>;
+    std::vector<vec8> channel;
+    const unsigned int width, height, widthPadded, heightPadded, widthInVec8;
+    const unsigned int stepX, stepY, blockSize;
+
+    ColorChannelSimd(unsigned int width, unsigned int height, unsigned int stepX, unsigned int stepY)
+    : blockSize(stepX * stepY), width(width), height(height), stepX(stepX), stepY(stepY),
+        widthPadded(width % stepX == 0 ? width : width + (stepX - (width % stepX))),
+        heightPadded(height % stepY == 0 ? height : height + (stepY - (height % stepY))),
+        widthInVec8(widthPadded/8)
+    {
+        assert(stepX == 8);
+        assert(stepY == 8);
+        const auto vsize = (widthPadded * heightPadded) / 8;
+        channel.resize(vsize, 0);
+    }
+
+    inline const T& get(int x, int y) const {
+        assert(x < widthPadded);
+        assert(y < heightPadded);
+        const auto offset = y * widthInVec8 + (x >> 3);
+
+#ifdef	NDEBUG
+        return channel[offset][x & 7];
+#else
+        return channel.at(offset)[x & 7];
+#endif
+    }
+
+    inline T get(int x, int y) {
+        assert(x < widthPadded);
+        assert(y < heightPadded);
+        const auto offset = y * widthInVec8 + (x >> 3);
+
+#ifdef	NDEBUG
+        return channel[offset][x & 7];
+#else
+        return channel.at(offset)[x & 7];
+#endif
+    }
+
+    inline void set(int x, int y, T value) {
+        assert(x < widthPadded);
+        assert(y < heightPadded);
+        const auto offset = y * widthInVec8 + (x >> 3);
+
+#ifdef	NDEBUG
+        channel[offset][x & 7] = value;
+#else
+        channel.at(offset)[x & 7] = value;
+#endif
+    }
+
+    std::function<const vec8&(unsigned int)> getBlockGetter(unsigned int blockx, unsigned int blocky) const {
+        const unsigned int yoffset = (blocky << 3) * widthInVec8;
+        const unsigned int offset = blockx + yoffset;
+        const auto& wiv8 = widthInVec8;
+        const auto buffer = &channel;
+
+        return [offset, buffer, wiv8] (unsigned int y) -> const vec8& {
+            assert(y < 8);
+
+#ifdef	NDEBUG
+            return (*buffer)[offset + (y * wiv8)];
+#else
+            return buffer->at(offset + (y * wiv8));
+#endif
+        };
+    }
+
+    std::function<T(int,int)> getPixelSubsampled420average() {
+        return [this] (int x, int y) {
+            x&=~1;
+            y&=~1;
+            T sum = 0;
+            sum += get(x,y);
+            sum += get(x+1,y);
+            sum += get(x,y+1);
+            sum += get(x+1,y+1);
+            return sum/4;
+        };
+    }
+
+    std::function<T(int,int)> getPixelSubsampled420simple() {
+        return [this] (int x, int y) {
+            return get(x&~1, y&~1);
+        };
+    }
+
+    std::function<T(int,int)> getPixelSubsampled411() {
+        return [this] (int x, int y) {
+            return get(x&~3, y);
+        };
+    }
+
+    std::function<T(int,int)> getPixelSubsampled422() {
+        return [this] (int x, int y) {
+            return get(x&~1, y);
+        };
+    }
+
+    std::function<T(int,int)> getPixelSubsampled444() {
+        return [this] (int x, int y) {
+            return get(x, y);
+        };
+    }
+
+    inline T getValue(int x, int y) const {
+        return getPixelSubsampled444(x, y);
+    }
+
+};
+
+template<typename T = float, typename ColorChannelImpl = ColorChannel<T>>
 struct RawImage {
-    using ColorChannelT = ColorChannel<float>;
+    using ColorChannelT = ColorChannelImpl;
     const unsigned int width, height, colorDepth;
     const float colorDepth_f;
     ColorChannelT Y, Cb, Cr;

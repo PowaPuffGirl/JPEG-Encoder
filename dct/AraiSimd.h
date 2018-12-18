@@ -2,6 +2,7 @@
 #define MEDIENINFO_ARAISIMD_H
 
 #include "AbstractCosinusTransform.h"
+#include "AraiCosinusTransform.h"
 #include <Vc/Vc>
 #include <Vc/IO>
 
@@ -22,23 +23,23 @@ private:
 
     std::array<T, 6> a = {
             0,
-            C(4),
-            C(2) - C(6),
-            C(4),
-            C(6) + C(2),
-            C(6)
+            a1,
+            a2,
+            a3,
+            a4,
+            a5
     };
 
 
     std::array<T, 8> s = {
-        M_SQRT1_2 * 0.5,
-        sc(1),
-        sc(2),
-        sc(3),
-        sc(4),
-        sc(5),
-        sc(6),
-        sc(7)
+        s0,
+        s1,
+        s2,
+        s3,
+        s4,
+        s5,
+        s6,
+        s7
     };
 
     inline void getRowBlocks(rowBlock& vert, rowBlock& hor, const std::function<const T&(uint, uint)>& get) const {
@@ -87,8 +88,8 @@ private:
         x6 += x7;
         // x7 = x7
 
-        x1 = (-x1c + x0) * s[4];
-        x0 = (x0 * x1c) * s[0];
+        x1 = (x0 - x1c) * s[4];
+        x0 = (x0 + x1c) * s[0];
         x2c = (x2 + x3) * a[1];
         x2 = (x2c + x3) * s[2];
         x3 = (x3 - x2c) * s[6];
@@ -111,6 +112,7 @@ private:
         x4 = (x7c + x4) * s[5];
         x6 = (x5c - x6) * s[7];
 
+        // x7.data0.data.d.data[0]
         x0c = x1;
         x1 = x4;
         x4 = x5;
