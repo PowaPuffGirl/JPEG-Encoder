@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 3.12)
 project(MedienInfo)
 
 set(CMAKE_CXX_STANDARD 17)
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-SET(CMAKE_CXX_FLAGS_RELEASE  "${CMAKE_CXX_FLAGS_RELEASE} -Ofast -DNDEBUG -fbuiltin -fdefer-pop -foptimize-sibling-calls -march=native -falign-jumps -falign-loops")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native -mavx2 -mfma")
+SET(CMAKE_CXX_FLAGS_RELEASE  "${CMAKE_CXX_FLAGS_RELEASE} -Ofast -DNDEBUG -fbuiltin -fdefer-pop -foptimize-sibling-calls -falign-jumps -falign-loops")
 # -fno-fnalias is -fno-alias only within functions
 #SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -pragma-optimization-level=Intel -fno-alias -fast -Oa")
 
