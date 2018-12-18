@@ -35,32 +35,25 @@ public:
         ty5 = y5 + y6;
         ty6 = y6 + y7;
 
-        y0 = ty0 + ty1;
         y1 = ty0 - ty1;
-        y2 = ty2 + ty3;
+        ty0 = (ty0 + ty1) * s0;
+        ty2 = (ty2 + ty3) * a1;
         y4 = ty4;
-        y6 = ty6;
 
-        ty2 = y2 * a1;
-        ty4 = y4*a2 - ((y6-y4)*a5);
-        ty6 = y6*a4 - ((y6+y4)*a5);
-        ty7 = y7;
+        ty4 = y4*a2 - ((ty6-y4)*a5);
+        ty6 = ty6*a4 - ((ty6+y4)*a5);
 
         y2 = ty2 + ty3;
-        y3 = ty3 - ty2;
-        y4 = ty4;
-        y5 = (ty5 * a3) + ty7;
-        y6 = ty6;
-        y7 = ty7 - ty5;
+        ty3 = (ty3 - ty2) * s6;
+        y5 = (ty5 * a3) + y7;
+        y7 = y7 - ty5;
 
-        ty0 = y0 * s0;
         ty1 = y1 * s4;
         ty2 = y2 * s2;
-        ty3 = y3 * s6;
-        ty4 = (y4 + y7) * s5;
-        ty5 = (y5 + y6) * s1;
-        ty6 = (y5 - y6) * s7;
-        ty7 = (y7 - y4) * s3;
+        ty7 = (y7 - ty4) * s3;
+        ty4 = (ty4 + y7) * s5;
+        ty5 = (y5 + ty6) * s1;
+        ty6 = (y5 - ty6) * s7;
 
         std::array<vec8*, 8> rb = {
             &ty0,
@@ -92,32 +85,25 @@ public:
         ty5 = y5 + y6;
         ty6 = y6 + y7;
 
-        y0 = ty0 + ty1;
         y1 = ty0 - ty1;
-        y2 = ty2 + ty3;
+        ty0 = (ty0 + ty1) * s0;
+        ty2 = (ty2 + ty3) * a1;
         y4 = ty4;
-        y6 = ty6;
 
-        ty2 = y2 * a1;
-        ty4 = y4*a2 - ((y6-y4)*a5);
-        ty6 = y6*a4 - ((y6+y4)*a5);
-        ty7 = y7;
+        ty4 = y4*a2 - ((ty6-y4)*a5);
+        ty6 = ty6*a4 - ((ty6+y4)*a5);
 
         y2 = ty2 + ty3;
-        y3 = ty3 - ty2;
-        y4 = ty4;
-        y5 = (ty5 * a3) + ty7;
-        y6 = ty6;
-        y7 = ty7 - ty5;
+        ty3 = (ty3 - ty2) * s6;
+        y5 = (ty5 * a3) + y7;
+        y7 = y7 - ty5;
 
-        ty0 = y0 * s0;
         ty1 = y1 * s4;
         ty2 = y2 * s2;
-        ty3 = y3 * s6;
-        ty4 = (y4 + y7) * s5;
-        ty5 = (y5 + y6) * s1;
-        ty6 = (y5 - y6) * s7;
-        ty7 = (y7 - y4) * s3;
+        ty7 = (y7 - ty4) * s3;
+        ty4 = (ty4 + y7) * s5;
+        ty5 = (y5 + ty6) * s1;
+        ty6 = (y5 - ty6) * s7;
 
         for(uint i = 0; i < 8; i++) {
             set(0,i) = ty0[i];
