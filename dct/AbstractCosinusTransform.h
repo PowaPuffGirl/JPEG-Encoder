@@ -16,12 +16,12 @@ public:
 
 template<>
 constexpr short FixedPointConverter<short>::convert(double input) {
-    return static_cast<short>(input * std::numeric_limits<short>::max());
+    return static_cast<short>(input * (std::numeric_limits<short>::max() / 500));
 }
 
 template<>
 constexpr int32_t FixedPointConverter<int32_t>::convert(double input) {
-    return static_cast<short>(input * std::numeric_limits<int32_t>::max());
+    return static_cast<short>(input * (std::numeric_limits<int32_t>::max() / 1000));
 }
 
 template<>
