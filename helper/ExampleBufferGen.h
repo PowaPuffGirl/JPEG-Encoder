@@ -6,6 +6,7 @@
 #define MEDIENINFO_EXAMPLEBUFFERGEN_H
 
 #include "../Image.h"
+#include "../dct/AbstractCosinusTransform.h"
 
 template<typename T>
 ColorChannel<T> generateTestBuffer(unsigned int width, unsigned int height) {
@@ -13,7 +14,7 @@ ColorChannel<T> generateTestBuffer(unsigned int width, unsigned int height) {
 
     for (unsigned int x = 0; x < width; ++x) {
         for (int y = 0; y < height; ++y) {
-            cc.get(x, y) =((x + (y << 3)) % 256) / 256.f;
+            cc.get(x, y) = FixedPointConverter<T>::convert(((x + (y << 3)) % 256) / 256.f);
         }
     }
 
