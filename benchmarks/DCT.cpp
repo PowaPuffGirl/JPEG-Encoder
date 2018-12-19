@@ -78,8 +78,8 @@ static void TestConversionAll(benchmark::State& state) {
 //BENCHMARK(TestConversionAll);
 
 BENCHMARK_TEMPLATE(TestConversionDeinzer, DirectCosinusTransform<float>);
-BENCHMARK_TEMPLATE(TestConversionDeinzer, SeparatedCosinusTransform<float>);
 BENCHMARK_TEMPLATE(TestConversionDeinzer, AraiCosinusTransform<float>);
+BENCHMARK_TEMPLATE(TestConversionDeinzer, SeparatedCosinusTransform<float>);
 BENCHMARK_TEMPLATE(TestConversionDeinzer, SeparatedCosinusTransformSimd<float>);
 BENCHMARK_TEMPLATE(TestConversionDeinzer, AraiSimd<float>);
 BENCHMARK_TEMPLATE(TestConversionDeinzer, AraiSimdSimple<float>);
@@ -87,8 +87,8 @@ BENCHMARK_TEMPLATE(TestConversionDeinzer, AraiSimdSimple<int32_t>, int32_t);
 BENCHMARK_TEMPLATE(TestConversionDeinzer, AraiSimdSimple<short>, short);
 
 BENCHMARK_TEMPLATE(TestConversionSmall, DirectCosinusTransform<float>);
-BENCHMARK_TEMPLATE(TestConversionSmall, SeparatedCosinusTransform<float>);
 BENCHMARK_TEMPLATE(TestConversionSmall, AraiCosinusTransform<float>);
+BENCHMARK_TEMPLATE(TestConversionSmall, SeparatedCosinusTransform<float>);
 BENCHMARK_TEMPLATE(TestConversionSmall, SeparatedCosinusTransformSimd<float>);
 BENCHMARK_TEMPLATE(TestConversionSmall, AraiSimd<float>);
 BENCHMARK_TEMPLATE(TestConversionSmall, AraiSimdSimple<float>);
