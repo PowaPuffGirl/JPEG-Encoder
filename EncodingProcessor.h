@@ -15,13 +15,15 @@ public:
         unsigned int blocksx = channel.widthPadded >> 3;
         unsigned int blocksy = channel.heightPadded >> 3;
 
+#pragma omp parallel for
         for(unsigned int x = 0; x < blocksx; ++x) {
+            Transform t;
             for(unsigned int y = 0; y < blocksy; ++y) {
 
                 auto setter = output.getBlockSetter(x, y);
                 const auto getter = channel.getBlockGetter(x, y);
 
-                dct.transformBlock(getter, setter);
+                t.transformBlock(getter, setter);
             }
         }
     }
