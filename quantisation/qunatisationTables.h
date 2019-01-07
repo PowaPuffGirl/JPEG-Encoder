@@ -1,6 +1,8 @@
 #ifndef MEDIENINFO_QUNATISATIONTABLES_H
 #define MEDIENINFO_QUNATISATIONTABLES_H
 
+#include <array>
+
 std::array<int, 64> luminaceOnePlus5 = {
         2,  1,  1,  2,  2,  4,  5,  6,
         1,  1,  1,  2,  3,  6,  6,  6,
