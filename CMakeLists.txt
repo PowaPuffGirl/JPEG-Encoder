@@ -67,7 +67,7 @@ SET(MI_FILES
                 dct/AraiSimd.h
                 dct/SeparatedCosinusTransformSimd.h
                 dct/AraiSimdSimple.h
-                quantisation/qunatisationTables.h)
+        quantisation/quantisationTables.h)
 
 add_executable(MedienInfo main.cpp ${MI_FILES})
 target_link_libraries(MedienInfo ${Vc_LIBRARIES})

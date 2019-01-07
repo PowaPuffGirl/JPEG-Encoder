@@ -6,6 +6,7 @@
 #include <cassert>
 #include <cmath>
 #include <iostream>
+#include "quantisation/quantisationTables.h"
 
 template<typename T>
 class SampledWriter {
@@ -110,7 +111,7 @@ public:
 
 };
 
-template<typename T>
+template<typename T, typename Tout = int8_t>
 class OffsetSampledWriter {
 private:
     using uint = unsigned int;
@@ -119,25 +120,35 @@ private:
     const uint blocksize = rowwidth * rowwidth;
     const uint acBlockSize = blocksize - 1;
     const uint size;
-    std::vector<T> output_dc;
-    std::vector<T> output_ac;
-    std::array<T, 256> huffweight_ac = {0}, huffweight_dc = {0};
+
+    std::vector<Tout> output_dc;
+    std::vector<Tout> output_ac;
+    std::array<Tout, 256> huffweight_ac = {0}, huffweight_dc = {0};
+
     const ZikZakLookupTable acLookupTableGen;
     const std::array<std::array<uint, 8>, 8>& acLookupTable = acLookupTableGen.acLookupTable;
+    const QuantisationTable& qTable;
 
 public:
-    explicit OffsetSampledWriter(const uint blocks) : size(blocks * blocksize){
+    explicit OffsetSampledWriter(const uint blocks, const QuantisationTable& qTable)
+        : size(blocks * blocksize), qTable(qTable) {
         // resize, but substract one for each block because the first coefficient is AC
         output_ac.resize(size - blocks, 0);
         output_dc.resize(blocks, 0);
     }
 
     void set(const T& val, const uint block, const uint x, const uint y) {
+        const auto divisor =  qTable[(x << 3) + y];
+        const auto extra = val < 0 ? -(divisor >> 1) : (divisor >> 1);
+        const Tout valm = static_cast<Tout>((val + extra) / divisor);
+
         if(x == 0 && y == 0) {
             output_dc[block] = val;
+            ++huffweight_dc[reinterpret_cast<Tout>(val)];
         }
         else {
             output_ac[(block * acBlockSize) + acLookupTable[x][y]] = val;
+            ++huffweight_ac[reinterpret_cast<Tout>(val)];
         }
     }
 };

@@ -25,7 +25,7 @@ void write_image(int runs = 10);
 
 int main() {
     //bitstream_tests();
-    OffsetSampledWriter<float> ad(200);
+    OffsetSampledWriter<float> ad(200, luminaceOnePlus5);
     huffman_tests();
 
     write_image();
