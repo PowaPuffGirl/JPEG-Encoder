@@ -43,6 +43,13 @@ public:
         DHT::write<max_tree_depth>(stream, tree_num, is_ac, bits, huffval);
     }
 
+    uint32_t NodeAmount() const {
+        uint32_t sum = 0;
+        for(auto x : bits)
+            sum += x;
+        return sum;
+    }
+
 protected:
     virtual void sortToLeaves(const std::array<AmountType, max_values> &values) = 0;
 

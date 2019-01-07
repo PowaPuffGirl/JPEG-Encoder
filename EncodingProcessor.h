@@ -11,6 +11,7 @@
 #include "segments/APP0.h"
 #include "segments/SOF0.h"
 #include "segments/SOS.h"
+#include "HuffmenTreeSorts/HuffmanTreeIsoSort.h"
 
 template<typename  T>
 class EncodingProcessor {
@@ -57,6 +58,7 @@ public:
 template<typename T, typename Transform, typename Channel = ColorChannel<T>>
 class ImageProcessor {
 public:
+    using HT = HuffmanTreeIsoSort<256, uint8_t, uint32_t, uint8_t, 16>;
     ImageProcessor() = default;
 
     void processImage(const RawImage& image, BitStream& writer) {
@@ -67,14 +69,37 @@ public:
         SampledWriter<T> Y(image.width, image.height);
         encodingProcessor.template processChannel<Transform, Channel>(image.Y, Y);
         OffsetSampledWriter<T> Yfin = Y.toOffsetSampledWriter(luminaceOnePlus5);
+        Yfin.runLengthEncoding();
+
+        HT y_ac;
+        y_ac.sortTree(Yfin.huffweight_ac);
+        y_ac.writeSegmentToStream(writer, 0, 1);
+        HT y_dc;
+        y_dc.sortTree(Yfin.huffweight_dc);
+        y_dc.writeSegmentToStream(writer, 1, 0);
 
         SampledWriter<T> Cb(image.width, image.height);
         encodingProcessor.template processChannel<Transform, Channel>(image.Y, Cb);
         OffsetSampledWriter<T> Cbfin = Cb.toOffsetSampledWriter(chrominaceOnePlus5);
+        Cbfin.runLengthEncoding();
 
         SampledWriter<T> Cr(image.width, image.height);
         encodingProcessor.template processChannel<Transform, Channel>(image.Y, Cr);
         OffsetSampledWriter<T> Crfin = Cr.toOffsetSampledWriter(chrominaceOnePlus5);
+        Crfin.runLengthEncoding();
+
+        std::array<uint32_t, 256> chrom_ac, chrom_dc;
+        for(int i = 0; i < 256; ++i) {
+            chrom_ac[i] = Cbfin.huffweight_ac[i] + Crfin.huffweight_ac[i];
+            chrom_dc[i] = Cbfin.huffweight_dc[i] + Crfin.huffweight_dc[i];
+        }
+
+        HT c_ac;
+        c_ac.sortTree(chrom_ac);
+        c_ac.writeSegmentToStream(writer, 2, 1);
+        HT c_dc;
+        c_dc.sortTree(chrom_dc);
+        c_dc.writeSegmentToStream(writer, 3, 0);
 
 
         writeEOI(writer);

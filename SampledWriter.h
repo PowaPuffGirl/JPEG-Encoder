@@ -10,15 +10,15 @@
 
 template<typename T, typename Tout = int8_t>
 class Pair {
-private:
+public:
     T amount;
     Tout value;
-    uint16_t bitPattern;
-    uint8_t category;
-    uint8_t pairBitwise;
+    uint16_t bitPattern; // note: The actual amount of used bits is determined by the bit_pattern
+    uint8_t category; // DC: Huffcode this category, then write huff(category) and then bit_pattern (unencoded)
+    uint8_t pairBitwise; // AC: search this value in the huffman tree and write it to the stream, then write bitPattern
+    bool DC;
 
     void createBitValue() {
-        assert(value != 0);
         double log;
         if (value < 0) {
             bitPattern = static_cast<uint16_t>(value*-1);
@@ -36,11 +36,15 @@ private:
     }
 
 public:
-    Pair(T first, Tout second) : amount(first), value(second), bitPattern(0), category(0), pairBitwise(0) {
+    Pair(T first, Tout second) : amount(first), value(second), bitPattern(0), category(0), pairBitwise(0), DC(false) { // AC
         createBitValue();
         pairBitwise = first;
         pairBitwise = pairBitwise << 4;
         pairBitwise += second;
+    }
+
+    Pair(Tout nr) : amount(0), value(nr), bitPattern(0), category(0), pairBitwise(0), DC(true) { // DC
+        createBitValue();
     }
 };
 
@@ -112,9 +116,12 @@ private:
 
     std::vector<Tout> output_dc;
     std::vector<Tout> output_ac;
-    std::vector<Pair<T,Tout>> runLengthEncoded;
-    std::array<Tout, 256> huffweight_ac = {0}, huffweight_dc = {0};
+    std::vector<Pair<uint8_t,Tout>> runLengthEncoded;
 
+public:
+    std::array<uint32_t, 256> huffweight_ac = {0}, huffweight_dc = {0};
+
+private:
     const ZikZakLookupTable acLookupTableGen;
     const std::array<std::array<uint, 8>, 8>& acLookupTable = acLookupTableGen.acLookupTable;
     const QuantisationTable& qTable;
@@ -134,31 +141,44 @@ public:
 
         if(x == 0 && y == 0) {
             output_dc[block] = valm;
-            ++huffweight_dc[reinterpret_cast<Tout>(valm)];
+
         }
         else {
             output_ac[(block * acBlockSize) + acLookupTable[x][y]] = valm;
-            ++huffweight_ac[reinterpret_cast<Tout>(valm)];
         }
     }
 
     void runLengthEncoding() {
-        uint amountZeros = 0;
-        for(Tout value : output_dc) {
-            if (value != 0) {
-                for (uint i = amountZeros; i > 15; i -= 16) {
-                    Pair<uint, Tout> temp(15,0);
-                    this->runLengthEncoded.emplace_back(temp);
+        Tout prev_dc = 0;
+        int ac_offset = 0;
+        for(int b = 0; b < output_ac.size(); b += 63) {
+            Tout cur_dc = output_dc[ac_offset++];
+            auto p = Pair<uint8_t, Tout>(cur_dc - prev_dc);
+            ++huffweight_dc[p.category];
+            this->runLengthEncoded.emplace_back(p);
+            prev_dc = cur_dc;
+
+            uint amountZeros = 0;
+            for(int k = b; k < b+63; ++k) {
+                const auto value = output_ac[k];
+                if (value != 0) {
+                    for (uint i = amountZeros; i > 15; i -= 16) {
+                        Pair<uint8_t, Tout> temp(15,0);
+                        ++huffweight_ac[p.pairBitwise];
+                        this->runLengthEncoded.emplace_back(temp);
+                    }
+                    Pair<uint8_t, Tout> temp(amountZeros,value);
+                    ++huffweight_ac[p.pairBitwise];
+                    runLengthEncoded.emplace_back(temp);
+                    amountZeros = 0;
+                } else {
+                    amountZeros++;
                 }
-                Pair<uint, Tout> temp(amountZeros,value);
-                runLengthEncoded.emplace_back(temp);
-                amountZeros = 0;
-            } else {
-                amountZeros++;
             }
-        }
-        if (output_dc.at(output_dc.size()-1) == 0) {
-            Pair<uint, Tout> temp(0, 0);
+
+            if (amountZeros != 0) {
+                Pair<uint, Tout> temp(0, 0);
+            }
         }
     }
 };
