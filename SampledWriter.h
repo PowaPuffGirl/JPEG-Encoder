@@ -5,6 +5,7 @@
 #include <functional>
 #include <cassert>
 #include <cmath>
+#include <iostream>
 
 template<typename T>
 class SampledWriter {
@@ -52,6 +53,92 @@ public:
         }
         //return sqrt(errsum / output.size());
         return errsum / output.size();
+    }
+};
+
+class ZikZakLookupTable {
+private:
+    using uint = unsigned int;
+    static constexpr void genAcLookupTable(std::array<std::array<uint, 8>, 8>& table) {
+
+        uint x = 1, y = 0;
+        bool use_x = false; // to switch between x & y
+        // iterate from 0..62 since the actual 0 is dc
+        for (uint i = 0; i < 63; ++i) {
+            table[x][y] = i;
+
+            if(use_x) {
+                if(x == 7) {
+                    use_x = false;
+                    ++y;
+                }
+                else {
+                    ++x;
+
+                    if(y == 0) {
+                        use_x = false;
+                    }
+                    else {
+                        --y;
+                    }
+                }
+
+            }
+            else {
+                if(y == 7) {
+                    use_x = true;
+                    ++x;
+                }
+                else {
+                    ++y;
+
+                    if (x == 0) {
+                        use_x = true;
+                    } else {
+                        --x;
+                    }
+                }
+            }
+        }
+    }
+
+public:
+    std::array<std::array<uint, 8>, 8> acLookupTable {0};
+    constexpr ZikZakLookupTable() {
+        genAcLookupTable(acLookupTable);
+    }
+
+};
+
+template<typename T>
+class OffsetSampledWriter {
+private:
+    using uint = unsigned int;
+
+    const uint rowwidth = 8;
+    const uint blocksize = rowwidth * rowwidth;
+    const uint acBlockSize = blocksize - 1;
+    const uint size;
+    std::vector<T> output_dc;
+    std::vector<T> output_ac;
+    std::array<T, 256> huffweight_ac = {0}, huffweight_dc = {0};
+    const ZikZakLookupTable acLookupTableGen;
+    const std::array<std::array<uint, 8>, 8>& acLookupTable = acLookupTableGen.acLookupTable;
+
+public:
+    explicit OffsetSampledWriter(const uint blocks) : size(blocks * blocksize){
+        // resize, but substract one for each block because the first coefficient is AC
+        output_ac.resize(size - blocks, 0);
+        output_dc.resize(blocks, 0);
+    }
+
+    void set(const T& val, const uint block, const uint x, const uint y) {
+        if(x == 0 && y == 0) {
+            output_dc[block] = val;
+        }
+        else {
+            output_ac[(block * acBlockSize) + acLookupTable[x][y]] = val;
+        }
     }
 };
 

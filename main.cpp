@@ -8,6 +8,7 @@
 #include "segments/SOF0.h"
 #include "HuffmenTreeSorts/HuffmanTree.h"
 //#include "helper/TreeEfficiencyMeter.h"
+#include "SampledWriter.h"
 #include "HuffmenTreeSorts/HuffmanTreeSimpleSort.h"
 #include "HuffmenTreeSorts/HuffmanTreeSort.h"
 #include "HuffmenTreeSorts/HuffmanTreeIsoSort.h"
@@ -24,7 +25,9 @@ void write_image(int runs = 10);
 
 int main() {
     //bitstream_tests();
-    //huffman_tests();
+    OffsetSampledWriter<float> ad(200);
+    huffman_tests();
+
     write_image();
 /*
     PPMParser test(stepSize, stepSize);
