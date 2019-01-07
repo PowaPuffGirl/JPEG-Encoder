@@ -14,7 +14,7 @@ private:
     T amount;
     Tout value;
     uint16_t bitPattern;
-    uint8_t kategorie;
+    uint8_t category;
     uint8_t pairBitwise;
 
     void createBitValue() {
@@ -32,11 +32,11 @@ private:
         if (log == (int)log) {
             log++;
         }
-        this->kategorie = ceil(log);
+        this->category = ceil(log);
     }
 
 public:
-    Pair(T first, Tout second) : amount(first), value(second), bitPattern(0), kategorie(0), pairBitwise(0) {
+    Pair(T first, Tout second) : amount(first), value(second), bitPattern(0), category(0), pairBitwise(0) {
         createBitValue();
         pairBitwise = first;
         pairBitwise = pairBitwise << 4;

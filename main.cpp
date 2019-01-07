@@ -27,23 +27,7 @@ void write_image(int runs = 10);
 void full_encode(int runs);
 
 int main() {
-    //kategorie 1 passt nicht
-    Pair test1(3, 1);
-    Pair test2(3, 2);
-    Pair test3(15, 5);
-    Pair test4(0, 9);
-    Pair test5(0, 27);
-    Pair test6(3, -36);
-    Pair test7(3, -99);
-    Pair test8(3, -167);
-    Pair test9(3, -488);
-    Pair test10(3, -777);
-    Pair test11(3, -1230);
-    Pair test12(3, -3000);
-    Pair test13(3, -7091);
-    Pair test14(3, -14010);
-    Pair test15(3, -30303);
-    //bitstream_tests();
+   //bitstream_tests();
     huffman_tests();
 
     write_image();
