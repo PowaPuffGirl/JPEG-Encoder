@@ -17,7 +17,7 @@
 #include "segments/SOS.h"
 #include "dct/AraiSimdSimple.h"
 
-const unsigned int stepSize = 16;
+const unsigned int stepSize = 8;
 
 void bitstream_tests(int runs = 10000);
 
@@ -33,7 +33,9 @@ int main() {
     write_image();
 
     full_encode(10);
-/*
+
+    PPMParser test(stepSize, stepSize);
+    RawImage temp = test.parsePPM();
     std::thread t1([&temp](){
         temp.exportPPMSubsampled420simple("420simple");
     });
@@ -54,14 +56,6 @@ int main() {
     t3.join();
     t4.join();
 
-    /*
-    uint16_t au = 0xFF00;
-    uint16_t a = convert_u16(au);
-    uint16_t bu = 0x3311;
-    uint16_t b = convert_u16(bu);
-    uint32_t xu = 0x11223344;
-    uint32_t x = convert_u32(xu);
-    */
 
 
     return 0;
