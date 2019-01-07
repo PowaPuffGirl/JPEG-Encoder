@@ -64,6 +64,26 @@ public:
 };
 
 template<typename T, typename Tout = int8_t>
+class Pair {
+private:
+    T first;
+    Tout second;
+
+    void createBitValue() {
+
+    }
+
+public:
+    Pair() = default;
+
+    Pair(T first, Tout second) : first(first), second(second) {
+
+    }
+
+
+};
+
+template<typename T, typename Tout = int8_t>
 class OffsetSampledWriter {
 private:
     using uint = unsigned int;
@@ -102,6 +122,25 @@ public:
             output_ac[(block * acBlockSize) + acLookupTable[x][y]] = valm;
             ++huffweight_ac[reinterpret_cast<Tout>(valm)];
         }
+    }
+
+    void runLengthEncoding() {
+        uint amountZeros = 0;
+        std::vector<Pair<uint, Tout>> values;
+        for(Tout value : output_dc) {
+            if (value != 0) {
+                Pair<uint, Tout> temp(amountZeros,value);
+                values.emplace_back(temp);
+                amountZeros = 0;
+            } else {
+                amountZeros++;
+            }
+        }
+        if (output_dc.at(output_dc.size()-1) == 0) {
+            Pair<uint, Tout> temp(0, 0);
+        }
+
+        int i = 0;
     }
 };
 
