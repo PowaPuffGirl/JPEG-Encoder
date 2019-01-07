@@ -35,7 +35,9 @@ public:
             const unsigned int height = getNextInteger(FileBin);
             const unsigned int colordepth = getNextInteger(FileBin);
 
+#ifndef NDEBUG
             cout << "w: " << width << " h:" << height << " mv:" << colordepth << "\n";
+#endif
 
             RawImage rawImage(width, height, colordepth, stepX, stepY);
 
@@ -51,7 +53,9 @@ public:
                 }
             }
             catch (invalid_argument &ia) {
+#ifndef NDEBUG
                 cout << "end of stream";
+#endif
             }
 
             return rawImage;

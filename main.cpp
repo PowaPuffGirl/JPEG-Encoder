@@ -7,6 +7,7 @@
 #include "BitStream.h"
 #include "segments/SOF0.h"
 #include "HuffmenTreeSorts/HuffmanTree.h"
+#include "EncodingProcessor.h"
 //#include "helper/TreeEfficiencyMeter.h"
 #include "SampledWriter.h"
 #include "HuffmenTreeSorts/HuffmanTreeSimpleSort.h"
@@ -14,6 +15,7 @@
 #include "HuffmenTreeSorts/HuffmanTreeIsoSort.h"
 #include "segments/DQT.h"
 #include "segments/SOS.h"
+#include "dct/AraiSimdSimple.h"
 
 const unsigned int stepSize = 16;
 
@@ -22,17 +24,16 @@ void bitstream_tests(int runs = 10000);
 void huffman_tests(int runs = 1000);
 
 void write_image(int runs = 10);
+void full_encode(int runs);
 
 int main() {
     //bitstream_tests();
-    OffsetSampledWriter<float> ad(200, luminaceOnePlus5);
     huffman_tests();
 
     write_image();
-/*
-    PPMParser test(stepSize, stepSize);
-    RawImage temp = test.parsePPM();
 
+    full_encode(100);
+/*
     std::thread t1([&temp](){
         temp.exportPPMSubsampled420simple("420simple");
     });
@@ -64,6 +65,24 @@ int main() {
 
 
     return 0;
+}
+
+void full_encode(int runs) {
+
+    long w = 0;
+    for (int i = 0; i < runs; ++i) {
+        auto startTime = std::chrono::high_resolution_clock::now();
+
+        PPMParser test(stepSize, stepSize);
+        RawImage temp = test.parsePPM();
+        ImageProcessor<float, AraiSimdSimple<float>, RawImage::ColorChannelT> ip;
+        BitStream bs("/tmp/full.jpg", temp.width, temp.height);
+        ip.processImage(temp, bs);
+
+        auto endTimeWithWrite = std::chrono::high_resolution_clock::now();
+        w += std::chrono::duration_cast<std::chrono::milliseconds>(endTimeWithWrite - startTime).count();
+    }
+    std::cout << "Time to write full partial image: " << static_cast<double>(w) / (runs) << " µs.\n";
 }
 
 void write_image(int runs) {

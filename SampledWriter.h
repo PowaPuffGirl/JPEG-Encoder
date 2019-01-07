@@ -95,12 +95,12 @@ public:
         const Tout valm = static_cast<Tout>((val + extra) / divisor);
 
         if(x == 0 && y == 0) {
-            output_dc[block] = val;
-            ++huffweight_dc[reinterpret_cast<Tout>(val)];
+            output_dc[block] = valm;
+            ++huffweight_dc[reinterpret_cast<Tout>(valm)];
         }
         else {
-            output_ac[(block * acBlockSize) + acLookupTable[x][y]] = val;
-            ++huffweight_ac[reinterpret_cast<Tout>(val)];
+            output_ac[(block * acBlockSize) + acLookupTable[x][y]] = valm;
+            ++huffweight_ac[reinterpret_cast<Tout>(valm)];
         }
     }
 };

@@ -1,10 +1,9 @@
 #ifndef MEDIENINFO_ARAISIMDSIMPLE_H
 #define MEDIENINFO_ARAISIMDSIMPLE_H
 
-#include "AbstractCosinusTransform.h"
-#include "AraiCosinusTransform.h"
 #include <Vc/Vc>
 #include <Vc/IO>
+#include "AraiCosinusTransform.h"
 
 template<typename T, unsigned int blocksize = 8>
 class AraiSimdSimple {

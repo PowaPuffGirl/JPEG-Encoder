@@ -27,6 +27,7 @@ struct APP0 {
 
     // char* thumbnail_image; // since the thumbnail size is zero, now thumbnail is there
 
+    APP0() {}
     APP0(uint16_t x_density, uint16_t y_density) : x_density(convert_u16(x_density)), y_density(convert_u16(y_density)) {}
 
     inline void setXDensity(uint16_t density) {
