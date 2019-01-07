@@ -32,7 +32,7 @@ int main() {
 
     write_image();
 
-    full_encode(100);
+    full_encode(10);
 /*
     std::thread t1([&temp](){
         temp.exportPPMSubsampled420simple("420simple");
@@ -82,7 +82,7 @@ void full_encode(int runs) {
         auto endTimeWithWrite = std::chrono::high_resolution_clock::now();
         w += std::chrono::duration_cast<std::chrono::milliseconds>(endTimeWithWrite - startTime).count();
     }
-    std::cout << "Time to write full partial image: " << static_cast<double>(w) / (runs) << " µs.\n";
+    std::cout << "Time to write full partial image: " << static_cast<double>(w) / (runs) << " ms.\n";
 }
 
 void write_image(int runs) {

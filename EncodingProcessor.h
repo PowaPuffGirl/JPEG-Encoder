@@ -75,6 +75,10 @@ public:
         SampledWriter<T> Cr(image.width, image.height);
         encodingProcessor.template processChannel<Transform, Channel>(image.Y, Cr);
         OffsetSampledWriter<T> Crfin = Cr.toOffsetSampledWriter(chrominaceOnePlus5);
+
+
+        writeEOI(writer);
+        writer.writeOut();
     }
 
     void writeMetadataHeaders(const RawImage& image, BitStream& bs) {
@@ -91,6 +95,10 @@ public:
         // size and channel info
         SOF0 sof0(image.height, image.width);
         _write_segment_ref(bs, sof0);
+
+        // DQT
+        FullDQT dqt(luminaceOnePlus5, chrominaceOnePlus5);
+        _write_segment_ref(bs, dqt);
 
         return; // for noew
 
@@ -111,6 +119,11 @@ public:
 
         _write_segment_ref(bs, sos);
 
+    }
+
+    inline void writeEOI(BitStream& bs) {
+        bs.writeByteAligned(0xFF);
+        bs.writeByteAligned(0xD9);
     }
 };
 
