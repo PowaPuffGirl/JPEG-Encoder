@@ -45,10 +45,12 @@ SET(MI_FILES
                 BitStream.h
                 segments/APP0.h
                 segments/SOF0.h
+                segments/DQT.h
+                segments/DHT.h
+                segments/SOS.h
                 helper/EndianConvert.h
                 helper/TreeEfficiencyMeter.h
                 HuffmanEncoder.h
-                segments/DHT.h
                 HuffmenTreeSorts/HuffmanTreeSimpleSort.h
                 HuffmenTreeSorts/HelperStructs.h
                 HuffmenTreeSorts/HuffmanTreeIsoSort.h
