@@ -26,7 +26,7 @@ public:
             // read the first two bytes (header)
             uint16_t header = 0;
             FileBin.read((char *) &header, sizeof(header));
-            if ('3P' != header && 'P3' != header) {
+            if (0x5033 != header && 0x3350 != header) {
                 throw invalid_argument("Invalid Magic Number");
             }
 

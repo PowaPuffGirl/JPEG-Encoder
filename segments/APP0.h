@@ -11,7 +11,7 @@ struct APP0 {
 
     uint16_t len = convert_u16(16); // 16 in reverse order, length is without the marker
 
-    const uint32_t jfif = convert_u32('JFIF'); // 'jfif' in reverse byte order
+    const uint32_t jfif = convert_u32(0x4a464946); // 'jfif' in reverse byte order
     const uint8_t jfif_end_marker = 0; // trailing zero byte
 
     const uint8_t revision_major = 1;
