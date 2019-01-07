@@ -11,6 +11,8 @@
 #include "HuffmenTreeSorts/HuffmanTreeSimpleSort.h"
 #include "HuffmenTreeSorts/HuffmanTreeSort.h"
 #include "HuffmenTreeSorts/HuffmanTreeIsoSort.h"
+#include "segments/DQT.h"
+#include "segments/SOS.h"
 
 const unsigned int stepSize = 16;
 
@@ -18,10 +20,12 @@ void bitstream_tests(int runs = 10000);
 
 void huffman_tests(int runs = 1000);
 
+void write_image(int runs = 10);
+
 int main() {
     //bitstream_tests();
-    huffman_tests();
-
+    //huffman_tests();
+    write_image();
 /*
     PPMParser test(stepSize, stepSize);
     RawImage temp = test.parsePPM();
@@ -57,6 +61,53 @@ int main() {
 
 
     return 0;
+}
+
+void write_image(int runs) {
+    {
+        APP0 app0(1, 1);
+        SOF0 sof0(16, 16);
+        SOS sos;
+
+        long w = 0;
+        for (int i = 0; i < runs; ++i) {
+            auto startTime = std::chrono::high_resolution_clock::now();
+
+            BitStream bs("/tmp/test2.bin", 16, 16);
+            //start of image marker
+            bs.writeByteAligned(0xFF);
+            bs.writeByteAligned(0xD8);
+
+            _write_segment_ref(bs, app0);
+
+            DQT dqtLuminace(0);
+            _write_segment_ref(bs, dqtLuminace);
+            //TODO: write luminace table
+            DQT dqtChrominace(0);
+            _write_segment_ref(bs, dqtChrominace);
+            //TODO: write chrominance table
+
+            _write_segment_ref(bs, sof0);
+
+            //TODO: Calculate len of huffmantable
+            uint16_t len = 0;
+            DHT dht(len);
+            _write_segment_ref(bs, dht);
+            //TODO: call function to write table
+
+            _write_segment_ref(bs, sos);
+
+            //End of Image marker
+            bs.writeByteAligned(0xFF);
+            bs.writeByteAligned(0xD9);
+            bs.writeOut();
+
+            auto endTimeWithWrite = std::chrono::high_resolution_clock::now();
+            w += std::chrono::duration_cast<std::chrono::milliseconds>(endTimeWithWrite - startTime).count();
+        }
+        std::cout << "Time to write segments: " << static_cast<double>(w) / (runs) << " µs.\n";
+
+    }
 }
 
 void huffman_tests(int runs) {
@@ -201,6 +252,8 @@ void huffman_tests(int runs) {
 //        std::cout << " > " << tem << "\n";
     }
 }
+
+
 
 void bitstream_tests(int runs) {
     std::ios_base::sync_with_stdio(false);
