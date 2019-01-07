@@ -8,6 +8,41 @@
 #include <iostream>
 #include "quantisation/quantisationTables.h"
 
+template<typename T, typename Tout = int8_t>
+class Pair {
+private:
+    T amount;
+    Tout value;
+    uint16_t bitPattern;
+    uint8_t kategorie;
+    uint8_t pairBitwise;
+
+    void createBitValue() {
+        assert(value != 0);
+        double log;
+        if (value < 0) {
+            bitPattern = static_cast<uint16_t>(value*-1);
+            bitPattern = ~bitPattern;
+            log = value * -1;
+        } else {
+            bitPattern = static_cast<uint16_t>(value);
+            log = value;
+        }
+        log = std::log2(log);
+        if (log == (int)log) {
+            log++;
+        }
+        this->kategorie = ceil(log);
+    }
+
+public:
+    Pair(T first, Tout second) : amount(first), value(second), bitPattern(0), kategorie(0), pairBitwise(0) {
+        createBitValue();
+        pairBitwise = first;
+        pairBitwise = pairBitwise << 4;
+        pairBitwise += second;
+    }
+};
 
 class ZikZakLookupTable {
 private:
@@ -63,25 +98,7 @@ public:
 
 };
 
-template<typename T, typename Tout = int8_t>
-class Pair {
-private:
-    T first;
-    Tout second;
 
-    void createBitValue() {
-
-    }
-
-public:
-    Pair() = default;
-
-    Pair(T first, Tout second) : first(first), second(second) {
-
-    }
-
-
-};
 
 template<typename T, typename Tout = int8_t>
 class OffsetSampledWriter {
@@ -95,6 +112,7 @@ private:
 
     std::vector<Tout> output_dc;
     std::vector<Tout> output_ac;
+    std::vector<Pair<T,Tout>> runLengthEncoded;
     std::array<Tout, 256> huffweight_ac = {0}, huffweight_dc = {0};
 
     const ZikZakLookupTable acLookupTableGen;
@@ -126,11 +144,14 @@ public:
 
     void runLengthEncoding() {
         uint amountZeros = 0;
-        std::vector<Pair<uint, Tout>> values;
         for(Tout value : output_dc) {
             if (value != 0) {
+                for (uint i = amountZeros; i > 15; i -= 16) {
+                    Pair<uint, Tout> temp(15,0);
+                    this->runLengthEncoded.emplace_back(temp);
+                }
                 Pair<uint, Tout> temp(amountZeros,value);
-                values.emplace_back(temp);
+                runLengthEncoded.emplace_back(temp);
                 amountZeros = 0;
             } else {
                 amountZeros++;
@@ -139,8 +160,6 @@ public:
         if (output_dc.at(output_dc.size()-1) == 0) {
             Pair<uint, Tout> temp(0, 0);
         }
-
-        int i = 0;
     }
 };
 
