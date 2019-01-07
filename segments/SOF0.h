@@ -18,12 +18,12 @@ struct SOF0 {
     const uint8_t YcompTableNumber = 0; // used subsampling table
 
     const uint8_t CBcompNumber = 2;  // Component Number 1 = Y, 2 = Cb, 3 = Cr
-    const uint8_t CBcompOversampling = 0x22;  // 0x22 = no subsampling, 0x11 = with subsampling
-    const uint8_t CBcompTableNumber = 0; // used subsampling table
+    const uint8_t CBcompOversampling = 0x11;  // 0x22 = no subsampling, 0x11 = with subsampling
+    const uint8_t CBcompTableNumber = 1; // used subsampling table
 
     const uint8_t CRcompNumber = 3;  // Component Number 1 = Y, 2 = Cb, 3 = Cr
-    const uint8_t CRcompOversampling = 0x22;  // 0x22 = no subsampling, 0x11 = with subsampling
-    const uint8_t CRcompTableNumber = 0; //used subsampling table
+    const uint8_t CRcompOversampling = 0x11;  // 0x22 = no subsampling, 0x11 = with subsampling
+    const uint8_t CRcompTableNumber = 1; //used subsampling table
 
     SOF0(const int height, const int width) {
         imageHeight = convert_u16(static_cast<uint16_t>(height));
