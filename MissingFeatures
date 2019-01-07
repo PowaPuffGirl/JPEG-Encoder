@@ -1,0 +1,31 @@
+Annex B
+the interchange format, specified in B.2 and B.3
+the abbreviated format for compressed image data, specified in B.4
+the abbreviated format for table-specification data, specified in B.5
+
+Annex E 
+control procedures 
+
+Annex F
+baseline sequential
+8 Bit arithmetic coding
+12 Bit huffman coding
+12 Bit arithmetic coding
+
+Annex G
+spectral selection only, Huffman coding, 8-bit sample precision
+spectral selection only, arithmetic coding, 8-bit sample precision
+full progression, Huffman coding, 8-bit sample precision
+full progression, arithmetic coding, 8-bit sample precision
+spectral selection only, Huffman coding, 12-bit sample precision
+spectral selection only, arithmetic coding, 12-bit sample precision
+full progression, Huffman coding, 12-bit sample precision
+full progression, arithmetic coding, 12-bit sample precision
+
+Annex H
+lossless processes with Huffman coding
+lossless processes with arithmetic coding
+
+Annex K 
+Luminance table
+chrominace table
