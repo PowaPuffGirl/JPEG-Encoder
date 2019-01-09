@@ -3,6 +3,7 @@
 
 #include <math.h>
 #include <array>
+#include "../Image.h"
 #include "AbstractCosinusTransform.h"
 
 template<typename T, unsigned int blocksize = 8>
@@ -59,6 +60,32 @@ public:
         for (unsigned int i = 0; i < blocksize; i++) {
             for (unsigned int j = 0; j < blocksize; j++) {
                 set(i,j) = sums[i][j];
+            }
+        }
+    }
+
+    template<typename CoordType>
+    void transformBlock(typename Block<T>::rowBlock& block, const std::function<void (const CoordType, const CoordType, const T)>& set) {
+        sums = { 0 };
+
+        for (unsigned int x = 0; x < blocksize; x++) {
+            const auto& rowX = coefficients[x];
+            for (unsigned int y = 0; y < blocksize; y++) {
+                const auto& value = block[y][x];
+                const auto& rowY = rowX[y];
+
+                for (unsigned int i = 0; i < blocksize; i++) {
+                    const auto& rowI = rowY[i];
+                    for (unsigned int j = 0; j < blocksize; j++) {
+                        sums[i][j] += value * rowI[j];
+                    }
+                }
+            }
+        }
+
+        for (CoordType i = 0; i < blocksize; i++) {
+            for (CoordType j = 0; j < blocksize; j++) {
+                set(i, j, sums[i][j]);
             }
         }
     }
