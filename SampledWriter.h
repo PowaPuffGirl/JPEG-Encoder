@@ -127,6 +127,7 @@ private:
     const QuantisationTable& qTable;
 
 public:
+    OffsetSampledWriter(OffsetSampledWriter& other) = delete;
     explicit OffsetSampledWriter(const uint blocks, const QuantisationTable& qTable)
         : size(blocks * blocksize), qTable(qTable) {
         // resize, but substract one for each block because the first coefficient is AC
@@ -140,11 +141,19 @@ public:
         const Tout valm = static_cast<Tout>((val + extra) / divisor);
 
         if(x == 0 && y == 0) {
+#ifdef NDEBUG
             output_dc[block] = valm;
-
+#else
+            output_dc.at(block) = valm;
+#endif
         }
         else {
+#ifdef NDEBUG
             output_ac[(block * acBlockSize) + acLookupTable[x][y]] = valm;
+#else
+
+            output_ac.at((block * acBlockSize) + acLookupTable[x][y]) = valm;
+#endif
         }
     }
 

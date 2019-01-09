@@ -27,7 +27,7 @@ public:
 
     virtual void sortTree(const std::array<AmountType, max_values> &values) = 0;
 
-    void sortTree(const std::array<AmountType, max_values> &v1, const std::array<AmountType, max_values> &v2) {
+    void sortTreeSummed(const std::array<AmountType, max_values> &v1, const std::array<AmountType, max_values> &v2) {
         std::array<AmountType, max_values> sum = { 0 };
         for(int i = 0; i < max_values; ++i)
             sum[i] = v1[i] + v2[i];

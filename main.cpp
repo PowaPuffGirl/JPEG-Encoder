@@ -34,7 +34,7 @@ int main() {
 
     full_encode(10);
 
-    PPMParser test(stepSize, stepSize);
+    PPMParser<RawImage> test(stepSize, stepSize);
     RawImage temp = test.parsePPM();
     std::thread t1([&temp](){
         temp.exportPPMSubsampled420simple("420simple");
@@ -67,8 +67,8 @@ void full_encode(int runs) {
     for (int i = 0; i < runs; ++i) {
         auto startTime = std::chrono::high_resolution_clock::now();
 
-        PPMParser test(stepSize, stepSize);
-        RawImage temp = test.parsePPM();
+        PPMParser<BlockwiseRawImage> test(stepSize, stepSize);
+        BlockwiseRawImage temp = test.parsePPM();
         ImageProcessor<float, AraiSimdSimple<float>, RawImage::ColorChannelT> ip;
         BitStream bs("/tmp/full.jpg", temp.width, temp.height);
         ip.processImage(temp, bs);

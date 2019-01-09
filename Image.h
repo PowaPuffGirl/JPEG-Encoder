@@ -231,8 +231,8 @@ struct Block {
     void setPixel(CoordinateType x, CoordinateType y, const StorageType& _y, const StorageType& cb, const StorageType& cr) {
         assert(x >= 0);
         assert(y >= 0);
-        assert(x < 15);
-        assert(y < 15);
+        assert(x < 16);
+        assert(y < 16);
 
         // offset within Y block
         const auto xoff = x % 8;
@@ -266,6 +266,10 @@ public:
         blockWidth, blockHeight;
     const int blockRowWidth, blockColHeight, blockAmount;
 
+    // for compatibility with RawImage
+    BlockwiseRawImage(const Coord width, const Coord height, const unsigned int colorDepth, const int stepX, const int stepY)
+        : BlockwiseRawImage(width, height, colorDepth) {};
+
     BlockwiseRawImage(const Coord width, const Coord height, const unsigned int colorDepth) :
             width(width), height(height),
             widthPadded(width % 16 == 0 ? width : width + (16 - (width % 16))),
@@ -275,7 +279,7 @@ public:
             blockAmount(blockRowWidth * blockColHeight)
     {
         assert(colorDepth == 255);
-        blocks.reserve(static_cast<unsigned long>(blockAmount));
+        blocks.resize(static_cast<unsigned long>(blockAmount));
     }
 
     // assumed to be called for subsequent coords
@@ -288,7 +292,7 @@ public:
 
         const Coord blockX = x / 16;
         const Coord blockY = y / 16;
-        const Coord blockOffset = y * blockWidth + x;
+        const Coord blockOffset = blockY * blockWidth + blockX;
 
         const Coord innerX = x % 16;
         const Coord innerY = y % 16;

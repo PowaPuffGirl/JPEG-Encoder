@@ -11,6 +11,7 @@
 
 using namespace std;
 
+template<typename Image>
 class PPMParser {
 public:
     const unsigned int stepX, stepY;
@@ -19,7 +20,7 @@ public:
 
     }
 
-    RawImage parsePPM() {
+    Image parsePPM() {
         fstream FileBin("../output/test.ppm", ios::in | ios::binary);
         if (FileBin.is_open() && FileBin.good()) {
 
@@ -39,7 +40,7 @@ public:
             cout << "w: " << width << " h:" << height << " mv:" << colordepth << "\n";
 #endif
 
-            RawImage rawImage(width, height, colordepth, stepX, stepY);
+            Image rawImage(width, height, colordepth, stepX, stepY);
 
             unsigned int r, g, b, offset = 0;
             try {

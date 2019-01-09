@@ -72,9 +72,9 @@ public:
 
 private:
     template <typename Transform>
-    inline void processRowBlock(typename Block<T>::rowBlock& block, OffsetSampledWriter<T> output, Transform& transform, const unsigned int offset) {
+    inline void processRowBlock(typename Block<T>::rowBlock& block, OffsetSampledWriter<T>& output, Transform& transform, const unsigned int offset) {
         //void transformBlock(rowBlock& block, const std::function<void (CoordType, CoordType, T&)>& set)
-        transform.transformBlock(block, [offset, &output](const unsigned int x, const unsigned int y, const T v) {
+        transform.template transformBlock<unsigned int>(block, [offset, &output](const unsigned int x, const unsigned int y, const T v) {
             output.set(v, offset, x, y);
         });
     }
@@ -132,14 +132,20 @@ public:
         writer.writeOut();
     }
 
-    void processImage(const BlockwiseRawImage& image, BitStream& writer) {
+    void processImage(BlockwiseRawImage& image, BitStream& writer) {
         writeMetadataHeaders(image.width, image.height, writer);
         EncodingProcessor<T> encodingProcessor;
-        OffsetSampledWriter<T> Y, Cb, Cr;
+        OffsetSampledWriter<T> Y(image.blockAmount * 4, luminaceOnePlus5),
+            Cb(image.blockAmount, luminaceOnePlus5),
+            Cr(image.blockAmount, luminaceOnePlus5);
         Transform transform;
 
         for(int i = 0; i < image.blockAmount; ++i)
-            encodingProcessor.processBlock(image.blocks[i], Y, Cb, Cr, transform, i, image.blockRowWidth);
+            encodingProcessor.template processBlock<Transform>(image.blocks[i], Y, Cb, Cr, transform, i, image.blockRowWidth);
+
+        Y.runLengthEncoding();
+        Cb.runLengthEncoding();
+        Cr.runLengthEncoding();
 
         HT y_ac;
         y_ac.sortTree(Y.huffweight_ac);
@@ -149,10 +155,10 @@ public:
         y_dc.writeSegmentToStream(writer, 1, 0);
 
         HT c_ac;
-        c_ac.sortTree(Cb.huffweight_ac, Cr.huffweight_ac);
+        c_ac.sortTreeSummed(Cb.huffweight_ac, Cr.huffweight_ac);
         c_ac.writeSegmentToStream(writer, 2, 1);
         HT c_dc;
-        c_dc.sortTree(Cb.huffweight_dc, Cr.huffweight_dc);
+        c_dc.sortTreeSummed(Cb.huffweight_dc, Cr.huffweight_dc);
         c_dc.writeSegmentToStream(writer, 3, 0);
 
 
