@@ -28,13 +28,17 @@ void full_encode(int runs);
 void full_encode_old(int runs);
 
 int main() {
+    //full_encode(1);
+    //return 0;
+
+
    //bitstream_tests();
     huffman_tests();
 
     write_image();
 
-    full_encode_old(100);
-    full_encode(100);
+    full_encode_old(50);
+    full_encode(50);
 
     PPMParser<RawImage> test(stepSize, stepSize);
     RawImage temp = test.parsePPM();
