@@ -13,6 +13,7 @@
 #include "../BitStream.h"
 #include "../segments/DHT.h"
 #include "../SampledWriter.h"
+#include "../HuffmanEncoder.h"
 
 
 template<uint32_t max_values, typename InputKeyType = uint8_t, typename AmountType = uint32_t, typename OutputKeyType = uint16_t, uint8_t max_tree_depth = 16>
@@ -33,6 +34,10 @@ public:
             sum[i] = v1[i] + v2[i];
 
         sortTree(sum);
+    }
+
+    IsoHuffmanEncoder<max_values, InputKeyType, max_tree_depth> generateEncoder() {
+        return IsoHuffmanEncoder(bits, huffval);
     }
 
     // returns the bits used when the huffman code is used
