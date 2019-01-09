@@ -173,11 +173,11 @@ public:
                 if (value != 0) {
                     for (uint i = amountZeros; i > 15; i -= 16) {
                         Pair<uint8_t, Tout> temp(15,0);
-                        ++huffweight_ac[p.pairBitwise];
+                        ++huffweight_ac[temp.pairBitwise];
                         this->runLengthEncoded.emplace_back(temp);
                     }
                     Pair<uint8_t, Tout> temp(amountZeros,value);
-                    ++huffweight_ac[p.pairBitwise];
+                    ++huffweight_ac[temp.pairBitwise];
                     runLengthEncoded.emplace_back(temp);
                     amountZeros = 0;
                 } else {
@@ -186,7 +186,9 @@ public:
             }
 
             if (amountZeros != 0) {
-                Pair<uint, Tout> temp(0, 0);
+                Pair<uint8_t, Tout> temp(0, 0);
+                ++huffweight_ac[temp.pairBitwise];
+                runLengthEncoded.emplace_back(temp);
             }
         }
     }
