@@ -36,6 +36,33 @@ static void TestConversionBlockwiseAraiFloat(benchmark::State& state) {
 
     for (auto _ : state) {
         encProc.processBlockImageBenchmark(sampleBuffer, transform, noop);
+
+//        state.PauseTiming();
+          // regenerate the buffer since we modify it
+//        auto sampleBuffer = generateBlockDeinzerBuffer();
+//        state.ResumeTiming();
+    }
+}
+
+template<int threads, typename Transform = AraiSimdSimple<float>>
+static void TestConversionBlockwiseAraiFloatThreaded(benchmark::State& state) {
+    auto sampleBuffer = generateBlockDeinzerBuffer();
+
+    EncodingProcessor<float> encProc;
+    ParallelFor<threads> pFor;
+    std::array<Transform, threads> transforms;
+
+    const auto noop = [](const uint8_t a, const uint8_t b, const float c) {
+        benchmark::DoNotOptimize(c);
+    };
+
+    for (auto _ : state) {
+        encProc.template processBlockImageThreadedBenchmark<Transform, threads>(sampleBuffer, transforms, noop, pFor);
+
+//        state.PauseTiming();
+          // regenerate the buffer since we modify it
+//        auto sampleBuffer = generateBlockDeinzerBuffer();
+//        state.ResumeTiming();
     }
 }
 
@@ -101,6 +128,10 @@ BENCHMARK_TEMPLATE(TestConversionDeinzer, AraiSimdSimple<float>);
 BENCHMARK_TEMPLATE(TestConversionDeinzer, AraiSimdSimple<int32_t>, int32_t);
 BENCHMARK_TEMPLATE(TestConversionDeinzer, AraiSimdSimple<short>, short);
 BENCHMARK(TestConversionBlockwiseAraiFloat);
+BENCHMARK_TEMPLATE(TestConversionBlockwiseAraiFloatThreaded, 2);
+BENCHMARK_TEMPLATE(TestConversionBlockwiseAraiFloatThreaded, 4);
+BENCHMARK_TEMPLATE(TestConversionBlockwiseAraiFloatThreaded, 8);
+BENCHMARK_TEMPLATE(TestConversionBlockwiseAraiFloatThreaded, 16);
 
 BENCHMARK_TEMPLATE(TestConversionSmall, DirectCosinusTransform<float>);
 BENCHMARK_TEMPLATE(TestConversionSmall, AraiCosinusTransform<float>);

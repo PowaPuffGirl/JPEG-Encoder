@@ -12,6 +12,7 @@
 #include "segments/SOF0.h"
 #include "segments/SOS.h"
 #include "HuffmenTreeSorts/HuffmanTreeIsoSort.h"
+#include "helper/ParallelFor.h"
 
 template<typename  T>
 class EncodingProcessor {
@@ -80,6 +81,26 @@ public:
             transform.template transformBlock<uint8_t>(image.blocks[i].Y[1][0], noop);
             transform.template transformBlock<uint8_t>(image.blocks[i].Y[1][1], noop);
         }
+    }
+
+    template <typename Transform, int threads>
+    void processBlockImageThreadedBenchmark(
+            BlockwiseRawImage& image,
+            std::array<Transform, threads>& transforms,
+            const std::function<void(uint8_t, uint8_t, const T c)> noop,
+            ParallelFor<threads>& pFor) {
+        // this method has an empty write and skips color channels
+
+        pFor.RunP([ &image, &noop, &transforms](const int min, const int max, const int th) {
+            auto&& transform = transforms[th];
+            for(int i = min; i <= max; ++i)
+            {
+                transform.template transformBlock<uint8_t>(image.blocks[i].Y[0][0], noop);
+                transform.template transformBlock<uint8_t>(image.blocks[i].Y[0][1], noop);
+                transform.template transformBlock<uint8_t>(image.blocks[i].Y[1][0], noop);
+                transform.template transformBlock<uint8_t>(image.blocks[i].Y[1][1], noop);
+            }
+        }, 0, image.blockAmount - 1);
     }
 
 private:
