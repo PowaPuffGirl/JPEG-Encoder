@@ -11,6 +11,62 @@
 
 using namespace std;
 
+class BufferedReader {
+private:
+    static const int bufferSize = 1 << 15; // 32kb default
+    const string file;
+    std::array<char, bufferSize> buffer;
+    int offset = bufferSize, available = bufferSize;
+    bool eof = false;
+    ifstream input;
+
+    inline void refreshBuffer() {
+        // theoretically we should watch out for additional bytes
+        // but since we only ever read one byte a time after the header, this is irrelevant
+        // to be sure we have this assert
+        assert(offset >= bufferSize);
+
+        if (eof)
+            throw invalid_argument("End of stream!");
+
+        offset = 0;
+        input.read(&buffer[0], buffer.size());
+
+        if(!input) { // read error
+            available = input.gcount();
+            eof = true;
+        }
+    }
+
+public:
+    explicit BufferedReader(const string &file) : file(file), input(file, ios::in | ios::binary) { }
+
+    inline bool isGood() { return input.is_open() && input.good(); }
+
+    inline void readu16(uint16_t& inp) {
+        if((offset + 1) >= available)
+            refreshBuffer();
+
+        inp = static_cast<uint16_t>(buffer[offset++]);
+        inp <<= 8;
+        inp |= static_cast<uint16_t>(buffer[offset++]);
+    }
+
+    inline void readu8(uint8_t& inp) {
+        if(offset >= available)
+            refreshBuffer();
+
+        inp = static_cast<uint8_t>(buffer[offset++]);
+    }
+
+    inline void readu8(uint8_t* inp) {
+        if(offset >= available)
+            refreshBuffer();
+
+        (*inp) = static_cast<uint8_t>(buffer[offset++]);
+    }
+};
+
 template<typename Image>
 class PPMParser {
 public:
@@ -21,20 +77,21 @@ public:
     }
 
     Image parsePPM() {
-        fstream FileBin("../output/test.ppm", ios::in | ios::binary);
-        if (FileBin.is_open() && FileBin.good()) {
+        BufferedReader input("../output/test.ppm");
+
+        if (input.isGood()) {
 
             // read the first two bytes (header)
             uint16_t header = 0;
-            FileBin.read((char *) &header, sizeof(header));
+            input.readu16(header);
             if (0x5033 != header && 0x3350 != header) {
                 throw invalid_argument("Invalid Magic Number");
             }
 
             // read the first three integeres (width, height, maxvalue)
-            const unsigned int width = getNextInteger(FileBin);
-            const unsigned int height = getNextInteger(FileBin);
-            const unsigned int colordepth = getNextInteger(FileBin);
+            const unsigned int width = getNextInteger(input);
+            const unsigned int height = getNextInteger(input);
+            const unsigned int colordepth = getNextInteger(input);
 
 #ifndef NDEBUG
             cout << "w: " << width << " h:" << height << " mv:" << colordepth << "\n";
@@ -45,10 +102,10 @@ public:
             unsigned int r, g, b, offset = 0;
             try {
 
-                while (FileBin.good() && !FileBin.eof()) {
-                    r = getNextInteger(FileBin);
-                    g = getNextInteger(FileBin);
-                    b = getNextInteger(FileBin);
+                while (true) {
+                    r = getNextInteger(input);
+                    g = getNextInteger(input);
+                    b = getNextInteger(input);
 
                     rawImage.setValue(offset++, r, g, b);
                 }
@@ -67,7 +124,7 @@ public:
 
 private:
 
-    unsigned int getNextInteger(fstream &stream) {
+    unsigned int getNextInteger(BufferedReader &stream) {
         unsigned char temp;
 
         // read single bytes until a number is found
@@ -90,19 +147,17 @@ private:
         return result;
     }
 
-    void readNum(fstream &stream, unsigned char *temp) {
-        if (stream.bad() || stream.eof())
-            throw invalid_argument("Got invalid stream as parameter!");
+    void readNum(BufferedReader &stream, unsigned char *temp) {
+        //if (stream.bad() || stream.eof())
+            //throw invalid_argument("Got invalid stream as parameter!");
 
-        stream.read((char *) temp, sizeof(*temp));
+        stream.readu8(temp);
 
         if(*temp == '#') {
             const unsigned char delim = '\n';
             do {
-                if (stream.bad() || stream.eof())
-                    throw invalid_argument("Got invalid stream as parameter!");
 
-                stream.read((char *) temp, sizeof(*temp));
+                stream.readu8(temp);
             }
             while(*temp != delim);
         }
