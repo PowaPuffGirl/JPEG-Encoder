@@ -70,6 +70,18 @@ public:
         processRowBlock(block.Cr, outputCr, transform, blockOffset);
     }
 
+    template <typename Transform>
+    void processBlockImageBenchmark(BlockwiseRawImage& image, Transform& transform, std::function<void(uint8_t, uint8_t, const T c)> noop) {
+        // this method has an empty write and skips color channels
+        for(int i = 0; i < image.blockAmount; ++i)
+        {
+            transform.template transformBlock<uint8_t>(image.blocks[i].Y[0][0], noop);
+            transform.template transformBlock<uint8_t>(image.blocks[i].Y[0][1], noop);
+            transform.template transformBlock<uint8_t>(image.blocks[i].Y[1][0], noop);
+            transform.template transformBlock<uint8_t>(image.blocks[i].Y[1][1], noop);
+        }
+    }
+
 private:
     template <typename Transform>
     inline void processRowBlock(typename Block<T>::rowBlock& block, OffsetSampledWriter<T>& output, Transform& transform, const unsigned int offset) {

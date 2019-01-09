@@ -24,6 +24,21 @@ static void TestConversionDeinzer(benchmark::State& state) {
     }
 }
 
+static void TestConversionBlockwiseAraiFloat(benchmark::State& state) {
+    auto sampleBuffer = generateBlockDeinzerBuffer();
+
+    EncodingProcessor<float> encProc;
+    AraiSimdSimple<float> transform;
+
+    const auto noop = [](const uint8_t a, const uint8_t b, const float c) {
+        benchmark::DoNotOptimize(c);
+    };
+
+    for (auto _ : state) {
+        encProc.processBlockImageBenchmark(sampleBuffer, transform, noop);
+    }
+}
+
 template<typename Transform, typename T = float>
 static void TestConversionSmall(benchmark::State& state) {
     auto sampleBuffer = generateTestBuffer<T>(8, 8);
@@ -85,6 +100,7 @@ BENCHMARK_TEMPLATE(TestConversionDeinzer, AraiSimd<float>);
 BENCHMARK_TEMPLATE(TestConversionDeinzer, AraiSimdSimple<float>);
 BENCHMARK_TEMPLATE(TestConversionDeinzer, AraiSimdSimple<int32_t>, int32_t);
 BENCHMARK_TEMPLATE(TestConversionDeinzer, AraiSimdSimple<short>, short);
+BENCHMARK(TestConversionBlockwiseAraiFloat);
 
 BENCHMARK_TEMPLATE(TestConversionSmall, DirectCosinusTransform<float>);
 BENCHMARK_TEMPLATE(TestConversionSmall, AraiCosinusTransform<float>);
