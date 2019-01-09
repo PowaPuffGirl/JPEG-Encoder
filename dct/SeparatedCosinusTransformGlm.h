@@ -71,6 +71,28 @@ public:
 
         writeMat(set, Y);
     }
+
+    template<typename CoordType>
+    void transformBlock(typename Block<T>::rowBlock& block, const std::function<void (const CoordType, const CoordType, const T)>& set) {
+        using namespace boost::numeric::ublas;
+
+        mat8x8 X(8,8);
+        for (uint y = 0; y < blocksize; ++y) {
+            for (uint x = 0; x < blocksize; ++x) {
+                X(x, y) = block[y][x];
+            }
+        }
+
+        mat8x8 Y(8,8);
+        Y = block_prod<matrix<T>, 1024>(block_prod<matrix<T>, 1024>(A, X), AT);
+
+
+        for (uint y = 0; y < blocksize; ++y) {
+            for (uint x = 0; x < blocksize; ++x) {
+                set(x, y, Y(x, y));
+            }
+        }
+    }
 };
 
 #endif //MEDIENINFO_SEPARATEDCOSINUSTRANSFORMGLM_H
