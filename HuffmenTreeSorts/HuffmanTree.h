@@ -12,6 +12,7 @@
 #include "HelperStructs.h"
 #include "../BitStream.h"
 #include "../segments/DHT.h"
+#include "../SampledWriter.h"
 
 
 template<uint32_t max_values, typename InputKeyType = uint8_t, typename AmountType = uint32_t, typename OutputKeyType = uint16_t, uint8_t max_tree_depth = 16>
@@ -25,6 +26,14 @@ public:
     HuffmanTree() = default;
 
     virtual void sortTree(const std::array<AmountType, max_values> &values) = 0;
+
+    void sortTree(const std::array<AmountType, max_values> &v1, const std::array<AmountType, max_values> &v2) {
+        std::array<AmountType, max_values> sum = { 0 };
+        for(int i = 0; i < max_values; ++i)
+            sum[i] = v1[i] + v2[i];
+
+        sortTree(sum);
+    }
 
     // returns the bits used when the huffman code is used
     virtual double Efficiency_huffman() const = 0;

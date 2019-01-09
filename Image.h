@@ -228,12 +228,7 @@ struct Block {
 
 
     template <typename CoordinateType>
-    inline void Set(CoordinateType x, CoordinateType y, StorageType Y, StorageType Cb, StorageType Cr) {
-
-    }
-
-    template <typename CoordinateType>
-    void setPixel(CoordinateType x, CoordinateType y, const StorageType& Y, const StorageType& Cb, const StorageType& Cr) {
+    void setPixel(CoordinateType x, CoordinateType y, const StorageType& _y, const StorageType& cb, const StorageType& cr) {
         assert(x >= 0);
         assert(y >= 0);
         assert(x < 15);
@@ -247,36 +242,40 @@ struct Block {
         x /= 2;
         y /= 2;
 
-        Cb[y][x] += Cb / 4;
-        Cr[y][x] += Cr / 4;
+        Cb[y][x] += cb / 4;
+        Cr[y][x] += cr / 4;
 
         // coordinate in Cb/Cr blocks
         // the coords are now 1/8th since we divided by two above already
         x /= 4;
         y /= 4;
 
-        Y[y][x][yoff][xoff] = Y;
+        Y[y][x][yoff][xoff] = _y;
     }
 };
 
 class BlockwiseRawImage {
 private:
     using Coord = int32_t;
-    std::vector<Block<float>> blocks;
 
 public:
+    std::vector<Block<float>> blocks;
+
     const Coord width, height,
         widthPadded, heightPadded,
         blockWidth, blockHeight;
+    const int blockRowWidth, blockColHeight, blockAmount;
 
     BlockwiseRawImage(const Coord width, const Coord height, const unsigned int colorDepth) :
             width(width), height(height),
             widthPadded(width % 16 == 0 ? width : width + (16 - (width % 16))),
             heightPadded(height % 16 == 0 ? height : height + (16 - (height % 16))),
-            blockWidth(widthPadded / 16), blockHeight(heightPadded / 16)
+            blockWidth(widthPadded / 16), blockHeight(heightPadded / 16),
+            blockRowWidth(widthPadded / 16), blockColHeight(heightPadded / 16),
+            blockAmount(blockRowWidth * blockColHeight)
     {
         assert(colorDepth == 255);
-        blocks.reserve(static_cast<unsigned long>((widthPadded / 16) * (heightPadded / 16)));
+        blocks.reserve(static_cast<unsigned long>(blockAmount));
     }
 
     // assumed to be called for subsequent coords
@@ -295,24 +294,24 @@ public:
         const Coord innerY = y % 16;
 
         auto&& block = blocks[blockOffset];
-        block.Set(innerX, innerY, red, green, blue);
+        block.setPixel(innerX, innerY, red, green, blue);
 
 
         // fill in borders/corners
         if(y == height && innerY != 15) {
             for(int iY = 16 - innerY; iY < 16; ++iY)
-                block.Set(innerX, iY, red, green, blue);
+                block.setPixel(innerX, iY, red, green, blue);
         }
 
         if(x == width && innerX != 15) {
             for(int iX = 16 - innerX; iX < 16; ++iX)
-                block.Set(iX, innerY, red, green, blue);
+                block.setPixel(iX, innerY, red, green, blue);
         }
 
         if(y == height && x == width) {
             for(int iX = 16 - innerX; iX < 16; ++iX)
                 for(int iY = 16 - innerY; iY < 16; ++iY)
-                    block.Set(iX, iY, red, green, blue);
+                    block.setPixel(iX, iY, red, green, blue);
         }
     }
 

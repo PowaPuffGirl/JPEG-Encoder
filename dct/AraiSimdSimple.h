@@ -148,6 +148,114 @@ public:
             set(3,i) = ty7[i];
         }
     }
+
+    template<typename CoordType>
+    void transformBlock(rowBlock& block, const std::function<void (const CoordType, const CoordType, const T)>& set) {
+
+        vec8& y0 = block[0];
+        vec8& y1 = block[1];
+        vec8& y2 = block[2];
+        vec8& y3 = block[3];
+        vec8& y4 = block[4];
+        vec8& y5 = block[5];
+        vec8& y6 = block[6];
+        vec8& y7 = block[7];
+
+        ty4 = y4;
+        ty5 = y5;
+        ty6 = y6;
+        ty7 = y7;
+
+        y4 = y3 - ty4;
+        y5 = y2 - ty5;
+        y6 = y1 - ty6;
+        y7 = y0 - ty7;
+        y0 += ty7;
+        y1 += ty6;
+        y2 += ty5;
+        y3 += ty4;
+
+
+
+        ty0 = y0 + y3;
+        ty1 = y1 + y2;
+        ty2 = y1 - y2;
+        ty3 = y0 - y3;
+        ty4 = y4 + y5;
+        ty5 = y5 + y6;
+        ty6 = y6 + y7;
+
+        y1 = ty0 - ty1;
+        ty0 = (ty0 + ty1) * s[0];
+        ty2 = (ty2 + ty3) * a[1];
+        y4 = ty4;
+
+        ty4 = y4*a[2] - ((ty6-y4)*a[5]);
+        ty6 = ty6*a[4] - ((ty6+y4)*a[5]);
+
+        y2 = ty2 + ty3;
+        ty3 = (ty3 - ty2) * s[6];
+        y5 = (ty5 * a[3]) + y7;
+        y7 = y7 - ty5;
+
+        ty1 = y1 * s[4];
+        ty2 = y2 * s[2];
+        ty7 = (y7 - ty4) * s[3];
+        ty4 = (ty4 + y7) * s[5];
+        ty5 = (y5 + ty6) * s[1];
+        ty6 = (y5 - ty6) * s[7];
+
+        for(uint i = 0; i < 8; i++) {
+            const auto& c = *rb[i];
+            y0[i] = c[0] + c[7];
+            y1[i] = c[1] + c[6];
+            y2[i] = c[2] + c[5];
+            y3[i] = c[3] + c[4];
+            y4[i] = c[3] - c[4];
+            y5[i] = c[2] - c[5];
+            y6[i] = c[1] - c[6];
+            y7[i] = c[0] - c[7];
+        }
+
+        ty0 = y0 + y3;
+        ty1 = y1 + y2;
+        ty2 = y1 - y2;
+        ty3 = y0 - y3;
+        ty4 = y4 + y5;
+        ty5 = y5 + y6;
+        ty6 = y6 + y7;
+
+        y1 = ty0 - ty1;
+        ty0 = (ty0 + ty1) * s[0];
+        ty2 = (ty2 + ty3) * a[1];
+        y4 = ty4;
+
+        ty4 = y4*a[2] - ((ty6-y4)*a[5]);
+        ty6 = ty6*a[4] - ((ty6+y4)*a[5]);
+
+        y2 = ty2 + ty3;
+        ty3 = (ty3 - ty2) * s[6];
+        y5 = (ty5 * a[3]) + y7;
+        y7 = y7 - ty5;
+
+        ty1 = y1 * s[4];
+        ty2 = y2 * s[2];
+        ty7 = (y7 - ty4) * s[3];
+        ty4 = (ty4 + y7) * s[5];
+        ty5 = (y5 + ty6) * s[1];
+        ty6 = (y5 - ty6) * s[7];
+
+        for(CoordType i = 0; i < 8; i++) {
+            set(i, 0, ty0[i]);
+            set(i, 4, ty1[i]);
+            set(i, 2, ty2[i]);
+            set(i, 6, ty3[i]);
+            set(i, 5, ty4[i]);
+            set(i, 1, ty5[i]);
+            set(i, 7, ty6[i]);
+            set(i, 3, ty7[i]);
+        }
+    }
 };
 
 

@@ -53,6 +53,32 @@ public:
         }
     }
 
+    template <typename Transform>
+    void processBlock(Block<T>& block,
+            OffsetSampledWriter<T>& outputY, OffsetSampledWriter<T>& outputCb, OffsetSampledWriter<T>& outputCr,
+            Transform& transform, const unsigned int blockOffset, const unsigned int blockRowWidth) {
+
+        auto Yoffset = blockOffset * 2;
+        processRowBlock(block.Y[0][0], outputY, transform, Yoffset);
+        processRowBlock(block.Y[0][1], outputY, transform, Yoffset + 1);
+
+        Yoffset += blockRowWidth + blockRowWidth;
+        processRowBlock(block.Y[1][0], outputY, transform, Yoffset);
+        processRowBlock(block.Y[1][1], outputY, transform, Yoffset + 1);
+
+        processRowBlock(block.Cb, outputCb, transform, blockOffset);
+        processRowBlock(block.Cr, outputCr, transform, blockOffset);
+    }
+
+private:
+    template <typename Transform>
+    inline void processRowBlock(typename Block<T>::rowBlock& block, OffsetSampledWriter<T> output, Transform& transform, const unsigned int offset) {
+        //void transformBlock(rowBlock& block, const std::function<void (CoordType, CoordType, T&)>& set)
+        transform.transformBlock(block, [offset, &output](const unsigned int x, const unsigned int y, const T v) {
+            output.set(v, offset, x, y);
+        });
+    }
+
 };
 
 template<typename T, typename Transform, typename Channel = ColorChannel<T>>
@@ -62,7 +88,7 @@ public:
     ImageProcessor() = default;
 
     void processImage(const RawImage& image, BitStream& writer) {
-        writeMetadataHeaders(image, writer);
+        writeMetadataHeaders(image.width, image.height, writer);
 
         EncodingProcessor<T> encodingProcessor;
 
@@ -106,9 +132,35 @@ public:
         writer.writeOut();
     }
 
-    void writeMetadataHeaders(const RawImage& image, BitStream& bs) {
-        SOS sos;
+    void processImage(const BlockwiseRawImage& image, BitStream& writer) {
+        writeMetadataHeaders(image.width, image.height, writer);
+        EncodingProcessor<T> encodingProcessor;
+        OffsetSampledWriter<T> Y, Cb, Cr;
+        Transform transform;
 
+        for(int i = 0; i < image.blockAmount; ++i)
+            encodingProcessor.processBlock(image.blocks[i], Y, Cb, Cr, transform, i, image.blockRowWidth);
+
+        HT y_ac;
+        y_ac.sortTree(Y.huffweight_ac);
+        y_ac.writeSegmentToStream(writer, 0, 1);
+        HT y_dc;
+        y_dc.sortTree(Y.huffweight_dc);
+        y_dc.writeSegmentToStream(writer, 1, 0);
+
+        HT c_ac;
+        c_ac.sortTree(Cb.huffweight_ac, Cr.huffweight_ac);
+        c_ac.writeSegmentToStream(writer, 2, 1);
+        HT c_dc;
+        c_dc.sortTree(Cb.huffweight_dc, Cr.huffweight_dc);
+        c_dc.writeSegmentToStream(writer, 3, 0);
+
+
+        writeEOI(writer);
+        writer.writeOut();
+    }
+
+    void writeMetadataHeaders(const unsigned int width, const unsigned int height, BitStream& bs) {
         //start of image marker
         bs.writeByteAligned(0xFF);
         bs.writeByteAligned(0xD8);
@@ -118,7 +170,7 @@ public:
         _write_segment_ref(bs, app0);
 
         // size and channel info
-        SOF0 sof0(image.height, image.width);
+        SOF0 sof0(height, width);
         _write_segment_ref(bs, sof0);
 
         // DQT
@@ -127,6 +179,7 @@ public:
 
         return; // for noew
 
+        SOS sos;
 
         DQT dqtLuminace(0);
         _write_segment_ref(bs, dqtLuminace);
