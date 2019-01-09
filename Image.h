@@ -1,10 +1,13 @@
 #ifndef MEDIENINFO_IMAGE_H
 #define MEDIENINFO_IMAGE_H
 
+#include <Vc/Vc>
+#include <Vc/IO>
 #include <vector>
 #include <stdexcept>
 #include "ppmCreator.h"
 #include "helper/BlockIterator.h"
+#include "helper/RgbToYCbCr.h"
 
 
 template<typename T>
@@ -209,6 +212,110 @@ struct RawImage {
             return cc->getPixelSubsampled444();
         });
     }
+};
+
+template<typename StorageType>
+struct Block {
+    using vec8 = Vc::fixed_size_simd<StorageType, 8>;
+    // row blocks are col-major -> [y][x]
+    using rowBlock = std::array<vec8, 8>;
+
+    // 2x2 blocks for the Y (luminance) component
+    // col-major aswell
+    std::array<std::array<rowBlock, 2>, 2> Y;
+    // 1 block each for the Cb/Cr (chrominance) components
+    rowBlock Cb = { 0 }, Cr = { 0 };
+
+
+    template <typename CoordinateType>
+    inline void Set(CoordinateType x, CoordinateType y, StorageType Y, StorageType Cb, StorageType Cr) {
+
+    }
+
+    template <typename CoordinateType>
+    void setPixel(CoordinateType x, CoordinateType y, const StorageType& Y, const StorageType& Cb, const StorageType& Cr) {
+        assert(x >= 0);
+        assert(y >= 0);
+        assert(x < 15);
+        assert(y < 15);
+
+        // offset within Y block
+        const auto xoff = x % 8;
+        const auto yoff = x % 8;
+
+        // coordinate in Cb/Cr blocks
+        x /= 2;
+        y /= 2;
+
+        Cb[y][x] += Cb / 4;
+        Cr[y][x] += Cr / 4;
+
+        // coordinate in Cb/Cr blocks
+        // the coords are now 1/8th since we divided by two above already
+        x /= 4;
+        y /= 4;
+
+        Y[y][x][yoff][xoff] = Y;
+    }
+};
+
+class BlockwiseRawImage {
+private:
+    using Coord = int32_t;
+    std::vector<Block<float>> blocks;
+
+public:
+    const Coord width, height,
+        widthPadded, heightPadded,
+        blockWidth, blockHeight;
+
+    BlockwiseRawImage(const Coord width, const Coord height, const unsigned int colorDepth) :
+            width(width), height(height),
+            widthPadded(width % 16 == 0 ? width : width + (16 - (width % 16))),
+            heightPadded(height % 16 == 0 ? height : height + (16 - (height % 16))),
+            blockWidth(widthPadded / 16), blockHeight(heightPadded / 16)
+    {
+        assert(colorDepth == 255);
+        blocks.reserve(static_cast<unsigned long>((widthPadded / 16) * (heightPadded / 16)));
+    }
+
+    // assumed to be called for subsequent coords
+    void setValue(const Coord offset, float red, float green, float blue) {
+        // this call converts the values inline
+        RgbToYCbCr<255>(red, green, blue);
+
+        const Coord x = offset % width;
+        const Coord y = offset / width;
+
+        const Coord blockX = x / 16;
+        const Coord blockY = y / 16;
+        const Coord blockOffset = y * blockWidth + x;
+
+        const Coord innerX = x % 16;
+        const Coord innerY = y % 16;
+
+        auto&& block = blocks[blockOffset];
+        block.Set(innerX, innerY, red, green, blue);
+
+
+        // fill in borders/corners
+        if(y == height && innerY != 15) {
+            for(int iY = 16 - innerY; iY < 16; ++iY)
+                block.Set(innerX, iY, red, green, blue);
+        }
+
+        if(x == width && innerX != 15) {
+            for(int iX = 16 - innerX; iX < 16; ++iX)
+                block.Set(iX, innerY, red, green, blue);
+        }
+
+        if(y == height && x == width) {
+            for(int iX = 16 - innerX; iX < 16; ++iX)
+                for(int iY = 16 - innerY; iY < 16; ++iY)
+                    block.Set(iX, iY, red, green, blue);
+        }
+    }
+
 };
 
 #endif //MEDIENINFO_IMAGE_H
