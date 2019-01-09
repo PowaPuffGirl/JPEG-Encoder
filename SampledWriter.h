@@ -127,7 +127,7 @@ private:
     const QuantisationTable& qTable;
 
 public:
-    OffsetSampledWriter(OffsetSampledWriter& other) = delete;
+    //OffsetSampledWriter(OffsetSampledWriter& other) = delete;
     explicit OffsetSampledWriter(const uint blocks, const QuantisationTable& qTable)
         : size(blocks * blocksize), qTable(qTable) {
         // resize, but substract one for each block because the first coefficient is AC

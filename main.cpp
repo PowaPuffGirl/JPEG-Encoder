@@ -25,6 +25,7 @@ void huffman_tests(int runs = 1000);
 
 void write_image(int runs = 10);
 void full_encode(int runs);
+void full_encode_old(int runs);
 
 int main() {
    //bitstream_tests();
@@ -32,7 +33,8 @@ int main() {
 
     write_image();
 
-    full_encode(10);
+    full_encode_old(100);
+    full_encode(100);
 
     PPMParser<RawImage> test(stepSize, stepSize);
     RawImage temp = test.parsePPM();
@@ -77,6 +79,24 @@ void full_encode(int runs) {
         w += std::chrono::duration_cast<std::chrono::milliseconds>(endTimeWithWrite - startTime).count();
     }
     std::cout << "Time to write full partial image: " << static_cast<double>(w) / (runs) << " ms.\n";
+}
+
+void full_encode_old(int runs) {
+
+    long w = 0;
+    for (int i = 0; i < runs; ++i) {
+        auto startTime = std::chrono::high_resolution_clock::now();
+
+        PPMParser<RawImage> test(stepSize, stepSize);
+        RawImage temp = test.parsePPM();
+        ImageProcessor<float, AraiSimdSimple<float>, RawImage::ColorChannelT> ip;
+        BitStream bs("/tmp/full.jpg", temp.width, temp.height);
+        ip.processImage(temp, bs);
+
+        auto endTimeWithWrite = std::chrono::high_resolution_clock::now();
+        w += std::chrono::duration_cast<std::chrono::milliseconds>(endTimeWithWrite - startTime).count();
+    }
+    std::cout << "Time to write full partial image (old way): " << static_cast<double>(w) / (runs) << " ms.\n";
 }
 
 void write_image(int runs) {
