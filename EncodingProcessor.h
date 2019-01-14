@@ -169,8 +169,8 @@ public:
         writeMetadataHeaders(image.width, image.height, writer);
         EncodingProcessor<T> encodingProcessor;
         OffsetSampledWriter<T> Y(image.blockAmount * 4, luminaceOnePlus5),
-            Cb(image.blockAmount, luminaceOnePlus5),
-            Cr(image.blockAmount, luminaceOnePlus5);
+            Cb(image.blockAmount, chrominaceOnePlus5),
+            Cr(image.blockAmount, chrominaceOnePlus5);
         Transform transform;
 
         for(int i = 0; i < image.blockAmount; ++i)
