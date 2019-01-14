@@ -217,14 +217,14 @@ public:
             wcb.writeBlock();
             wcr.writeBlock();
 
-            if(++i % image.blockRowWidth == 0)
+            if(++i % image.blockRowWidth == 0 && i != image.blockAmount)
             {
                 wy1.skip(rowWidth2);
                 wy2.skip(rowWidth2);
             }
         }
 
-
+        writer.fillByte();
         writeEOI(writer);
         writer.writeOut();
     }
