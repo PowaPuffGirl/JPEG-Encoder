@@ -31,14 +31,23 @@ int main() {
     //full_encode(1);
     //return 0;
 
+    Vc::fixed_size_simd<float, 4> testv = { 1, 2, -1, 3};
+    Vc::fixed_size_simd<float, 4> testa = { 1, 1, 1, 1};
+    Vc::fixed_size_simd<float, 4> testb = { 2, 2, 2, 2};
+    auto mask = Vc::isnegative(testv);
+    //auto test = Vc:: <float, 4> isnegative();
+    Vc::where(mask) | testv += testa;
+    Vc::where(!mask) | testv = testb;
+    //Vc::where(!mask) | testv ^= testv;
+    //Vc::where(!mask) | testv += testb;
 
-   //bitstream_tests();
-    huffman_tests();
 
-    write_image();
+    //bitstream_tests();
+    //huffman_tests();
 
-    full_encode_old(50);
-    full_encode(50);
+    //full_encode_old(50);
+    full_encode(1);
+    return 0;
 
     PPMParser<RawImage> test(stepSize, stepSize);
     RawImage temp = test.parsePPM();

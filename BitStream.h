@@ -56,6 +56,15 @@ public:
         ++position;
     }
 
+
+    void appendU16(const uint16_t data, uint8_t amount) {
+        if(amount > 8) {
+            appendBit(static_cast<const uint8_t>(data >> (16 - amount)), 8);
+            amount -= 8;
+        }
+        appendBit(static_cast<const uint8_t>(data) & ones_u8[amount], amount);
+    }
+
     /**
      * Write up to 8 bits to the stream
      */
@@ -76,15 +85,23 @@ public:
 
                 amount -= pad;
                 const uint8_t append = data >> amount;
-                *(streamStart + position) |= append;
+                const auto pos = streamStart + position;
+                *pos |= append;
                 ++position; // increase the position by one since we filled the byte
                 position_bit = 0; // set the bit position to zero
+
+                if(*pos == 0xFF) // make sure we dont write a 0xFF byte w/o a trailing zero
+                {
+                    ++position;
+                    *(pos + 1) = 0x00;
+                }
             }
             else {
                 // we have exactly as much or less bits than the byte can fit
                 // so we shift our data to start at the first unused byte (this shift could be zero if amount == pad)
                 const uint8_t append = data << (pad - amount);
-                *(streamStart + position) |= append;
+                const auto pos = streamStart + position;
+                *(pos) |= append;
 
                 assert((amount + position_bit) <= 8); // it can't be >8 because this would be handled by the other if case
                 if(amount == pad) { // we exactly filled this byte
@@ -92,6 +109,12 @@ public:
                     // handled by the other if
                     position_bit = 0;
                     ++position; // update the position since we filled this byte
+
+                    if(*pos == 0xFF) // make sure we dont write a 0xFF byte w/o a trailing zero
+                    {
+                        ++position;
+                        *(pos + 1) = 0x00;
+                    }
                 }
                 else {
                     position_bit = amount + position_bit;
@@ -106,6 +129,11 @@ public:
             // this is the simplest case - write exactly one byte
             *(streamStart + position) = data;
             ++position;
+
+            if(data == 0xFF) {
+                *(streamStart + position) = 0;
+                ++position;
+            }
         }
         else { // amount < 8
             // if we start a new byte with less than 8 bits to write, we need to shift the first important bit to the
@@ -143,10 +171,22 @@ private:
     /**
      * Return an uint64_t with the rightmost $amount bytes set to one
      */
-    inline uint64_t ones(const int amount) {
+    static constexpr uint64_t ones(const int amount) {
         assert(amount < 63 && amount >= 0);
         return (static_cast<uint64_t>(1) << amount) - 1;
     }
+
+    static constexpr std::array<uint8_t, 9> ones_u8 {
+            0,
+            1,
+            0b00000011,
+            0b00000111,
+            0b00001111,
+            0b00011111,
+            0b00111111,
+            0b01111111,
+            0b11111111,
+    };
 
 };
 

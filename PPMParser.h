@@ -21,13 +21,13 @@ private:
     ifstream input;
 
     inline void refreshBuffer() {
+        if (eof)
+            throw invalid_argument("End of stream!");
+
         // theoretically we should watch out for additional bytes
         // but since we only ever read one byte a time after the header, this is irrelevant
         // to be sure we have this assert
         assert(offset >= bufferSize);
-
-        if (eof)
-            throw invalid_argument("End of stream!");
 
         offset = 0;
         input.read(&buffer[0], buffer.size());

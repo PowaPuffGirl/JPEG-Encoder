@@ -7,6 +7,7 @@
 #include <cmath>
 #include <iostream>
 #include "quantisation/quantisationTables.h"
+#include "HuffmanEncoder.h"
 
 template<typename T, typename Tout = int8_t>
 class Pair {
@@ -103,7 +104,6 @@ public:
 };
 
 
-
 template<typename T, typename Tout = int8_t>
 class OffsetSampledWriter {
 private:
@@ -116,9 +116,9 @@ private:
 
     std::vector<Tout> output_dc;
     std::vector<Tout> output_ac;
-    std::vector<Pair<uint8_t,Tout>> runLengthEncoded;
 
 public:
+    std::vector<Pair<uint8_t,Tout>> runLengthEncoded;
     std::array<uint32_t, 256> huffweight_ac = {0}, huffweight_dc = {0};
 
 private:
@@ -191,6 +191,72 @@ public:
                 runLengthEncoded.emplace_back(temp);
             }
         }
+    }
+};
+
+template<typename T>
+class StreamWriter {
+private:
+    using HuffmanEncoder = IsoHuffmanEncoder<256, uint8_t, 16>;
+    const OffsetSampledWriter<T, int8_t> channel;
+    const HuffmanEncoder& ac_encoder, dc_encoder;
+    const uint32_t rowWidth;
+    uint32_t offset = 0, blockOffset = 0;
+    BitStream& stream;
+
+public:
+    StreamWriter(const OffsetSampledWriter<T, int8_t> &channel, const HuffmanEncoder &ac_encoder,
+                 const HuffmanEncoder &dc_encoder, BitStream& bs, const uint32_t rowWidth) :
+                 channel(channel), ac_encoder(ac_encoder), dc_encoder(dc_encoder), rowWidth(rowWidth), stream(bs) {
+
+    }
+
+    void skip(uint32_t amount) {
+        while(amount > 0) {
+#ifdef NDEBUG
+            while(!channel.runLengthEncoded[++offset].DC);
+#else
+            while(!channel.runLengthEncoded.at(++offset).DC);
+#endif
+            --amount;
+        }
+    }
+
+    void skipRow() {
+        skip(rowWidth);
+    }
+
+    void writeBlock() {
+        assert(channel.runLengthEncoded.at(offset).DC);
+        writeDcPair(channel.runLengthEncoded[offset]);
+
+        while(true) {
+            const auto& p =
+#ifdef NDEBUG
+                    channel.runLengthEncoded[offset++];
+#else
+                    channel.runLengthEncoded.at(++offset);
+#endif
+            if(p.DC)
+                break;
+            writeAcPair(p);
+        }
+
+//        if(++blockOffset % rowWidth == 0) {
+//            skip(rowWidth * 2);
+//        }
+    }
+
+    template<typename T1, typename T2>
+    inline void writeAcPair(const Pair<T1, T2>& p) {
+        ac_encoder.write(stream, p.pairBitwise);
+        stream.appendU16(p.bitPattern, p.category);
+    }
+
+    template<typename T1, typename T2>
+    inline void writeDcPair(const Pair<T1, T2>& p) {
+        dc_encoder.write(stream, p.category);
+        stream.appendU16(p.bitPattern, p.category);
     }
 };
 

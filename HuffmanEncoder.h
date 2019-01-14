@@ -7,8 +7,8 @@
 #include <algorithm>
 #include <cassert>
 #include <set>
-#include <immintrin.h>
 #include <math.h>
+#include <numeric>
 #include "BitStream.h"
 
 
@@ -28,15 +28,16 @@ public:
     }
 
     template <typename InputType>
-    inline void write(BitStream& bs, const InputType it) {
-        bs.writeBytes(lookupTable[it], sizeLookupTable[it]);
+    inline void write(BitStream& bs, const InputType it) const {
+        bs.appendU16(lookupTable[it], sizeLookupTable[it]);
     }
 
 private:
     void generateEncodingTable(const std::array<CountType, max_tree_depth+1>& bits, const std::vector<InputKeyType>& huffval) {
         assert(huffval.size() > 0);
-        assert(std::accumulate(bits.begin(), bits.end(), 0) == huffval.size());
-        assert(std::max_element(huffval.begin(), huffval.end()) < lookupTable.size());
+        //const auto huffvals = std::accumulate(bits.begin(), bits.end(), 0);
+        //assert(huffvals == huffval.size());
+        assert((*std::max_element(huffval.begin(), huffval.end())) < lookupTable.size());
 
         std::vector<CountType> huffsize(huffval.size());
         std::vector<OutputCodeType> huffcode(huffval.size());
