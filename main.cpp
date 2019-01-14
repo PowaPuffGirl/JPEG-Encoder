@@ -90,6 +90,9 @@ void full_encode(int runs) {
 
         auto endTimeWithWrite = std::chrono::high_resolution_clock::now();
         w += std::chrono::duration_cast<std::chrono::milliseconds>(endTimeWithWrite - startTime).count();
+        temp.exportYPpm("bw_y");
+        temp.exportCbPpm("bw_cb");
+        temp.exportCrPpm("bw_cr");
     }
     std::cout << "Time to write full partial image: " << static_cast<double>(w) / (runs) << " ms.\n";
 }

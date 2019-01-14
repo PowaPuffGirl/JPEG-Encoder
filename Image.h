@@ -282,6 +282,57 @@ public:
         blocks.resize(static_cast<unsigned long>(blockAmount));
     }
 
+    void exportYPpm(std::string filename) {
+        writePPM(filename, width, height, 255, [this] (int x, int y) {
+
+            const Coord blockX = x / 16;
+            const Coord blockY = y / 16;
+            const Coord blockOffset = blockY * blockWidth + blockX;
+
+            const Coord innerX = x % 16;
+            const Coord innerY = y % 16;
+
+            auto ycbcr = this->blocks.at(blockOffset).getPixel(innerX, innerY);
+            RGB test;
+            test.fromYCbCr((ycbcr.y + 128.f) / 255.f, 0.5f, 0.5f);
+            return test;
+        });
+    }
+
+    void exportCbPpm(std::string filename) {
+        writePPM(filename, width, height, 255, [this] (int x, int y) {
+
+            const Coord blockX = x / 16;
+            const Coord blockY = y / 16;
+            const Coord blockOffset = blockY * blockWidth + blockX;
+
+            const Coord innerX = x % 16;
+            const Coord innerY = y % 16;
+
+            auto ycbcr = this->blocks.at(blockOffset).getPixel(innerX, innerY);
+            RGB test;
+            test.fromYCbCr(1.f, ycbcr.cb/255.f, 0.5f);
+            return test;
+        });
+    }
+
+    void exportCrPpm(std::string filename) {
+        writePPM(filename, width, height, 255, [this] (int x, int y) {
+
+            const Coord blockX = x / 16;
+            const Coord blockY = y / 16;
+            const Coord blockOffset = blockY * blockWidth + blockX;
+
+            const Coord innerX = x % 16;
+            const Coord innerY = y % 16;
+
+            auto ycbcr = this->blocks.at(blockOffset).getPixel(innerX, innerY);
+            RGB test;
+            test.fromYCbCr(1.f, .5f, ycbcr.cr/255.f);
+            return test;
+        });
+    }
+
     // assumed to be called for subsequent coords
     void setValue(const Coord offset, float red, float green, float blue) {
         // this call converts the values inline
