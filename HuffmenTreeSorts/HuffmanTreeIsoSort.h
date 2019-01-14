@@ -48,7 +48,7 @@ private:
     void sort_input() {
         int k = 0;
         for(int i = 1; i <= 32; i++) {
-            for(int j = 0; j < leavesISO.size(); j++) {
+            for(int j = 0; j < (leavesISO.size() - 1); j++) {
                 if (leavesISO.at(j).codesize == i) {
                     //this->huffval.push_back(j); // uneeded since we resized it at the beginning of iso_sort
                     this->huffval[k++] = j;
@@ -71,7 +71,9 @@ private:
                 bits[j + 1] = bits[j + 1] + 2;
                 bits[j] = bits[j] - 1;
             }
-            i--;
+            else {
+                --i;
+            }
         }
 
         while (bits[i] == 0) {
@@ -100,7 +102,9 @@ private:
             if (lv.amount > 0)
                 set.insert(&lv);
         }
-        this->huffval.resize(set.size()); // the elements in the set now account for all non-zero values
+        // the elements in the set now account for all non-zero values
+        // -1 is for the zero-element (right-most)
+        this->huffval.resize(set.size() - 1);
 
         LeafISO<InputKeyType, AmountType>* v1, * v2;
         findLowest(v1, v2, set);
