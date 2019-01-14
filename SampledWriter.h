@@ -230,10 +230,10 @@ public:
         assert(channel.runLengthEncoded.at(offset).DC);
         writeDcPair(channel.runLengthEncoded[offset]);
 
-        while(true) {
+        while(offset < channel.runLengthEncoded.size() - 1) {
             const auto& p =
 #ifdef NDEBUG
-                    channel.runLengthEncoded[offset++];
+                    channel.runLengthEncoded[++offset];
 #else
                     channel.runLengthEncoded.at(++offset);
 #endif
@@ -250,13 +250,15 @@ public:
     template<typename T1, typename T2>
     inline void writeAcPair(const Pair<T1, T2>& p) {
         ac_encoder.write(stream, p.pairBitwise);
-        stream.appendU16(p.bitPattern, p.category);
+        if (p.category != 0)
+            stream.appendU16(p.bitPattern, p.category);
     }
 
     template<typename T1, typename T2>
     inline void writeDcPair(const Pair<T1, T2>& p) {
         dc_encoder.write(stream, p.category);
-        stream.appendU16(p.bitPattern, p.category);
+        if (p.category != 0)
+            stream.appendU16(p.bitPattern, p.category);
     }
 };
 
