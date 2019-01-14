@@ -73,6 +73,6 @@ SET(MI_FILES
 
 add_executable(MedienInfo main.cpp ${MI_FILES})
 target_link_libraries(MedienInfo ${Vc_LIBRARIES})
-add_executable(Benchmarks ${MI_FILES} benchmarks/BitStream.cpp benchmarks/Huffman.cpp benchmarks/DCT.cpp benchmarks/VcAdds.cpp)
+add_executable(Benchmarks ${MI_FILES} benchmarks/BitStream.cpp benchmarks/Huffman.cpp benchmarks/DCT.cpp benchmarks/VcAdds.cpp benchmarks/Log2.cpp)
 target_link_libraries(Benchmarks benchmark_main benchmark ${Vc_LIBRARIES})
 add_executable(PPMCreator ppmCreatorMain.cpp ppmCreator.h ppmCreator.cpp)
