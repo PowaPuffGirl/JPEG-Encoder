@@ -47,7 +47,7 @@ private:
         auto voffset = huffsize.begin();
         for(int i = 1; i < bits.size(); ++i) {
             // bits is zero-based while our algorithm starts at one bit
-            std::fill(voffset, voffset + bits[i], static_cast<uint8_t>(i + 1));
+            std::fill(voffset, voffset + bits[i], static_cast<uint8_t>(i));
             voffset += bits[i];
         }
 
