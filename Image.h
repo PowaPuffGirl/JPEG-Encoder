@@ -236,7 +236,7 @@ struct Block {
 
         // offset within Y block
         const auto xoff = x % 8;
-        const auto yoff = x % 8;
+        const auto yoff = y % 8;
 
         // coordinate in Cb/Cr blocks
         x /= 2;
@@ -251,6 +251,32 @@ struct Block {
         y /= 4;
 
         Y[y][x][yoff][xoff] = _y;
+    }
+
+    template <typename CoordinateType>
+    YCBCR getPixel(CoordinateType x, CoordinateType y) {
+        assert(x >= 0);
+        assert(y >= 0);
+        assert(x < 16);
+        assert(y < 16);
+
+        // offset within Y block
+        const auto xoff = x % 8;
+        const auto yoff = y % 8;
+
+        // coordinate in Cb/Cr blocks
+        x /= 2;
+        y /= 2;
+
+        YCBCR result(0, Cb[y][x], Cr[y][x]);
+
+        // coordinate in Cb/Cr blocks
+        // the coords are now 1/8th since we divided by two above already
+        x /= 4;
+        y /= 4;
+
+        result.y = Y[y][x][yoff][xoff];
+        return result;
     }
 };
 
