@@ -121,13 +121,15 @@ private:
         std::sort(nodes.begin(), nodes.end());
 
         std::multiset<Node<InputKeyType, AmountType> *, NodePtrComp<InputKeyType, AmountType>> lowest;
-        uint32_t leaves_offset = 2;
+        uint32_t leaves_offset = 0;
+        while(nodes[leaves_offset].weight == 0)
+            ++leaves_offset;
 
         auto dn = initNode();
-        dn->setDeadNode(&nodes[0]);
+        dn->setDeadNode(&nodes[leaves_offset++]);
 
         auto firstNode = initNode();
-        firstNode->setValue(&nodes[1], dn);
+        firstNode->setValue(&nodes[leaves_offset++], dn);
 
         lowest.insert(firstNode);
 
