@@ -36,7 +36,7 @@ public:
         sortTree(sum);
     }
 
-    IsoHuffmanEncoder<max_values, InputKeyType, max_tree_depth> generateEncoder() {
+    inline IsoHuffmanEncoder<max_values, InputKeyType, max_tree_depth> generateEncoder() {
         return IsoHuffmanEncoder(bits, huffval);
     }
 
