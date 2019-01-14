@@ -308,6 +308,23 @@ public:
         blocks.resize(static_cast<unsigned long>(blockAmount));
     }
 
+    void exportFullPpm(std::string filename) {
+        writePPM(filename, width, height, 255, [this] (int x, int y) {
+
+            const Coord blockX = x / 16;
+            const Coord blockY = y / 16;
+            const Coord blockOffset = blockY * blockWidth + blockX;
+
+            const Coord innerX = x % 16;
+            const Coord innerY = y % 16;
+
+            auto ycbcr = this->blocks.at(blockOffset).getPixel(innerX, innerY);
+            RGB test;
+            test.fromYCbCr((ycbcr.y + 128.f) / 255.f, ycbcr.cb/255.f, ycbcr.cr/255.f);
+            return test;
+        });
+    }
+
     void exportYPpm(std::string filename) {
         writePPM(filename, width, height, 255, [this] (int x, int y) {
 

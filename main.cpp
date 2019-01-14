@@ -16,6 +16,7 @@
 #include "segments/DQT.h"
 #include "segments/SOS.h"
 #include "dct/AraiSimdSimple.h"
+#include "dct/DirectCosinusTransform.h"
 
 const unsigned int stepSize = 8;
 
@@ -47,7 +48,6 @@ int main() {
 
     //full_encode_old(50);
     full_encode(1);
-    return 0;
 
     PPMParser<RawImage> test(stepSize, stepSize);
     RawImage temp = test.parsePPM();
@@ -93,6 +93,7 @@ void full_encode(int runs) {
         temp.exportYPpm("bw_y");
         temp.exportCbPpm("bw_cb");
         temp.exportCrPpm("bw_cr");
+        temp.exportFullPpm("bw_full");
     }
     std::cout << "Time to write full partial image: " << static_cast<double>(w) / (runs) << " ms.\n";
 }
