@@ -43,7 +43,7 @@ RGB createRandomPixel() {
     float red = (double) std::rand() / (RAND_MAX);
     float green = (double) std::rand() / (RAND_MAX);
     float blue = (double) std::rand() / (RAND_MAX);
-    return RGB(1.f, 0, 0);
+    return RGB(red, green, blue);
 }
 
 void createPixelChangeingColorRows(std::string &fileText, int width, int height, int depth) {
