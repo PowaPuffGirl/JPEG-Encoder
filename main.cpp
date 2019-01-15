@@ -9,6 +9,7 @@
 #include "HuffmenTreeSorts/HuffmanTree.h"
 #include "EncodingProcessor.h"
 //#include "helper/TreeEfficiencyMeter.h"
+#include "dct/SeparatedCosinusTransformGlm.h"
 #include "SampledWriter.h"
 #include "HuffmenTreeSorts/HuffmanTreeSimpleSort.h"
 #include "HuffmenTreeSorts/HuffmanTreeSort.h"
@@ -84,7 +85,7 @@ void full_encode(int runs) {
 
         PPMParser<BlockwiseRawImage> test(stepSize, stepSize);
         BlockwiseRawImage temp = test.parsePPM();
-        ImageProcessor<float, AraiSimdSimple<float>, RawImage::ColorChannelT> ip;
+        ImageProcessor<float, SeparatedCosinusTransform<float>, RawImage::ColorChannelT> ip;
         BitStream bs("/tmp/full.jpg", temp.width, temp.height);
         ip.processImage(temp, bs);
 
