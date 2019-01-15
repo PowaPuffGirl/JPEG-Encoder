@@ -320,7 +320,7 @@ public:
 
             auto ycbcr = this->blocks.at(blockOffset).getPixel(innerX, innerY);
             RGB test;
-            test.fromYCbCr((ycbcr.y + 128.f) / 255.f, ycbcr.cb/255.f, ycbcr.cr/255.f);
+            test.fromYCbCr((ycbcr.y + 128.f) / 255.f, (ycbcr.cb + 128.f)/255.f, (ycbcr.cr + 128.f)/255.f);
             return test;
         });
     }
@@ -354,7 +354,7 @@ public:
 
             auto ycbcr = this->blocks.at(blockOffset).getPixel(innerX, innerY);
             RGB test;
-            test.fromYCbCr(1.f, ycbcr.cb/255.f, 0.5f);
+            test.fromYCbCr(1.f, (ycbcr.cb + 128.f)/255.f, 0.5f);
             return test;
         });
     }
@@ -371,7 +371,7 @@ public:
 
             auto ycbcr = this->blocks.at(blockOffset).getPixel(innerX, innerY);
             RGB test;
-            test.fromYCbCr(1.f, .5f, ycbcr.cr/255.f);
+            test.fromYCbCr(1.f, .5f, (ycbcr.cr + 128.f)/255.f);
             return test;
         });
     }

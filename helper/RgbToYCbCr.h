@@ -7,8 +7,8 @@ void RgbToYCbCr(StorageType& r, StorageType& g, StorageType& b);
 
 template <typename StorageType, int maxval>
 inline void RgbToYCbCrFloatingPoint(StorageType& red, StorageType& green, StorageType& blue) {
-    StorageType cb = (-0.1687f * red + -0.3312f * green + 0.5f * blue + (maxval * 0.5f)) - (maxval * 0.5f);
-    StorageType cr = (0.5f * red + -0.4186f * green + -0.0813f * blue + (maxval * 0.5f)) - (maxval * 0.5f);
+    StorageType cb = ((-0.1687f * red) + (-0.3312f * green) + 0.5f * blue + (maxval * 0.5f)) - (maxval * 0.5f);
+    StorageType cr = (0.5f * red + (-0.4186f * green) + (-0.0813f * blue) + (maxval * 0.5f)) - (maxval * 0.5f);
     red =            (0.299f * red + 0.587f * green + 0.114f * blue)                     - (maxval * 0.5f);
     green = cb;
     blue = cr;
