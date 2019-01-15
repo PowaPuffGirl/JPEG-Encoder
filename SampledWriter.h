@@ -241,10 +241,6 @@ public:
                 break;
             writeAcPair(p);
         }
-
-//        if(++blockOffset % rowWidth == 0) {
-//            skip(rowWidth * 2);
-//        }
     }
 
     template<typename T1, typename T2>
