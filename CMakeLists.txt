@@ -69,7 +69,7 @@ SET(MI_FILES
                 dct/AraiSimdSimple.h
                 quantisation/quantisationTables.h
                 helper/ParallelFor.h
-                helper/RgbToYCbCr.h)
+                helper/RgbToYCbCr.h HuffmenTreeSorts/NoopHuffman.h)
 
 add_executable(MedienInfo main.cpp ${MI_FILES})
 target_link_libraries(MedienInfo ${Vc_LIBRARIES})
