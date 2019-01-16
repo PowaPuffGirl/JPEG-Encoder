@@ -16,7 +16,7 @@ class HuffmanTreeIsoSort: public HuffmanTree<max_values, InputKeyType, AmountTyp
 private:
     std::array<LeafISO<InputKeyType, AmountType>, max_values + 1> leavesISO;
 
-    void sortToLeaves(const std::array<AmountType, max_values> &values) {
+    void sortToLeaves(const std::array<AmountType, max_values> &values) override {
         for (auto i = 0; i < values.size(); i++) {
             const auto leaf = &leavesISO[i];
             leaf->value = i;
@@ -138,17 +138,17 @@ public:
         iso_sort();
     }
 
-    double Efficiency_huffman() const {
+    double Efficiency_huffman() const override {
         //TODO: not implemented yet
         return 0;
     }
 
-    double Efficiency_fullkey() const {
+    double Efficiency_fullkey() const override {
         //TODO: not implemented yet
         return 0;
     }
 
-    double Efficiency_logkey() const {
+    double Efficiency_logkey() const override {
         //TODO: not implemented yet
         return 0;
     }

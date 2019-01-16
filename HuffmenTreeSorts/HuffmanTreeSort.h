@@ -19,7 +19,7 @@ private:
     uint32_t node_buffer_offset = 0;
     Node<InputKeyType, AmountType> *startNode = nullptr;
 
-    void sortToLeaves(const std::array<AmountType, max_values> &values) {
+    void sortToLeaves(const std::array<AmountType, max_values> &values) override {
         for (auto i = 0; i < values.size(); i++) {
             const auto leaf = &leaves[i];
             leaf->value = i;
@@ -204,7 +204,8 @@ private:
             } else {
                 // at this point, the two lowest values must be in the tree
                 auto newNode = initNode();
-                newNode->setValueSwap(&nodes[leaves_offset++], &nodes[leaves_offset++]);
+                auto temp = &nodes[leaves_offset++];
+                newNode->setValueSwap(temp, &nodes[leaves_offset++]);
 
                 lowest.insert(newNode);
                 lowest_value = (*lowest.begin())->weight;
@@ -223,15 +224,15 @@ public:
         sort();
     }
 
-    double Efficiency_fullkey() const {
+    double Efficiency_fullkey() const override {
         return 8 * sizeof(InputKeyType) * sumWeight();
     }
 
-    double Efficiency_logkey() const {
+    double Efficiency_logkey() const override {
         return log2(max_values) * sumWeight();
     }
 
-    double Efficiency_huffman() const {
+    double Efficiency_huffman() const override {
         assert(startNode != nullptr);
         return this->node_iter(startNode, 0);
     }

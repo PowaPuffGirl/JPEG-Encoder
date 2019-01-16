@@ -43,15 +43,15 @@ public:
 
 
 
-    double Efficiency_huffman() const {
+    double Efficiency_huffman() const override {
         return 1;
     }
 
-    double Efficiency_fullkey() const {
+    double Efficiency_fullkey() const override {
         return 1;
     }
 
-    double Efficiency_logkey() const {
+    double Efficiency_logkey() const override {
         return 1;
     }
 };
