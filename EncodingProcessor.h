@@ -235,8 +235,8 @@ public:
         _write_segment_ref(writer, sos);
 
         const auto rowWidth2 = image.blockRowWidth * 2;
-        StreamWriter<T> wy1 (Y, y_ac_enc, y_dc_enc, writer, static_cast<const uint32_t>(image.blockRowWidth));
-        StreamWriter<T> wy2 (Y, y_ac_enc, y_dc_enc, writer, static_cast<const uint32_t>(image.blockRowWidth));
+        StreamWriter<T> wy1 (Y, y_ac_enc, y_dc_enc, writer, static_cast<const uint32_t>(image.blockRowWidth * 2));
+        StreamWriter<T> wy2 (Y, y_ac_enc, y_dc_enc, writer, static_cast<const uint32_t>(image.blockRowWidth * 2));
         wy2.skipRow();
 
         StreamWriter<T> wcb (Cb, c_ac_enc, c_dc_enc, writer, image.blockRowWidth);
