@@ -215,20 +215,20 @@ public:
 
         HT y_ac;
         y_ac.sortTree(Y.huffweight_ac);
-        y_ac.writeSegmentToStream(writer, 0, 1);
+        y_ac.writeSegmentToStream(writer, 2, 1);
         const auto y_ac_enc = y_ac.generateEncoder();
         HT y_dc;
         y_dc.sortTree(Y.huffweight_dc);
-        y_dc.writeSegmentToStream(writer, 1, 0);
+        y_dc.writeSegmentToStream(writer, 0, 0);
         const auto y_dc_enc = y_dc.generateEncoder();
 
         HT c_ac;
         c_ac.sortTreeSummed(Cb.huffweight_ac, Cr.huffweight_ac);
-        c_ac.writeSegmentToStream(writer, 2, 1);
+        c_ac.writeSegmentToStream(writer, 3, 1);
         const auto c_ac_enc = c_ac.generateEncoder();
         HT c_dc;
         c_dc.sortTreeSummed(Cb.huffweight_dc, Cr.huffweight_dc);
-        c_dc.writeSegmentToStream(writer, 3, 0);
+        c_dc.writeSegmentToStream(writer, 1, 0);
         const auto c_dc_enc = c_dc.generateEncoder();
 
         SOS sos;
