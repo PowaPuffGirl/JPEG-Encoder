@@ -24,7 +24,7 @@ private:
 
 public:
     IsoHuffmanEncoder(const std::array<CountType, max_tree_depth+1>& bits, const std::vector<InputKeyType>& huffval) {
-        generateEncodingTable(bits, huffval);
+        generateEncodingTableWithFuckingGotos(bits, huffval);
     }
 
     template <typename InputType>
@@ -33,6 +33,72 @@ public:
     }
 
 private:
+    void generateEncodingTableWithFuckingGotos(const std::array<CountType, max_tree_depth+1>& bits, const std::vector<InputKeyType>& huffval) {
+        std::vector<CountType> huffsize(257);
+        std::vector<OutputCodeType> huffcode(257);
+
+        // generate_size_table
+        int k = 0;
+        int i = 1;
+        int j = 1;
+
+    begin:
+        if(j > bits.at(i)) {
+            ++i;
+            j = 1;
+            goto further;
+        }
+
+        huffsize.at(k) = i;
+        ++k;
+        ++j;
+        goto begin;
+
+    further:
+
+        if(!(i > 16))
+            goto begin;
+
+        huffsize.at(k) = 0;
+        int lastk = k;
+
+        // generate_code_table
+        k = 0;
+        int code = 0;
+        int si = huffsize[0];
+
+    begin2:
+        huffcode.at(k) = code;
+        ++code;
+        ++k;
+
+        if(huffsize.at(k) == si)
+            goto begin2;
+
+        if(huffsize.at(k) == 0)
+            goto end;
+
+   inc:
+        code <<= 1;
+        ++si;
+        if(huffsize.at(k) == si)
+            goto begin2;
+        goto inc;
+
+    end:
+
+        // order_codes
+        k = 0;
+    begin3:
+        i = huffval.at(k);
+        lookupTable.at(i) = huffcode.at(k);
+        sizeLookupTable.at(i) = huffsize.at(k);
+        ++k;
+
+        if(k < lastk)
+            goto begin3;
+
+    }
     void generateEncodingTable(const std::array<CountType, max_tree_depth+1>& bits, const std::vector<InputKeyType>& huffval) {
         assert(huffval.size() > 0);
         //const auto huffvals = std::accumulate(bits.begin(), bits.end(), 0);

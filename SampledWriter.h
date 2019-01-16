@@ -9,7 +9,7 @@
 #include "quantisation/quantisationTables.h"
 #include "HuffmanEncoder.h"
 
-template<typename T, typename Tout = int8_t>
+template<typename T, typename Tout = int16_t>
 class Pair {
 public:
     T amount;
