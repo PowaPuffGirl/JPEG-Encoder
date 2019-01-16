@@ -119,8 +119,8 @@ private:
 template<typename T, typename Transform, typename Channel = ColorChannel<T>>
 class ImageProcessor {
 public:
-    //using HT = HuffmanTreeIsoSort<256, uint8_t, uint32_t, uint8_t, 16>;
-    using HT = NoopHuffman<256, uint8_t, uint32_t, uint8_t, 16>;
+    using HT = HuffmanTreeIsoSort<256, uint8_t, uint32_t, uint8_t, 16>;
+    //using HT = NoopHuffman<256, uint8_t, uint32_t, uint8_t, 16>;
 //    using HT = HuffmanTreeSort<256, uint8_t, uint32_t, uint8_t, 16>;
     ImageProcessor() = default;
 

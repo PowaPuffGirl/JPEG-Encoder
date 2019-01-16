@@ -104,7 +104,7 @@ public:
 };
 
 
-template<typename T, typename Tout = int8_t>
+template<typename T, typename Tout = int16_t>
 class OffsetSampledWriter {
 private:
     using uint = unsigned int;
@@ -139,6 +139,7 @@ public:
         const auto divisor =  qTable[(x << 3) + y];
         const auto extra = val < 0 ? -(divisor >> 1) : (divisor >> 1);
         const Tout valm = static_cast<Tout>((val + extra) / divisor);
+        assert(abs(static_cast<T>(val)/divisor) < 32767);
 
         if(x == 0 && y == 0) {
 #ifdef NDEBUG
@@ -198,14 +199,14 @@ template<typename T>
 class StreamWriter {
 private:
     using HuffmanEncoder = IsoHuffmanEncoder<256, uint8_t, 16>;
-    const OffsetSampledWriter<T, int8_t> channel;
+    const OffsetSampledWriter<T, int16_t> channel;
     const HuffmanEncoder& ac_encoder, dc_encoder;
     const uint32_t rowWidth;
     uint32_t offset = 0, blockOffset = 0;
     BitStream& stream;
 
 public:
-    StreamWriter(const OffsetSampledWriter<T, int8_t> &channel, const HuffmanEncoder &ac_encoder,
+    StreamWriter(const OffsetSampledWriter<T, int16_t> &channel, const HuffmanEncoder &ac_encoder,
                  const HuffmanEncoder &dc_encoder, BitStream& bs, const uint32_t rowWidth) :
                  channel(channel), ac_encoder(ac_encoder), dc_encoder(dc_encoder), rowWidth(rowWidth), stream(bs) {
 
@@ -230,7 +231,7 @@ public:
         assert(channel.runLengthEncoded.at(offset).DC);
         writeDcPair(channel.runLengthEncoded[offset]);
 
-        while(offset < channel.runLengthEncoded.size() - 1) {
+        while(offset < (channel.runLengthEncoded.size() - 1)) {
             const auto& p =
 #ifdef NDEBUG
                     channel.runLengthEncoded[++offset];
@@ -243,15 +244,15 @@ public:
         }
     }
 
-    template<typename T1, typename T2>
-    inline void writeAcPair(const Pair<T1, T2>& p) {
+    template<typename T1>
+    inline void writeAcPair(const Pair<T1, int16_t>& p) {
         ac_encoder.write(stream, p.pairBitwise);
         if (p.category != 0)
             stream.appendU16(p.bitPattern, p.category);
     }
 
-    template<typename T1, typename T2>
-    inline void writeDcPair(const Pair<T1, T2>& p) {
+    template<typename T1>
+    inline void writeDcPair(const Pair<T1, int16_t>& p) {
         dc_encoder.write(stream, p.category);
         if (p.category != 0)
             stream.appendU16(p.bitPattern, p.category);
