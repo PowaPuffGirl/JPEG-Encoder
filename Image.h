@@ -25,6 +25,14 @@ struct ColorChannel {
         channel.resize(vsize, 0);
     }
 
+    unsigned int blockRowWidth() const {
+        return widthPadded / 8;
+    }
+
+    unsigned int blockAmount() const {
+        return (widthPadded * heightPadded) / 64;
+    }
+
     inline const T& get(int x, int y) const {
         if(x >= width) {
             if(x < widthPadded) {
@@ -130,6 +138,14 @@ struct RawImage {
       Y(width, height, stepX, stepY), Cb(width, height, stepX, stepY), Cr(width, height, stepX, stepY)
     {
 
+    }
+
+    unsigned int blockRowWidth() const {
+        return Y.blockRowWidth();
+    }
+
+    unsigned int blockAmount() const {
+        return Y.blockAmount();
     }
 
     void setValue(unsigned int offset, unsigned int red_i, unsigned int green_i, unsigned int blue_i) {
