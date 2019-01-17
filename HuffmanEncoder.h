@@ -24,7 +24,7 @@ private:
 
 public:
     IsoHuffmanEncoder(const std::array<CountType, max_tree_depth+1>& bits, const std::vector<InputKeyType>& huffval) {
-        generateEncodingTableWithFuckingGotos(bits, huffval);
+        generateEncodingTable(bits, huffval);
     }
 
     template <typename InputType>
