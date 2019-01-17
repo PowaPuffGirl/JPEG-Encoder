@@ -59,8 +59,11 @@ public:
 
     void appendU16(const uint16_t data, uint8_t amount) {
         if(amount > 8) {
-            appendBit(static_cast<const uint8_t>(data >> (16 - amount)), 8);
+            //const int over = amount - 8;
+            //const uint16_t shifted = data >> over;
+            //appendBit(static_cast<const uint8_t>(shifted), 8);
             amount -= 8;
+            appendBit(static_cast<const uint8_t>(data >> amount), 8);
         }
         appendBit(static_cast<const uint8_t>(data) & ones_u8[amount], amount);
     }
