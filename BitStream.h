@@ -313,6 +313,6 @@ private:
 
 };
 
-typedef BitStreamDeinzer BitStream;
+typedef BitStreamSeb BitStream;
 
 #endif //MEDIENINFO_BITSTREAM_H
