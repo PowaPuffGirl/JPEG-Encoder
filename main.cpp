@@ -53,6 +53,9 @@ int main() {
         full_encode(1, false, "../output/test_red64");
     });
     std::thread tx4([](){
+        full_encode(1, false, "../output/test_128_random");
+    });
+    std::thread tx5([](){
         full_encode(1, false, "../output/test_full");
     });
 
@@ -60,6 +63,7 @@ int main() {
     tx2.join();
     tx3.join();
     tx4.join();
+    tx5.join();
 
     return 0;
 
