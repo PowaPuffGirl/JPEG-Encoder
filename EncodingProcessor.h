@@ -61,7 +61,7 @@ public:
             OffsetSampledWriter<T>& outputY, OffsetSampledWriter<T>& outputCb, OffsetSampledWriter<T>& outputCr,
             Transform& transform, const unsigned int blockOffset, const unsigned int blockRowWidth) {
 
-        auto Yoffset = blockOffset * 2;
+        auto Yoffset = (blockOffset / blockRowWidth) * (blockRowWidth * 4) + (blockOffset % blockRowWidth) * 2;
         processRowBlock(block.Y[0][0], outputY, transform, Yoffset);
         processRowBlock(block.Y[0][1], outputY, transform, Yoffset + 1);
 
@@ -252,8 +252,8 @@ public:
 
             if(++i % image.blockRowWidth == 0 && i != image.blockAmount)
             {
-                wy1.skip(rowWidth2);
-                wy2.skip(rowWidth2);
+                wy1.skipRow();
+                wy2.skipRow();
             }
         }
 
