@@ -76,8 +76,8 @@ public:
 
     }
 
-    Image parsePPM() {
-        BufferedReader input("../output/test.ppm");
+    Image parsePPM(const string path = "../output/test.ppm") {
+        BufferedReader input(path);
 
         if (input.isGood()) {
 

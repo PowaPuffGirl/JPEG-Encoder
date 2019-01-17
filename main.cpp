@@ -26,7 +26,7 @@ void bitstream_tests(int runs = 10000);
 void huffman_tests(int runs = 1000);
 
 void write_image(int runs = 10);
-void full_encode(int runs);
+void full_encode(int runs, bool exportChannels = false, const string path = "../output/test");
 void full_encode_old(int runs);
 
 int main() {
@@ -43,12 +43,31 @@ int main() {
     //Vc::where(!mask) | testv ^= testv;
     //Vc::where(!mask) | testv += testb;
 
+    std::thread tx1([](){
+        full_encode(1, false, "../output/test_gradient");
+    });
+    std::thread tx2([](){
+        full_encode(1, false, "../output/test_red");
+    });
+    std::thread tx3([](){
+        full_encode(1, false, "../output/test_red64");
+    });
+    std::thread tx4([](){
+        full_encode(1, false, "../output/test_full");
+    });
+
+    tx1.join();
+    tx2.join();
+    tx3.join();
+    tx4.join();
+
+    return 0;
 
     //bitstream_tests();
     //huffman_tests();
 
     //full_encode_old(50);
-    full_encode(1);
+    //full_encode(1);
 
     PPMParser<RawImage> test(stepSize, stepSize);
     RawImage temp = test.parsePPM();
@@ -77,24 +96,28 @@ int main() {
     return 0;
 }
 
-void full_encode(int runs) {
+void full_encode(int runs, bool exportChannels, const string path) {
 
     long w = 0;
     for (int i = 0; i < runs; ++i) {
         auto startTime = std::chrono::high_resolution_clock::now();
 
         PPMParser<BlockwiseRawImage> test(stepSize, stepSize);
-        BlockwiseRawImage temp = test.parsePPM();
+        BlockwiseRawImage temp = test.parsePPM(path + ".ppm");
         ImageProcessor<float, SeparatedCosinusTransform<float>, RawImage::ColorChannelT> ip;
-        BitStream bs("/tmp/full.jpg", temp.width, temp.height);
+        BitStream bs(path + ".jpg", temp.width, temp.height);
         ip.processImage(temp, bs);
 
         auto endTimeWithWrite = std::chrono::high_resolution_clock::now();
         w += std::chrono::duration_cast<std::chrono::milliseconds>(endTimeWithWrite - startTime).count();
-        temp.exportYPpm("bw_y");
-        temp.exportCbPpm("bw_cb");
-        temp.exportCrPpm("bw_cr");
-        temp.exportFullPpm("bw_full");
+
+        if(exportChannels) {
+            temp.exportYPpm("bw_y");
+            temp.exportCbPpm("bw_cb");
+            temp.exportCrPpm("bw_cr");
+            temp.exportFullPpm("bw_full");
+
+        }
     }
     std::cout << "Time to write full partial image: " << static_cast<double>(w) / (runs) << " ms.\n";
 }
