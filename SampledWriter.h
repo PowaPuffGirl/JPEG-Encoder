@@ -34,14 +34,19 @@ public:
             log++;
         }
         this->category = ceil(log);
+        assert(category < 16 && category >= 0);
     }
 
 public:
     Pair(T first, Tout second) : amount(first), value(second), bitPattern(0), category(0), pairBitwise(0), DC(false) { // AC
+        assert(first < 16);
+        assert(first >= 0);
+
         createBitValue();
-        pairBitwise = first;
+
+        pairBitwise = amount;
         pairBitwise = pairBitwise << 4;
-        pairBitwise += second;
+        pairBitwise |= category & 0x0F;
     }
 
     Pair(Tout nr) : amount(0), value(nr), bitPattern(0), category(0), pairBitwise(0), DC(true) { // DC
