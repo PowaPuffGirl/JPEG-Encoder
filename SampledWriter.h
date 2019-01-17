@@ -34,6 +34,7 @@ public:
             log++;
         }
         this->category = ceil(log);
+        this->bitPattern &= BitStream::ones(this->category);
         assert(category < 16 && category >= 0);
     }
 
@@ -43,6 +44,7 @@ public:
         assert(first >= 0);
 
         createBitValue();
+        assert(static_cast<int>(abs(second)) == static_cast<int>(second < 0 ? (~bitPattern & BitStream::ones(category)) : bitPattern));
 
         pairBitwise = amount;
         pairBitwise = pairBitwise << 4;

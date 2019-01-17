@@ -167,7 +167,6 @@ public:
         file.close();
     }
 
-private:
     /**
      * Return an uint64_t with the rightmost $amount bytes set to one
      */
@@ -290,7 +289,7 @@ private:
         ++position;
     }
 
-
+public:
     /**
      * Return an uint64_t with the rightmost $amount bytes set to one
      */
