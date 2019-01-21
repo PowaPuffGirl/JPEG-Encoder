@@ -21,41 +21,6 @@ class EncodingProcessor {
 public:
     EncodingProcessor() = default;
 
-
-    template<typename Transform, typename Channel = ColorChannel<T>>
-    void processChannel(const Channel& channel, SampledWriter<T>& output) {
-        unsigned int blocksx = channel.widthPadded >> 3;
-        unsigned int blocksy = channel.heightPadded >> 3;
-
-#pragma omp parallel for
-        for(unsigned int x = 0; x < blocksx; ++x) {
-            Transform t;
-            for(unsigned int y = 0; y < blocksy; ++y) {
-
-                auto setter = output.getBlockSetter(x, y);
-                const auto getter = channel.getBlockGetter(x, y);
-
-                t.transformBlock(getter, setter);
-            }
-        }
-    }
-
-    template<typename Transform, typename Channel = ColorChannel<T>>
-    void processChannel(const Channel& channel, Transform& dct, SampledWriter<T>& output) {
-        unsigned int blocksx = channel.widthPadded >> 3;
-        unsigned int blocksy = channel.heightPadded >> 3;
-
-        for(unsigned int x = 0; x < blocksx; ++x) {
-            for(unsigned int y = 0; y < blocksy; ++y) {
-
-                auto setter = output.getBlockSetter(x, y);
-                const auto getter = channel.getBlockGetter(x, y);
-
-                dct.transformBlock(getter, setter);
-            }
-        }
-    }
-
     template <typename Transform>
     void processBlock(Block<T>& block,
             OffsetSampledWriter<T>& outputY, OffsetSampledWriter<T>& outputCb, OffsetSampledWriter<T>& outputCr,
@@ -113,87 +78,13 @@ private:
 
 };
 
-template<typename T, typename Transform, typename Channel = ColorChannel<T>>
+template<typename T, typename Transform>
 class ImageProcessor {
 public:
     using HT = HuffmanTreeIsoSort<256, uint8_t, uint32_t, uint8_t, 16>;
     //using HT = NoopHuffman<256, uint8_t, uint32_t, uint8_t, 16>;
 //    using HT = HuffmanTreeSort<256, uint8_t, uint32_t, uint8_t, 16>;
     ImageProcessor() = default;
-
-    void processImage(const RawImage& image, BitStream& writer) {
-        writeMetadataHeaders(image.width, image.height, writer);
-
-        EncodingProcessor<T> encodingProcessor;
-
-        SampledWriter<T> Y(image.width, image.height);
-        encodingProcessor.template processChannel<Transform, Channel>(image.Y, Y);
-        OffsetSampledWriter<T> Yfin = Y.toOffsetSampledWriter(luminaceOnePlus5);
-        Yfin.runLengthEncoding();
-
-        HT y_ac;
-        y_ac.sortTree(Yfin.huffweight_ac);
-        y_ac.writeSegmentToStream(writer, 0, 1);
-        auto y_ac_enc = y_ac.generateEncoder();
-        HT y_dc;
-        y_dc.sortTree(Yfin.huffweight_dc);
-        y_dc.writeSegmentToStream(writer, 1, 0);
-        auto y_dc_enc = y_dc.generateEncoder();
-
-        SampledWriter<T> Cb(image.width, image.height);
-        encodingProcessor.template processChannel<Transform, Channel>(image.Y, Cb);
-        OffsetSampledWriter<T> Cbfin = Cb.toOffsetSampledWriter(chrominaceOnePlus5);
-        Cbfin.runLengthEncoding();
-
-        SampledWriter<T> Cr(image.width, image.height);
-        encodingProcessor.template processChannel<Transform, Channel>(image.Y, Cr);
-        OffsetSampledWriter<T> Crfin = Cr.toOffsetSampledWriter(chrominaceOnePlus5);
-        Crfin.runLengthEncoding();
-
-        std::array<uint32_t, 256> chrom_ac, chrom_dc;
-        for(int i = 0; i < 256; ++i) {
-            chrom_ac[i] = Cbfin.huffweight_ac[i] + Crfin.huffweight_ac[i];
-            chrom_dc[i] = Cbfin.huffweight_dc[i] + Crfin.huffweight_dc[i];
-        }
-
-        HT c_ac;
-        c_ac.sortTree(chrom_ac);
-        c_ac.writeSegmentToStream(writer, 2, 1);
-        auto c_ac_enc = c_ac.generateEncoder();
-        HT c_dc;
-        c_dc.sortTree(chrom_dc);
-        c_dc.writeSegmentToStream(writer, 3, 0);
-        auto c_dc_enc = c_dc.generateEncoder();
-        SOS sos;
-        _write_segment_ref(writer, sos);
-
-        const auto rowWidth2 = image.blockRowWidth() * 2;
-        StreamWriter<T> wy1 (Yfin, y_ac_enc, y_dc_enc, writer, static_cast<const uint32_t>(image.blockRowWidth()));
-        StreamWriter<T> wy2 (Yfin, y_ac_enc, y_dc_enc, writer, static_cast<const uint32_t>(image.blockRowWidth()));
-        wy2.skipRow();
-
-        StreamWriter<T> wcb (Cbfin, c_ac_enc, c_dc_enc, writer, image.blockRowWidth());
-        StreamWriter<T> wcr (Crfin, c_ac_enc, c_dc_enc, writer, image.blockRowWidth());
-
-        for(int i = 0; i < image.blockAmount();) {
-            wy1.writeBlock();
-            wy1.writeBlock();
-            wy2.writeBlock();
-            wy2.writeBlock();
-            wcb.writeBlock();
-            wcr.writeBlock();
-
-            if(++i % image.blockRowWidth() == 0 && i != image.blockAmount())
-            {
-                wy1.skip(rowWidth2);
-                wy2.skip(rowWidth2);
-            }
-        }
-
-        writer.fillByte();
-        writeEOI(writer);
-        writer.writeOut();
-    }
 
     void processImage(BlockwiseRawImage& image, BitStream& writer) {
         writeMetadataHeaders(image.width, image.height, writer);

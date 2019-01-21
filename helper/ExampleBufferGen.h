@@ -8,23 +8,6 @@
 #include "../Image.h"
 #include "../dct/AbstractCosinusTransform.h"
 
-template<typename T>
-ColorChannel<T> generateTestBuffer(unsigned int width, unsigned int height) {
-    ColorChannel<T> cc(width, height, 8, 8);
-
-    for (unsigned int x = 0; x < width; ++x) {
-        for (int y = 0; y < height; ++y) {
-            cc.get(x, y) = FixedPointConverter<T>::convert(((x + (y << 3)) % 256) / 256.f);
-        }
-    }
-
-    return cc;
-}
-
-template<typename T>
-ColorChannel<T> generateDeinzerBuffer() {
-    return generateTestBuffer<T>(3840, 2160);
-}
 
 BlockwiseRawImage generateBlockTestBuffer(unsigned int width, unsigned int height) {
     BlockwiseRawImage bri(width, height, 255);

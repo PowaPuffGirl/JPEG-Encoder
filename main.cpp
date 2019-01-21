@@ -39,7 +39,7 @@ void full_encode(int runs, bool exportChannels, const string path) {
 
         PPMParser<BlockwiseRawImage> test(stepSize, stepSize);
         BlockwiseRawImage temp = test.parsePPM(path + ".ppm");
-        ImageProcessor<float, SeparatedCosinusTransform<float>, RawImage::ColorChannelT> ip;
+        ImageProcessor<float, SeparatedCosinusTransform<float>> ip;
         BitStream bs(path + ".jpg", temp.width, temp.height);
         ip.processImage(temp, bs);
 
