@@ -101,8 +101,7 @@ private:
     }
     void generateEncodingTable(const std::array<CountType, max_tree_depth+1>& bits, const std::vector<InputKeyType>& huffval) {
         assert(huffval.size() > 0);
-        //const auto huffvals = std::accumulate(bits.begin(), bits.end(), 0);
-        //assert(huffvals == huffval.size());
+        assert(std::accumulate(bits.begin(), bits.end(), 0) == huffval.size());
         assert((*std::max_element(huffval.begin(), huffval.end())) < lookupTable.size());
 
         std::vector<CountType> huffsize(huffval.size());
