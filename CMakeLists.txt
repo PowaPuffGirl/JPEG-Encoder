@@ -64,7 +64,6 @@ SET(MI_FILES
                 SampledWriter.h
                 helper/BlockIterator.h
                 helper/ExampleBufferGen.h
-                dct/AraiSimd.h
         dct/AraiSimdSimple.h
                 quantisation/quantisationTables.h
                 helper/ParallelFor.h
