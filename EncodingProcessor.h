@@ -61,14 +61,11 @@ public:
             OffsetSampledWriter<T>& outputY, OffsetSampledWriter<T>& outputCb, OffsetSampledWriter<T>& outputCr,
             Transform& transform, const unsigned int blockOffset, const unsigned int blockRowWidth) {
 
-        auto Yoffset = (blockOffset / blockRowWidth) * (blockRowWidth * 4) + (blockOffset % blockRowWidth) * 2;
+        auto Yoffset = blockOffset * 4;
         processRowBlock(block.Y[0][0], outputY, transform, Yoffset);
         processRowBlock(block.Y[0][1], outputY, transform, Yoffset + 1);
-
-        Yoffset += blockRowWidth + blockRowWidth;
-        processRowBlock(block.Y[1][0], outputY, transform, Yoffset);
-        processRowBlock(block.Y[1][1], outputY, transform, Yoffset + 1);
-
+        processRowBlock(block.Y[1][0], outputY, transform, Yoffset + 2);
+        processRowBlock(block.Y[1][1], outputY, transform, Yoffset + 3);
         processRowBlock(block.Cb, outputCb, transform, blockOffset);
         processRowBlock(block.Cr, outputCr, transform, blockOffset);
     }
@@ -235,27 +232,19 @@ public:
         _write_segment_ref(writer, sos);
 
         const auto rowWidth2 = image.blockRowWidth * 2;
-        StreamWriter<T> wy1 (Y, y_ac_enc, y_dc_enc, writer, static_cast<const uint32_t>(image.blockRowWidth * 2));
-        StreamWriter<T> wy2 (Y, y_ac_enc, y_dc_enc, writer, static_cast<const uint32_t>(image.blockRowWidth * 2));
-        wy2.skipRow();
-
+        StreamWriter<T> wy (Y, y_ac_enc, y_dc_enc, writer, static_cast<const uint32_t>(image.blockRowWidth * 2));
         StreamWriter<T> wcb (Cb, c_ac_enc, c_dc_enc, writer, image.blockRowWidth);
         StreamWriter<T> wcr (Cr, c_ac_enc, c_dc_enc, writer, image.blockRowWidth);
 
-        for(int i = 0; i < image.blockAmount;) {
-            wy1.writeBlock();
-            wy1.writeBlock();
-            wy2.writeBlock();
-            wy2.writeBlock();
+        int i = 0;
+        do {
+            wy.writeBlock();
+            wy.writeBlock();
+            wy.writeBlock();
+            wy.writeBlock();
             wcb.writeBlock();
             wcr.writeBlock();
-
-            if(++i % image.blockRowWidth == 0 && i != image.blockAmount)
-            {
-                wy1.skipRow();
-                wy2.skipRow();
-            }
-        }
+        } while (++i < image.blockAmount);
 
         writer.fillByte();
         writeEOI(writer);
