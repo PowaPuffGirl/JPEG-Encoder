@@ -65,8 +65,7 @@ SET(MI_FILES
                 helper/BlockIterator.h
                 helper/ExampleBufferGen.h
                 dct/AraiSimd.h
-                dct/SeparatedCosinusTransformSimd.h
-                dct/AraiSimdSimple.h
+        dct/AraiSimdSimple.h
                 quantisation/quantisationTables.h
                 helper/ParallelFor.h
                 helper/RgbToYCbCr.h HuffmenTreeSorts/NoopHuffman.h)
