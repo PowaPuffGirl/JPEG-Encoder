@@ -212,7 +212,7 @@ public:
         Y.runLengthEncoding();
         Cb.runLengthEncoding();
         Cr.runLengthEncoding();
-
+/*
         HT y_ac;
         y_ac.sortTree(Y.huffweight_ac);
         y_ac.writeSegmentToStream(writer, 2, 1);
@@ -221,39 +221,41 @@ public:
         y_dc.sortTree(Y.huffweight_dc);
         y_dc.writeSegmentToStream(writer, 0, 0);
         const auto y_dc_enc = y_dc.generateEncoder();
-
+*/
         HT c_ac;
         c_ac.sortTreeSummed(Cb.huffweight_ac, Cr.huffweight_ac);
-        c_ac.writeSegmentToStream(writer, 3, 1);
+        c_ac.writeSegmentToStream(writer, 2, 1);
         const auto c_ac_enc = c_ac.generateEncoder();
         HT c_dc;
         c_dc.sortTreeSummed(Cb.huffweight_dc, Cr.huffweight_dc);
-        c_dc.writeSegmentToStream(writer, 1, 0);
+        c_dc.writeSegmentToStream(writer, 0, 0);
         const auto c_dc_enc = c_dc.generateEncoder();
 
         SOS sos;
         _write_segment_ref(writer, sos);
 
         const auto rowWidth2 = image.blockRowWidth * 2;
+       /*
         StreamWriter<T> wy1 (Y, y_ac_enc, y_dc_enc, writer, static_cast<const uint32_t>(image.blockRowWidth * 2));
         StreamWriter<T> wy2 (Y, y_ac_enc, y_dc_enc, writer, static_cast<const uint32_t>(image.blockRowWidth * 2));
         wy2.skipRow();
-
-        StreamWriter<T> wcb (Cb, c_ac_enc, c_dc_enc, writer, image.blockRowWidth);
+*/
+        //StreamWriter<T> wcb (Cb, c_ac_enc, c_dc_enc, writer, image.blockRowWidth);
         StreamWriter<T> wcr (Cr, c_ac_enc, c_dc_enc, writer, image.blockRowWidth);
 
         for(int i = 0; i < image.blockAmount;) {
+/*
             wy1.writeBlock();
             wy1.writeBlock();
             wy2.writeBlock();
             wy2.writeBlock();
             wcb.writeBlock();
-            wcr.writeBlock();
+    */        wcr.writeBlock();
 
             if(++i % image.blockRowWidth == 0 && i != image.blockAmount)
             {
-                wy1.skipRow();
-                wy2.skipRow();
+    //            wy1.skipRow();
+      //          wy2.skipRow();
             }
         }
 
