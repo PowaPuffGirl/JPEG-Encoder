@@ -9,7 +9,7 @@
 #include "HuffmenTreeSorts/HuffmanTree.h"
 #include "EncodingProcessor.h"
 //#include "helper/TreeEfficiencyMeter.h"
-#include "dct/SeparatedCosinusTransformGlm.h"
+#include "dct/SeparatedCosinusTransform.h"
 #include "SampledWriter.h"
 #include "HuffmenTreeSorts/HuffmanTreeSimpleSort.h"
 #include "HuffmenTreeSorts/HuffmanTreeSort.h"

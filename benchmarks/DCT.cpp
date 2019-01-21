@@ -3,7 +3,7 @@
 #include "../helper/ExampleBufferGen.h"
 #include "../EncodingProcessor.h"
 #include "../dct/DirectCosinusTransform.h"
-#include "../dct/SeparatedCosinusTransformGlm.h"
+#include "../dct/SeparatedCosinusTransform.h"
 #include "../dct/AraiSimdSimple.h"
 
 template<typename Transform, typename T = float>

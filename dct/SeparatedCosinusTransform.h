@@ -66,7 +66,6 @@ public:
         generateMatFromChannel(get, X);
         mat8x8 Y(8,8);
 
-        //auto Y1 = block_prod<matrix<T>, 1024>(A, X);
         Y = block_prod<matrix<T>, 1024>(block_prod<matrix<T>, 1024>(A, X), AT);
 
         writeMat(set, Y);
