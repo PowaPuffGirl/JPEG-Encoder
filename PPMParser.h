@@ -4,6 +4,7 @@
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
+#include <mutex>
 
 #include "PixelTypes.h"
 #include "Image.h"
@@ -15,39 +16,81 @@ class BufferedReader {
 private:
     static const int bufferSize = 1 << 15; // 32kb default
     const string file;
-    std::array<char, bufferSize> buffer;
-    int offset = bufferSize, available = bufferSize;
+    char* buffer;
+    int offset = 0, available = 0;
+    int readAvailable = 0;
+    std::mutex lock;
     bool eof = false;
     ifstream input;
+    bool good = false;
+    std::thread reader;
 
     inline void refreshBuffer() {
-        if (eof)
-            throw invalid_argument("End of stream!");
 
-        // theoretically we should watch out for additional bytes
-        // but since we only ever read one byte a time after the header, this is irrelevant
-        // to be sure we have this assert
-        assert(offset >= bufferSize);
-
-        offset = 0;
-        input.read(&buffer[0], buffer.size());
-
-        if(!input) { // read error
-            available = input.gcount();
-            eof = true;
+        do {
+            lock.lock();
+            available = readAvailable;
+            if (offset == available && eof) {
+                lock.unlock();
+                throw invalid_argument("End of stream!");
+            }
+            lock.unlock();
         }
+        while(offset >= available);
+
+    }
+
+    void asyncReader() {
+        const int reserved = 1024000000;
+        buffer = static_cast<char *>(malloc(reserved));
+        if (buffer == nullptr) {
+            eof = true;
+            std::cerr << "Couldn't reserve memory\n";
+            exit(4);
+        }
+
+        int readOffset = 0;
+        bool setEof = false;
+        while(input) {
+            input.read(buffer + readOffset, bufferSize);
+
+            if(!input) { // read error
+                readOffset += input.gcount();
+                setEof = true;
+            }
+            else {
+                readOffset += bufferSize;
+            }
+
+            lock.lock();
+            readAvailable = readOffset;
+            if(setEof)
+                eof = true;
+            lock.unlock();
+        }
+
+
     }
 
 public:
-    explicit BufferedReader(const string &file) : file(file), input(file, ios::in | ios::binary) { }
+    explicit BufferedReader(const string &file)
+        : file(file), input(file, ios::in | ios::binary), good(input.is_open() && input.good()), reader([this]() { asyncReader(); })
+    {
+    }
 
-    inline bool isGood() { return input.is_open() && input.good(); }
+    ~BufferedReader() {
+        reader.join();
+        if(buffer != nullptr)
+            free(buffer);
+    }
+
+    inline bool isGood() { return good; }
 
     inline void readu16(uint16_t& inp) {
         if((offset + 1) >= available)
             refreshBuffer();
 
-        inp = static_cast<uint16_t>(buffer[offset++]);
+        inp = static_cast<uint16_t>(*(buffer + offset++));
         inp <<= 8;
         inp |= static_cast<uint16_t>(buffer[offset++]);
     }
