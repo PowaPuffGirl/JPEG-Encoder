@@ -3,6 +3,8 @@
 
 #include <Vc/Vc>
 #include <Vc/IO>
+#include <math.h>
+#include "AbstractCosinusTransform.h"
 
 #define a1 0.707106781186547524400844362104849039284835937688474036588
 #define a2 0.541196100146196984399723205366389420061072063378015444681
@@ -57,6 +59,17 @@ private:
             &ty4,
             &ty3,
             &ty6
+    };
+
+    std::array<vec8*, 8> rb_ordered = {
+            &ty0,
+            &ty1,
+            &ty2,
+            &ty3,
+            &ty4,
+            &ty5,
+            &ty6,
+            &ty7
     };
 
 public:
