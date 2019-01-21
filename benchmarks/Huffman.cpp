@@ -5,7 +5,6 @@
 #include "../segments/SOF0.h"
 #include "../HuffmenTreeSorts/HuffmanTreeIsoSort.h"
 #include "../HuffmenTreeSorts/HuffmanTreeSimpleSort.h"
-#include "../helper/TreeEfficiencyMeter.h"
 #include "../HuffmenTreeSorts/HuffmanTreeSort.h"
 
 static void BM_WriteDhtSegment(benchmark::State& state) {
@@ -69,7 +68,6 @@ static void BM_WriteDhtSegmentIso(benchmark::State& state) {
 template<typename Tree>
 static void BM_HuffmantreeSimple(benchmark::State& state) {
     std::array<uint32_t, 256> values;
-    TreeEfficiencyMeter tem;
 
     for (uint16_t i = 0; i < values.size(); i++) {
         values[i] = i;
@@ -78,17 +76,12 @@ static void BM_HuffmantreeSimple(benchmark::State& state) {
     for (auto _ : state) {
         Tree tree;
         tree.sortTree(values);
-
-        tem.gsample(state, tree);
     }
-
-    tem.gWriteOutput(state);
 }
 
 template<typename Tree>
 static void BM_HuffmantreeRandom(benchmark::State& state) {
     std::array<uint32_t, 256> rand_values;
-    TreeEfficiencyMeter tem;
 
     std::lognormal_distribution<double> distribution(0.0,1.0);
     std::default_random_engine generator(42);
@@ -99,11 +92,7 @@ static void BM_HuffmantreeRandom(benchmark::State& state) {
     for (auto _ : state) {
         Tree tree;
         tree.sortTree(rand_values);
-
-        tem.gsample(state, tree);
     }
-
-    tem.gWriteOutput(state);
 }
 
 typedef HuffmanTreeSimpleSort<256, uint8_t, uint32_t, uint16_t> HtSimple;

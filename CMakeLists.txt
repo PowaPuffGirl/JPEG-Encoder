@@ -49,8 +49,7 @@ SET(MI_FILES
                 segments/DHT.h
                 segments/SOS.h
                 helper/EndianConvert.h
-                helper/TreeEfficiencyMeter.h
-                HuffmanEncoder.h
+        HuffmanEncoder.h
                 HuffmenTreeSorts/HuffmanTreeSimpleSort.h
                 HuffmenTreeSorts/HelperStructs.h
                 HuffmenTreeSorts/HuffmanTreeIsoSort.h

@@ -8,7 +8,6 @@
 #include "segments/SOF0.h"
 #include "HuffmenTreeSorts/HuffmanTree.h"
 #include "EncodingProcessor.h"
-//#include "helper/TreeEfficiencyMeter.h"
 #include "dct/SeparatedCosinusTransform.h"
 #include "SampledWriter.h"
 #include "HuffmenTreeSorts/HuffmanTreeSimpleSort.h"
