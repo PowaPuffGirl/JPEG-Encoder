@@ -4,7 +4,6 @@
 #include "../EncodingProcessor.h"
 #include "../dct/DirectCosinusTransform.h"
 #include "../dct/SeparatedCosinusTransformGlm.h"
-#include "../dct/AraiCosinusTransform.h"
 #include "../dct/AraiSimdSimple.h"
 
 template<typename Transform, typename T = float>
@@ -86,31 +85,26 @@ static void TestConversionAll(benchmark::State& state) {
     SampledWriter<T> outBufferDCT(sampleBuffer.widthPadded, sampleBuffer.heightPadded);
     SampledWriter<T> outBufferSCT(sampleBuffer.widthPadded, sampleBuffer.heightPadded);
     SampledWriter<T> outBufferArai(sampleBuffer.widthPadded, sampleBuffer.heightPadded);
-    SampledWriter<T> outBufferAraiSS(sampleBuffer.widthPadded, sampleBuffer.heightPadded);
 
     EncodingProcessor<T> encProc;
-    AraiCosinusTransform<T> act;
-    AraiSimdSimple<T> araiSS;
+    AraiSimdSimple<T> arai;
     DirectCosinusTransform<T> dct;
     SeparatedCosinusTransform<T> sct;
 
     for (auto _ : state) {
-        encProc.processChannel(sampleBuffer, act, outBufferArai);
         encProc.processChannel(sampleBuffer, sct, outBufferSCT);
-        encProc.processChannel(sampleBuffer, araiSS, outBufferAraiSS);
+        encProc.processChannel(sampleBuffer, arai, outBufferArai);
         encProc.processChannel(sampleBuffer, dct, outBufferDCT);
     }
 
     state.counters["Arai <-> SCT"] = outBufferArai.errorTo(outBufferSCT);
     state.counters["Arai <-> DCT"] = outBufferArai.errorTo(outBufferDCT);
-    state.counters["Arai <-> AraiSS"] = outBufferArai.errorTo(outBufferAraiSS);
     state.counters["DCT <-> SCT"] = outBufferDCT.errorTo(outBufferSCT);
 }
 
 //BENCHMARK(TestConversionAll);
 
 BENCHMARK_TEMPLATE(TestConversionDeinzer, DirectCosinusTransform<float>);
-BENCHMARK_TEMPLATE(TestConversionDeinzer, AraiCosinusTransform<float>);
 BENCHMARK_TEMPLATE(TestConversionDeinzer, SeparatedCosinusTransform<float>);
 BENCHMARK_TEMPLATE(TestConversionDeinzer, AraiSimdSimple<float>);
 BENCHMARK_TEMPLATE(TestConversionDeinzer, AraiSimdSimple<int32_t>, int32_t);
@@ -126,7 +120,6 @@ BENCHMARK_TEMPLATE(TestConversionBlockwiseAraiFloatThreaded, 16, DirectCosinusTr
 BENCHMARK_TEMPLATE(TestConversionBlockwiseAraiFloatThreaded, 16, SeparatedCosinusTransform<float>);
 
 BENCHMARK_TEMPLATE(TestConversionSmall, DirectCosinusTransform<float>);
-BENCHMARK_TEMPLATE(TestConversionSmall, AraiCosinusTransform<float>);
 BENCHMARK_TEMPLATE(TestConversionSmall, SeparatedCosinusTransform<float>);
 BENCHMARK_TEMPLATE(TestConversionSmall, AraiSimdSimple<float>);
 BENCHMARK_TEMPLATE(TestConversionSmall, AraiSimdSimple<int32_t>, int32_t);

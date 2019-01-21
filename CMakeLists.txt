@@ -58,8 +58,7 @@ SET(MI_FILES
                 HuffmenTreeSorts/HuffmanTree.h
                 dct/DirectCosinusTransform.h
                 dct/AbstractCosinusTransform.h
-                dct/AraiCosinusTransform.h
-                dct/SeparatedCosinusTransformGlm.h
+        dct/SeparatedCosinusTransformGlm.h
                 EncodingProcessor.h
                 SampledWriter.h
                 helper/BlockIterator.h
