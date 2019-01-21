@@ -24,23 +24,36 @@ void full_encode(int runs, bool exportChannels = false, const string path = "../
 
 void runAllTestImages();
 
-int main() {
-    full_encode(10);
-    runAllTestImages();
-
+int main(int argc, char* argv[]) {
+    std::cout << argv[0] << std::endl;
+    if(argc < 2) {
+        std::cerr << "Please add a Path to the ppm File as a program argument"
+                  << std::endl
+                  << "Optional to amount of runs as a second param default = 10"
+                  << std::endl;
+        return 1;
+    }
+    std::string pathToFile = argv[1];
+    if (argc == 3) {
+        int runs = atoi(argv[2]);
+        full_encode(runs, false, pathToFile);
+    } else {
+        full_encode(10, false, pathToFile);
+    }
     return 0;
 }
 
-void full_encode(int runs, bool exportChannels, const string path) {
+void full_encode(int runs, bool exportChannels, const std::string path) {
 
     long w = 0;
     for (int i = 0; i < runs; ++i) {
         auto startTime = std::chrono::high_resolution_clock::now();
 
         PPMParser<BlockwiseRawImage> test(stepSize, stepSize);
-        BlockwiseRawImage temp = test.parsePPM(path + ".ppm");
+        BlockwiseRawImage temp = test.parsePPM(path);
         ImageProcessor<float, SeparatedCosinusTransform<float>> ip;
-        BitStream bs(path + ".jpg", temp.width, temp.height);
+        std::string output = path.substr(0, path.size()-4);
+        BitStream bs(output + ".jpg", temp.width, temp.height);
         ip.processImage(temp, bs);
 
         auto endTimeWithWrite = std::chrono::high_resolution_clock::now();
