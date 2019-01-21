@@ -6,7 +6,6 @@
 #include <vector>
 #include <stdexcept>
 #include "ppmCreator.h"
-#include "helper/BlockIterator.h"
 #include "helper/RgbToYCbCr.h"
 
 

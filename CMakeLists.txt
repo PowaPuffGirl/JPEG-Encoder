@@ -61,8 +61,7 @@ SET(MI_FILES
         dct/SeparatedCosinusTransform.h
                 EncodingProcessor.h
                 SampledWriter.h
-                helper/BlockIterator.h
-                helper/ExampleBufferGen.h
+        helper/ExampleBufferGen.h
         dct/AraiSimdSimple.h
                 quantisation/quantisationTables.h
                 helper/ParallelFor.h
