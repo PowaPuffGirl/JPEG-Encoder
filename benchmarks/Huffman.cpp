@@ -106,27 +106,10 @@ static void BM_HuffmantreeRandom(benchmark::State& state) {
     tem.gWriteOutput(state);
 }
 
-/*
-static void BM_(benchmark::State& state) {
-    for (auto _ : state) {
-
-    }
-}
-static void BM_(benchmark::State& state) {
-    for (auto _ : state) {
-
-    }
-}
-static void BM_(benchmark::State& state) {
-    for (auto _ : state) {
-
-    }
-}*/
-
 typedef HuffmanTreeSimpleSort<256, uint8_t, uint32_t, uint16_t> HtSimple;
 typedef HuffmanTreeSort<256, uint8_t, uint32_t, uint16_t> HtNormal;
 typedef HuffmanTreeIsoSort<256, uint8_t, uint32_t, uint16_t> HtIso;
-/*
+
 BENCHMARK(BM_WriteDhtSegment);
 BENCHMARK(BM_WriteDhtSegmentIso);
 BENCHMARK_TEMPLATE(BM_HuffmantreeSimple, HtSimple);
@@ -135,4 +118,3 @@ BENCHMARK_TEMPLATE(BM_HuffmantreeSimple, HtIso);
 BENCHMARK_TEMPLATE(BM_HuffmantreeRandom, HtSimple);
 BENCHMARK_TEMPLATE(BM_HuffmantreeRandom, HtNormal);
 BENCHMARK_TEMPLATE(BM_HuffmantreeRandom, HtIso);
- */
