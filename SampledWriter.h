@@ -134,7 +134,6 @@ private:
     const QuantisationTable& qTable;
 
 public:
-    //OffsetSampledWriter(OffsetSampledWriter& other) = delete;
     explicit OffsetSampledWriter(const uint blocks, const QuantisationTable& qTable)
         : size(blocks * blocksize), qTable(qTable) {
         // resize, but substract one for each block because the first coefficient is AC
@@ -210,7 +209,7 @@ private:
     const OffsetSampledWriter<T, int16_t> channel;
     const HuffmanEncoder& ac_encoder, dc_encoder;
     const uint32_t rowWidth;
-    uint32_t offset = 0, blockOffset = 0;
+    uint32_t offset = 0;
     BitStream& stream;
 
 public:
@@ -264,70 +263,6 @@ public:
         dc_encoder.write(stream, p.category);
         if (p.category != 0)
             stream.appendU16(p.bitPattern, p.category);
-    }
-};
-
-
-template<typename T>
-class SampledWriter {
-private:
-    using uint = unsigned int;
-
-    std::vector<T> output;
-    const uint xsize, ysize;
-    const uint blocksize = 8;
-
-public:
-    SampledWriter(const uint xsize, const uint ysize) : xsize(xsize), ysize(ysize) {
-        output.resize(xsize * ysize, 0);
-    }
-
-    std::function<T&(uint, uint)> getBlockSetter(uint blockx, uint blocky) {
-        assert(blocksize == 8); // for << 3
-
-        auto vector = &output;
-        const auto pos = blocky * xsize + blockx;
-        return [vector, pos](uint x, uint y) -> T& {
-            return (*vector).at(pos + (y << 3) + x);
-        };
-    }
-
-    OffsetSampledWriter<T> toOffsetSampledWriter(const QuantisationTable& qt) {
-        OffsetSampledWriter<T> outputw((xsize * ysize) / (blocksize * blocksize), qt);
-        const auto widthInBlocks = xsize / blocksize;
-
-        int offset = 0;
-        for (uint x = 0; x < xsize; ++x) {
-            for (uint y = 0; y < ysize; ++y) {
-                outputw.set(output.at(offset++), ((y / 8) * widthInBlocks) + (x / 8), x % 8, y % 8);
-            }
-        }
-
-        return outputw;
-    }
-
-    bool compareWith(SampledWriter<T> other) {
-        assert(other.output.size() == output.size());
-        for (int i = 0; i < output.size(); i++) {
-            if (output[i] != other.output[i]) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    double errorTo(SampledWriter<T> other) {
-        assert(other.output.size() == output.size());
-        double errsum = 0;
-        for (int i = 0; i < output.size(); i++) {
-            if (output[i] != other.output[i]) {
-                errsum += abs(output[i] - other.output[i]);
-                //auto err = abs(output[i] - other.output[i]);
-                //errsum += err*err;
-            }
-        }
-        //return sqrt(errsum / output.size());
-        return errsum / output.size();
     }
 };
 
