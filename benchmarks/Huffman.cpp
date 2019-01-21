@@ -8,7 +8,7 @@
 #include "../HuffmenTreeSorts/HuffmanTreeSort.h"
 
 static void BM_WriteDhtSegment(benchmark::State& state) {
-    APP0 app0(1, 1);
+    APP0 app0;
     SOF0 sof0(16, 16);
 
     std::array<uint32_t, 64> rand_values;
@@ -37,7 +37,7 @@ static void BM_WriteDhtSegment(benchmark::State& state) {
 }
 
 static void BM_WriteDhtSegmentIso(benchmark::State& state) {
-    APP0 app0(1, 1);
+    APP0 app0;
     SOF0 sof0(16, 16);
 
     std::array<uint32_t, 64> rand_values;
