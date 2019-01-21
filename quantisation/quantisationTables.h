@@ -5,7 +5,7 @@
 
 using QuantisationTable = std::array<int, 64>;
 
-const static QuantisationTable luminaceOnePlus51 = {
+const static QuantisationTable luminaceOnePlus5 = {
         2,  1,  1,  2,  2,  4,  5,  6,
         1,  1,  1,  2,  3,  6,  6,  6,
         1,  1,  2,  2,  4,  6,  7,  6,
@@ -16,7 +16,7 @@ const static QuantisationTable luminaceOnePlus51 = {
         7,  9, 10, 10, 11, 10, 10, 10
 };
 
-const static QuantisationTable chrominaceOnePlus51 = {
+const static QuantisationTable chrominaceOnePlus5 = {
         2,  2,  2,  5, 10, 10, 10, 10,
         2,  2,  3,  7, 10, 10, 10, 10,
         2,  3,  6, 10, 10, 10, 10, 10,
@@ -27,7 +27,7 @@ const static QuantisationTable chrominaceOnePlus51 = {
         10, 10, 10, 10, 10, 10, 10, 10
 };
 
-const static QuantisationTable luminaceOnePlus5 = {
+const static QuantisationTable luminaceOnePlus51 = {
         1,  1,  1,  1, 1, 1, 1, 1,
         1,  1,  1,  1, 1, 1, 1, 1,
         1,  1,  1, 1, 1, 1, 1, 1,
@@ -38,7 +38,7 @@ const static QuantisationTable luminaceOnePlus5 = {
         1, 1, 1, 1, 1, 1, 1, 1
 };
 
-const static QuantisationTable chrominaceOnePlus5 = {
+const static QuantisationTable chrominaceOnePlus51 = {
         1,  1,  1,  1, 1, 1, 1, 1,
         1,  1,  1,  1, 1, 1, 1, 1,
         1,  1,  1, 1, 1, 1, 1, 1,
