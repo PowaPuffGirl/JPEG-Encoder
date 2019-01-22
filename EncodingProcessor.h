@@ -105,13 +105,11 @@ public:
             }
 
             const int prevStop = blockOffset;
-            blockOffset += image.blockRowWidth * (rowsReady - rowsProcessed);
+            const int nextStop = blockOffset + image.blockRowWidth * (rowsReady - rowsProcessed);
 
-            pFor.RunP([&encodingProcessor, &Y, &Cb, &Cr, &transform, &image](const int min, const int max) {
-                for(unsigned int i = min; i < max; ++i) {
-                    encodingProcessor.template processBlock<Transform>(image.blocks[i], Y, Cb, Cr, transform, i);
-                }
-            }, prevStop, blockOffset);
+            for(; blockOffset < nextStop; ++blockOffset) {
+                encodingProcessor.template processBlock<Transform>(image.blocks[blockOffset], Y, Cb, Cr, transform, blockOffset);
+            }
 
             Y.partialRunLengthEncoding(prevStop * 4, blockOffset * 4);
             Cb.partialRunLengthEncoding(prevStop, blockOffset);
