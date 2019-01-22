@@ -49,7 +49,7 @@ int main(int argc, char* argv[]) {
 
 void full_encode(int runs, bool exportChannels, const std::string path) {
 
-    long w = 0;
+    long w = 0, wW = 0;
     for (int i = 0; i < runs; ++i) {
         auto startTime = std::chrono::high_resolution_clock::now();
 
@@ -60,8 +60,12 @@ void full_encode(int runs, bool exportChannels, const std::string path) {
         BitStream bs(output + ".jpg", temp->width, temp->height);
         ip.processImage(*temp, bs);
 
+        auto endTime = std::chrono::high_resolution_clock::now();
+        w += std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
+        bs.writeOut();
+
         auto endTimeWithWrite = std::chrono::high_resolution_clock::now();
-        w += std::chrono::duration_cast<std::chrono::milliseconds>(endTimeWithWrite - startTime).count();
+        wW += std::chrono::duration_cast<std::chrono::milliseconds>(endTimeWithWrite - startTime).count();
 
         if (exportChannels) {
             temp->exportYPpm("bw_y");
@@ -71,7 +75,8 @@ void full_encode(int runs, bool exportChannels, const std::string path) {
 
         }
     }
-    std::cout << "Time to write full image: " << static_cast<double>(w) / (runs) << " ms.\n";
+    std::cout << "Time to encode full image: " << static_cast<double>(w) / (runs) << " ms, time to encode and write: "
+        << static_cast<double>(wW) / runs << " ms.\n";
 }
 
 void runAllTestImages() {

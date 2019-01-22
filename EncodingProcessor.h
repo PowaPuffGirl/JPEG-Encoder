@@ -164,7 +164,6 @@ public:
 
         writer.fillByte();
         writeEOI(writer);
-        writer.writeOut();
     }
 
     void writeMetadataHeaders(const unsigned int width, const unsigned int height, BitStream& bs) {
