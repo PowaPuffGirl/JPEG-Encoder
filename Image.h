@@ -199,14 +199,14 @@ public:
 
         // fill in borders/corners
         if(y == heightMinusOne && innerY != 15) {
-            //for(int iY = 16 - innerY; iY < 16; ++iY)
-                //block.setPixel(innerX, iY, red, green, blue);
+            for(int iY = innerY; iY < 16; ++iY)
+                block.setPixel(innerX, iY, red, green, blue);
         }
 
         if(x == widthMinusOne) {
             if(innerX != 15) {
-                //for(int iX = 16 - innerX; iX < 16; ++iX)
-                    //block.setPixel(iX, innerY, red, green, blue);
+                for(int iX = innerX; iX < 16; ++iX)
+                    block.setPixel(iX, innerY, red, green, blue);
 
             }
 
@@ -218,9 +218,9 @@ public:
         }
 
         if(y == heightMinusOne && x == widthMinusOne) {
-            //for(int iX = 16 - innerX; iX < 16; ++iX)
-                //for(int iY = 16 - innerY; iY < 16; ++iY)
-                    //block.setPixel(iX, iY, red, green, blue);
+            for(int iX = innerX; iX < 16; ++iX)
+                for(int iY = innerY; iY < 16; ++iY)
+                    block.setPixel(iX, iY, red, green, blue);
 
             // bottom-right corner => last block. We need to set this here because if the image height is not
             // 16-aligned, the above increment will not be triggered
