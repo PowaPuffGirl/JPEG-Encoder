@@ -161,5 +161,5 @@ static void TestVcVectorSet(benchmark::State& state) {
     }
 }
 
-BENCHMARK(TestVcSingleSet);
-BENCHMARK(TestVcVectorSet);
+//BENCHMARK(TestVcSingleSet);
+//BENCHMARK(TestVcVectorSet);

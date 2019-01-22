@@ -63,7 +63,7 @@ static void Log2TestCounting(benchmark::State& state) {
    }
 }
 
-BENCHMARK(Log2TestBsr);
-BENCHMARK(Log2TestBuiltin);
-BENCHMARK(Log2TestCounting);
-BENCHMARK(Log2TestStd);
+//BENCHMARK(Log2TestBsr);
+//BENCHMARK(Log2TestBuiltin);
+//BENCHMARK(Log2TestCounting);
+//BENCHMARK(Log2TestStd);

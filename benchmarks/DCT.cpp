@@ -79,20 +79,21 @@ static void TestConversionSmall(benchmark::State& state) {
     }
 }
 
-BENCHMARK_TEMPLATE(TestConversionDeinzer, DirectCosinusTransform<float>);
-BENCHMARK_TEMPLATE(TestConversionDeinzer, SeparatedCosinusTransform<float>);
-BENCHMARK_TEMPLATE(TestConversionDeinzer, AraiSimdSimple<float>);
+//BENCHMARK_TEMPLATE(TestConversionDeinzer, DirectCosinusTransform<float>);
+//BENCHMARK_TEMPLATE(TestConversionDeinzer, SeparatedCosinusTransform<float>);
+//BENCHMARK_TEMPLATE(TestConversionDeinzer, AraiSimdSimple<float>);
 //BENCHMARK_TEMPLATE(TestConversionDeinzer, AraiSimdSimple<int32_t>, int32_t);
 //BENCHMARK_TEMPLATE(TestConversionDeinzer, AraiSimdSimple<short>, short);
+//BENCHMARK_TEMPLATE(TestConversionBlockwiseAraiFloatThreaded, 2);
+//BENCHMARK_TEMPLATE(TestConversionBlockwiseAraiFloatThreaded, 4);
+//BENCHMARK_TEMPLATE(TestConversionBlockwiseAraiFloatThreaded, 8);
+BENCHMARK_TEMPLATE(TestConversionBlockwiseAraiFloatThreaded, 16);
+BENCHMARK_TEMPLATE(TestConversionBlockwiseAraiFloatThreaded, 16, SeparatedCosinusTransform<float>);
+BENCHMARK_TEMPLATE(TestConversionBlockwiseAraiFloatThreaded, 16, DirectCosinusTransform<float>);
+
 BENCHMARK_TEMPLATE(TestConversionBlockwiseAraiFloat, DirectCosinusTransform<float>);
 BENCHMARK_TEMPLATE(TestConversionBlockwiseAraiFloat, SeparatedCosinusTransform<float>);
 BENCHMARK_TEMPLATE(TestConversionBlockwiseAraiFloat, AraiSimdSimple<float>);
-BENCHMARK_TEMPLATE(TestConversionBlockwiseAraiFloatThreaded, 2);
-BENCHMARK_TEMPLATE(TestConversionBlockwiseAraiFloatThreaded, 4);
-BENCHMARK_TEMPLATE(TestConversionBlockwiseAraiFloatThreaded, 8);
-BENCHMARK_TEMPLATE(TestConversionBlockwiseAraiFloatThreaded, 16);
-BENCHMARK_TEMPLATE(TestConversionBlockwiseAraiFloatThreaded, 16, DirectCosinusTransform<float>);
-BENCHMARK_TEMPLATE(TestConversionBlockwiseAraiFloatThreaded, 16, SeparatedCosinusTransform<float>);
 
 BENCHMARK_TEMPLATE(TestConversionSmall, DirectCosinusTransform<float>);
 BENCHMARK_TEMPLATE(TestConversionSmall, SeparatedCosinusTransform<float>);

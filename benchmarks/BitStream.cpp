@@ -63,11 +63,11 @@ static void BM_Defined10KKWrite(benchmark::State& state) {
 }
 
 
-BENCHMARK_TEMPLATE(BM_BasicBitAppending, BitStreamSeb);
-BENCHMARK_TEMPLATE(BM_BasicBitAppending, BitStreamDeinzer);
-BENCHMARK_TEMPLATE(BM_SegmentWrite, BitStreamSeb);
-BENCHMARK_TEMPLATE(BM_SegmentWrite, BitStreamDeinzer);
-BENCHMARK_TEMPLATE(BM_Random10KKWrite, BitStreamSeb);
-BENCHMARK_TEMPLATE(BM_Random10KKWrite, BitStreamDeinzer);
-BENCHMARK_TEMPLATE(BM_Defined10KKWrite, BitStreamSeb);
-BENCHMARK_TEMPLATE(BM_Defined10KKWrite, BitStreamDeinzer);
+//BENCHMARK_TEMPLATE(BM_BasicBitAppending, BitStreamSeb);
+//BENCHMARK_TEMPLATE(BM_BasicBitAppending, BitStreamDeinzer);
+//BENCHMARK_TEMPLATE(BM_SegmentWrite, BitStreamSeb);
+//BENCHMARK_TEMPLATE(BM_SegmentWrite, BitStreamDeinzer);
+//BENCHMARK_TEMPLATE(BM_Random10KKWrite, BitStreamSeb);
+//BENCHMARK_TEMPLATE(BM_Random10KKWrite, BitStreamDeinzer);
+//BENCHMARK_TEMPLATE(BM_Defined10KKWrite, BitStreamSeb);
+//BENCHMARK_TEMPLATE(BM_Defined10KKWrite, BitStreamDeinzer);
