@@ -24,7 +24,7 @@ public:
     template <typename Transform>
     void processBlock(Block<T>& block,
             OffsetSampledWriter<T>& outputY, OffsetSampledWriter<T>& outputCb, OffsetSampledWriter<T>& outputCr,
-            Transform& transform, const unsigned int blockOffset) {
+            Transform& transform, const unsigned int blockOffset) const {
 
         auto Yoffset = blockOffset * 4;
         processRowBlock(block.Y[0][0], outputY, transform, Yoffset);
@@ -36,7 +36,7 @@ public:
     }
 
     template <typename Transform>
-    void processBlockImageBenchmark(BlockwiseRawImage& image, Transform& transform, std::function<void(uint8_t, uint8_t, const T c)> noop) {
+    void processBlockImageBenchmark(BlockwiseRawImage& image, Transform& transform, std::function<void(uint8_t, uint8_t, const T c)> noop) const {
         // this method has an empty write and skips color channels
         for(int i = 0; i < image.blockAmount; ++i)
         {
@@ -52,7 +52,7 @@ public:
             BlockwiseRawImage& image,
             std::array<Transform, threads>& transforms,
             const std::function<void(uint8_t, uint8_t, const T c)> noop,
-            ParallelFor<threads>& pFor) {
+            ParallelFor<threads>& pFor) const {
         // this method has an empty write and skips color channels
 
         pFor.RunP([ &image, &noop, &transforms](const int min, const int max, const int th) {
@@ -69,7 +69,7 @@ public:
 
 private:
     template <typename Transform>
-    inline void processRowBlock(typename Block<T>::rowBlock& block, OffsetSampledWriter<T>& output, Transform& transform, const unsigned int offset) {
+    inline void processRowBlock(typename Block<T>::rowBlock& block, OffsetSampledWriter<T>& output, Transform& transform, const unsigned int offset) const {
         //void transformBlock(rowBlock& block, const std::function<void (CoordType, CoordType, T&)>& set)
         transform.template transformBlock<unsigned int>(block, [offset, &output](const unsigned int x, const unsigned int y, const T v) {
             output.set(v, offset, x, y);
@@ -85,10 +85,11 @@ public:
     //using HT = NoopHuffman<256, uint8_t, uint32_t, uint8_t, 16>;
 //    using HT = HuffmanTreeSort<256, uint8_t, uint32_t, uint8_t, 16>;
     ImageProcessor() = default;
+    ParallelFor<4> pFor;
 
     void processImage(BlockwiseRawImage& image, BitStream& writer) {
         writeMetadataHeaders(image.width, image.height, writer);
-        EncodingProcessor<T> encodingProcessor;
+        const EncodingProcessor<T> encodingProcessor;
         OffsetSampledWriter<T> Y(image.blockAmount * 4, luminaceOnePlus5),
             Cb(image.blockAmount, chrominaceOnePlus5),
             Cr(image.blockAmount, chrominaceOnePlus5);
@@ -104,19 +105,26 @@ public:
             }
 
             const int prevStop = blockOffset;
-            const int nextStop = blockOffset + image.blockRowWidth * (rowsReady - rowsProcessed);
-            for(; blockOffset  < nextStop; ++blockOffset) {
-                encodingProcessor.template processBlock<Transform>(image.blocks[blockOffset], Y, Cb, Cr, transform, blockOffset);
-            }
+            blockOffset += image.blockRowWidth * (rowsReady - rowsProcessed);
+
+            pFor.RunP([&encodingProcessor, &Y, &Cb, &Cr, &transform, &image](const int min, const int max) {
+                for(unsigned int i = min; i < max; ++i) {
+                    encodingProcessor.template processBlock<Transform>(image.blocks[i], Y, Cb, Cr, transform, i);
+                }
+            }, prevStop, blockOffset);
+
+            Y.partialRunLengthEncoding(prevStop * 4, blockOffset * 4);
+            Cb.partialRunLengthEncoding(prevStop, blockOffset);
+            Cr.partialRunLengthEncoding(prevStop, blockOffset);
 
             rowsProcessed = rowsReady;
         }
 
 
 
-        Y.runLengthEncoding();
-        Cb.runLengthEncoding();
-        Cr.runLengthEncoding();
+        //Y.runLengthEncoding();
+        //Cb.runLengthEncoding();
+        //Cr.runLengthEncoding();
 
         HT y_ac;
         y_ac.sortTree(Y.huffweight_ac);
