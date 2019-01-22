@@ -20,37 +20,32 @@
 
 const unsigned int stepSize = 8;
 
-void full_encode(int runs, bool exportChannels = false, const string path = "../output/test");
+void full_encode(int runtime, bool exportChannels = false, const string path = "../output/test");
 
 void runAllTestImages();
 
 int main(int argc, char* argv[]) {
-    //full_encode(1, false, "../output/test_full.ppm");
-    runAllTestImages();
-    return 0;
-
     std::cout << argv[0] << std::endl;
     if(argc < 2) {
-        std::cerr << "Please add a Path to the ppm File as a program argument"
-                  << std::endl
-                  << "Optional to amount of runs as a second param default = 10"
+        std::cerr << "Usage: ./Medieninfo path.ppm [runtime in s]"
                   << std::endl;
         return 1;
     }
     std::string pathToFile = argv[1];
     if (argc == 3) {
         int runs = atoi(argv[2]);
-        full_encode(runs, false, pathToFile);
+        full_encode(runs * 1000, false, pathToFile);
     } else {
-        full_encode(10, false, pathToFile);
+        full_encode(0, false, pathToFile);
     }
     return 0;
 }
 
-void full_encode(int runs, bool exportChannels, const std::string path) {
+void full_encode(int runtime, bool exportChannels, const std::string path) {
 
     long w = 0, wW = 0;
-    for (int i = 0; i < runs; ++i) {
+    int runs = 0;
+    for (;;) {
         auto startTime = std::chrono::high_resolution_clock::now();
 
         PPMParser<BlockwiseRawImage> test(stepSize, stepSize);
@@ -72,39 +67,42 @@ void full_encode(int runs, bool exportChannels, const std::string path) {
             temp->exportCbPpm("bw_cb");
             temp->exportCrPpm("bw_cr");
             temp->exportFullPpm("bw_full");
-
         }
+
+        ++runs;
+        if(w > runtime)
+            break;
     }
     std::cout << "Time to encode full image: " << static_cast<double>(w) / (runs) << " ms, time to encode and write: "
-        << static_cast<double>(wW) / runs << " ms.\n";
+        << static_cast<double>(wW) / runs << " ms (with " << runs << " sample runs).\n";
 }
 
 void runAllTestImages() {
 
 
 //    std::thread tx1([]() {
-        full_encode(1, false, "../output/test_gradient.ppm");
+        full_encode(10, false, "../output/test_gradient.ppm");
 //    });
 //    std::thread tx2([]() {
-        full_encode(1, false, "../output/test_red.ppm");
+        full_encode(10, false, "../output/test_red.ppm");
 //    });
 //    std::thread tx3([]() {
-        full_encode(1, false, "../output/test_red64.ppm");
+        full_encode(10, false, "../output/test_red64.ppm");
 //    });
 //    std::thread tx4([]() {
-        full_encode(1, false, "../output/test_128_random.ppm");
+        full_encode(10, false, "../output/test_128_random.ppm");
 //    });
 //    std::thread tx5([]() {
-        full_encode(1, false, "../output/31x31-synth.ppm");
+        full_encode(10, false, "../output/31x31-synth.ppm");
 //    });
 //    std::thread tx6([]() {
-        full_encode(1, false, "../output/test_blocked.ppm");
+        full_encode(10, false, "../output/test_blocked.ppm");
 //    });
 //    std::thread tx7([]() {
-        full_encode(1, false, "../output/test_full.ppm");
+        full_encode(10, false, "../output/test_full.ppm");
 //    });
 
-      full_encode(1, false, "../output/test.ppm");
+      full_encode(10, false, "../output/test.ppm");
 
 //    tx1.join();
 //    tx2.join();
