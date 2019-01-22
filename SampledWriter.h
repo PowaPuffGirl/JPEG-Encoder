@@ -165,10 +165,17 @@ public:
     }
 
     void runLengthEncoding() {
-        Tout prev_dc = 0;
-        int ac_offset = 0;
-        for(int b = 0; b < output_ac.size(); b += 63) {
-            Tout cur_dc = output_dc[ac_offset++];
+        partialRunLengthEncoding(0, output_dc.size());
+    }
+
+    void partialRunLengthEncoding(const int start, int stop) {
+        Tout prev_dc = (start == 0) ? 0 : output_dc[start - 1];
+        int dc_offset = start;
+
+        stop *= 63;
+        for(int b = (start * 63); b < stop; b += 63) {
+
+            Tout cur_dc = output_dc[dc_offset++];
             auto p = Pair<uint8_t, Tout>(cur_dc - prev_dc);
             ++huffweight_dc[p.category];
             this->runLengthEncoded.emplace_back(p);

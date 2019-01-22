@@ -112,6 +112,9 @@ public:
 
 template<typename Image>
 class PPMParser {
+private:
+    std::thread reader;
+
 public:
     const unsigned int stepX, stepY;
     PPMParser(unsigned int stepX, unsigned int stepY)
@@ -119,10 +122,17 @@ public:
 
     }
 
-    Image parsePPM(const string path = "../output/test.ppm") {
-        BufferedReader input(path);
+    ~PPMParser() {
+        if(reader.joinable()) {
+            reader.join();
+        }
+    }
 
-        if (input.isGood()) {
+    std::shared_ptr<Image> parsePPM(const string path = "../output/test.ppm") {
+        shared_ptr<BufferedReader> inputPtr(new BufferedReader(path));
+
+        if (inputPtr->isGood()) {
+            auto& input = *inputPtr;
 
             // read the first two bytes (header)
             uint16_t header = 0;
@@ -135,29 +145,36 @@ public:
             const unsigned int width = getNextInteger(input);
             const unsigned int height = getNextInteger(input);
             const unsigned int colordepth = getNextInteger(input);
+            const unsigned int pixelCount = width*height;
 
 #ifndef NDEBUG
             cout << "w: " << width << " h:" << height << " mv:" << colordepth << "\n";
 #endif
 
-            Image rawImage(width, height, colordepth, stepX, stepY);
+            shared_ptr<Image> rawImage(new Image(width, height, colordepth, stepX, stepY));
 
-            unsigned int r, g, b, offset = 0;
-            try {
+            reader = std::thread([inputPtr, rawImage, pixelCount]() {
+                unsigned int r, g, b, offset = 0;
+                try {
+                    auto& input = *inputPtr;
 
-                while (true) {
-                    r = getNextInteger(input);
-                    g = getNextInteger(input);
-                    b = getNextInteger(input);
+                    while (offset < pixelCount) {
+                        r = getNextInteger(input);
+                        g = getNextInteger(input);
+                        b = getNextInteger(input);
 
-                    rawImage.setValue(offset++, r, g, b);
+                        rawImage->setValue(offset++, r, g, b);
+                    }
                 }
-            }
-            catch (invalid_argument &ia) {
+                catch (invalid_argument &ia) {
+                    cerr << "Error: Image only had " << offset << " color values, but " << pixelCount << " were needed!\n";
+                    exit(5);
+                }
 #ifndef NDEBUG
                 cout << "end of stream";
 #endif
-            }
+            });
+
 
             return rawImage;
         } else {
@@ -167,7 +184,7 @@ public:
 
 private:
 
-    unsigned int getNextInteger(BufferedReader &stream) {
+    static inline unsigned int getNextInteger(BufferedReader &stream) {
         unsigned char temp;
 
         // read single bytes until a number is found
@@ -190,7 +207,7 @@ private:
         return result;
     }
 
-    void readNum(BufferedReader &stream, unsigned char *temp) {
+    static inline void readNum(BufferedReader &stream, unsigned char *temp) {
         //if (stream.bad() || stream.eof())
             //throw invalid_argument("Got invalid stream as parameter!");
 

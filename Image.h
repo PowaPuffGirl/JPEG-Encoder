@@ -77,21 +77,23 @@ struct Block {
 class BlockwiseRawImage {
 private:
     using Coord = int32_t;
+    std::mutex blockRowsProcessedLock;
 
 public:
     std::vector<Block<float>> blocks;
 
-    const Coord width, height,
+    const Coord width, height, widthMinusOne, heightMinusOne,
         widthPadded, heightPadded,
         blockWidth, blockHeight;
     const int blockRowWidth, blockColHeight, blockAmount;
+    Coord blockRowsProcessed = 0;
 
     // for compatibility with RawImage
     BlockwiseRawImage(const Coord width, const Coord height, const unsigned int colorDepth, const int stepX, const int stepY)
         : BlockwiseRawImage(width, height, colorDepth) {};
 
     BlockwiseRawImage(const Coord width, const Coord height, const unsigned int colorDepth) :
-            width(width), height(height),
+            width(width), height(height), widthMinusOne(width - 1), heightMinusOne(height - 1),
             widthPadded(width % 16 == 0 ? width : width + (16 - (width % 16))),
             heightPadded(height % 16 == 0 ? height : height + (16 - (height % 16))),
             blockWidth(widthPadded / 16), blockHeight(heightPadded / 16),
@@ -100,6 +102,12 @@ public:
     {
         assert(colorDepth == 255);
         blocks.resize(static_cast<unsigned long>(blockAmount));
+    }
+
+    inline void getProcessedRowCount(Coord& var) {
+        blockRowsProcessedLock.lock();
+        var = blockRowsProcessed;
+        blockRowsProcessedLock.unlock();
     }
 
     void exportFullPpm(std::string filename) {
@@ -190,20 +198,35 @@ public:
 
 
         // fill in borders/corners
-        if(y == height && innerY != 15) {
-            for(int iY = 16 - innerY; iY < 16; ++iY)
-                block.setPixel(innerX, iY, red, green, blue);
+        if(y == heightMinusOne && innerY != 15) {
+            //for(int iY = 16 - innerY; iY < 16; ++iY)
+                //block.setPixel(innerX, iY, red, green, blue);
         }
 
-        if(x == width && innerX != 15) {
-            for(int iX = 16 - innerX; iX < 16; ++iX)
-                block.setPixel(iX, innerY, red, green, blue);
+        if(x == widthMinusOne) {
+            if(innerX != 15) {
+                //for(int iX = 16 - innerX; iX < 16; ++iX)
+                    //block.setPixel(iX, innerY, red, green, blue);
+
+            }
+
+            if(innerY == 15) { // bottom col of block => block finished
+                blockRowsProcessedLock.lock();
+                ++blockRowsProcessed;
+                blockRowsProcessedLock.unlock();
+            }
         }
 
-        if(y == height && x == width) {
-            for(int iX = 16 - innerX; iX < 16; ++iX)
-                for(int iY = 16 - innerY; iY < 16; ++iY)
-                    block.setPixel(iX, iY, red, green, blue);
+        if(y == heightMinusOne && x == widthMinusOne) {
+            //for(int iX = 16 - innerX; iX < 16; ++iX)
+                //for(int iY = 16 - innerY; iY < 16; ++iY)
+                    //block.setPixel(iX, iY, red, green, blue);
+
+            // bottom-right corner => last block. We need to set this here because if the image height is not
+            // 16-aligned, the above increment will not be triggered
+            blockRowsProcessedLock.lock();
+            blockRowsProcessed = blockHeight;
+            blockRowsProcessedLock.unlock();
         }
     }
 

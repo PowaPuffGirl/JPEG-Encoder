@@ -54,20 +54,20 @@ void full_encode(int runs, bool exportChannels, const std::string path) {
         auto startTime = std::chrono::high_resolution_clock::now();
 
         PPMParser<BlockwiseRawImage> test(stepSize, stepSize);
-        BlockwiseRawImage temp = test.parsePPM(path);
+        shared_ptr<BlockwiseRawImage> temp = test.parsePPM(path);
         ImageProcessor<float, SeparatedCosinusTransform<float>> ip;
         std::string output = path.substr(0, path.size()-4);
-        BitStream bs(output + ".jpg", temp.width, temp.height);
-        ip.processImage(temp, bs);
+        BitStream bs(output + ".jpg", temp->width, temp->height);
+        ip.processImage(*temp, bs);
 
         auto endTimeWithWrite = std::chrono::high_resolution_clock::now();
         w += std::chrono::duration_cast<std::chrono::milliseconds>(endTimeWithWrite - startTime).count();
 
         if (exportChannels) {
-            temp.exportYPpm("bw_y");
-            temp.exportCbPpm("bw_cb");
-            temp.exportCrPpm("bw_cr");
-            temp.exportFullPpm("bw_full");
+            temp->exportYPpm("bw_y");
+            temp->exportCbPpm("bw_cb");
+            temp->exportCrPpm("bw_cr");
+            temp->exportFullPpm("bw_full");
 
         }
     }

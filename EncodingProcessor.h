@@ -24,7 +24,7 @@ public:
     template <typename Transform>
     void processBlock(Block<T>& block,
             OffsetSampledWriter<T>& outputY, OffsetSampledWriter<T>& outputCb, OffsetSampledWriter<T>& outputCr,
-            Transform& transform, const unsigned int blockOffset, const unsigned int blockRowWidth) {
+            Transform& transform, const unsigned int blockOffset) {
 
         auto Yoffset = blockOffset * 4;
         processRowBlock(block.Y[0][0], outputY, transform, Yoffset);
@@ -94,8 +94,25 @@ public:
             Cr(image.blockAmount, chrominaceOnePlus5);
         Transform transform;
 
-        for(int i = 0; i < image.blockAmount; ++i)
-            encodingProcessor.template processBlock<Transform>(image.blocks[i], Y, Cb, Cr, transform, i, image.blockRowWidth);
+        // read the asynchronously written blocks
+        int rowsReady = 0, rowsProcessed = 0, blockOffset = 0;
+        while(rowsProcessed < image.blockHeight) {
+
+            // wait for new rows
+            while(rowsReady == rowsProcessed) {
+                image.getProcessedRowCount(rowsReady);
+            }
+
+            const int prevStop = blockOffset;
+            const int nextStop = blockOffset + image.blockRowWidth * (rowsReady - rowsProcessed);
+            for(; blockOffset  < nextStop; ++blockOffset) {
+                encodingProcessor.template processBlock<Transform>(image.blocks[blockOffset], Y, Cb, Cr, transform, blockOffset);
+            }
+
+            rowsProcessed = rowsReady;
+        }
+
+
 
         Y.runLengthEncoding();
         Cb.runLengthEncoding();
