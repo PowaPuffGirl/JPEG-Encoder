@@ -5,6 +5,7 @@
 #include <Vc/IO>
 #include <vector>
 #include <stdexcept>
+#include <mutex>
 #include "ppmCreator.h"
 #include "helper/RgbToYCbCr.h"
 
@@ -77,7 +78,9 @@ struct Block {
 class BlockwiseRawImage {
 private:
     using Coord = int32_t;
+#ifndef IS_BENCHMARK
     std::mutex blockRowsProcessedLock;
+#endif
 
 public:
     std::vector<Block<float>> blocks;
@@ -105,9 +108,13 @@ public:
     }
 
     inline void getProcessedRowCount(Coord& var) {
+#ifndef IS_BENCHMARK
         blockRowsProcessedLock.lock();
         var = blockRowsProcessed;
         blockRowsProcessedLock.unlock();
+#else
+        var = blockRowsProcessed;
+#endif
     }
 
     void exportFullPpm(std::string filename) {
@@ -210,11 +217,13 @@ public:
 
             }
 
+#ifndef IS_BENCHMARK
             if(innerY == 15) { // bottom col of block => block finished
                 blockRowsProcessedLock.lock();
                 ++blockRowsProcessed;
                 blockRowsProcessedLock.unlock();
             }
+#endif
         }
 
         if(y == heightMinusOne && x == widthMinusOne) {
@@ -222,11 +231,13 @@ public:
                 for(int iY = innerY; iY < 16; ++iY)
                     block.setPixel(iX, iY, red, green, blue);
 
+#ifndef IS_BENCHMARK
             // bottom-right corner => last block. We need to set this here because if the image height is not
             // 16-aligned, the above increment will not be triggered
             blockRowsProcessedLock.lock();
             blockRowsProcessed = blockHeight;
             blockRowsProcessedLock.unlock();
+#endif
         }
     }
 
