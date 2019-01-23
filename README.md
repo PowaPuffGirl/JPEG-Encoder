@@ -2,8 +2,9 @@
 
 This is a PPM to JPG/JPEG encoder using SIMD. It was developed for a lecture at
 FHWS and is primarily designed for speed. Because of this it only encodes to
-three channels (no black/white) and only with 4:2:0 subsampling, but it should
-be rather easy to fit it to other purposes.
+three channels (therefore no black/white) with 4:2:0 subsampling and assumes a 
+welformed PPM image with a colordepth of 255, but it should be rather easy to fit 
+it to more general purposes.
 
 For now it can encode a 4K image in under a second and a 12K (12000x6660) image
 in about 3 seconds.
