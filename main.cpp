@@ -22,8 +22,6 @@ const unsigned int stepSize = 8;
 
 void full_encode(int runtime, bool exportChannels = false, const string path = "../output/test");
 
-void runAllTestImages();
-
 int main(int argc, char* argv[]) {
     std::cout << argv[0] << std::endl;
     if(argc < 2) {
@@ -75,40 +73,4 @@ void full_encode(int runtime, bool exportChannels, const std::string path) {
     }
     std::cout << "Time to encode full image: " << static_cast<double>(w) / (runs) << " ms, time to encode and write: "
         << static_cast<double>(wW) / runs << " ms (with " << runs << " sample runs).\n";
-}
-
-void runAllTestImages() {
-
-
-//    std::thread tx1([]() {
-        full_encode(10, false, "../output/test_gradient.ppm");
-//    });
-//    std::thread tx2([]() {
-        full_encode(10, false, "../output/test_red.ppm");
-//    });
-//    std::thread tx3([]() {
-        full_encode(10, false, "../output/test_red64.ppm");
-//    });
-//    std::thread tx4([]() {
-        full_encode(10, false, "../output/test_128_random.ppm");
-//    });
-//    std::thread tx5([]() {
-        full_encode(10, false, "../output/31x31-synth.ppm");
-//    });
-//    std::thread tx6([]() {
-        full_encode(10, false, "../output/test_blocked.ppm");
-//    });
-//    std::thread tx7([]() {
-        full_encode(10, false, "../output/test_full.ppm");
-//    });
-
-      full_encode(10, false, "../output/test.ppm");
-
-//    tx1.join();
-//    tx2.join();
-//    tx3.join();
-//    tx4.join();
-//    tx5.join();
-//    tx6.join();
-//    tx7.join();
 }
